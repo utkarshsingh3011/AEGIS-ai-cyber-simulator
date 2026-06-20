@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { 
   Terminal, Bot, Layers, Play, CheckCircle2, 
   ArrowLeft, RefreshCw, Cpu, Database, Network, ArrowRight 
@@ -74,25 +75,35 @@ const compileCampaignConfig = (
   // Calculate compromise chance and risk factors based on security level
   let compromiseChance = 85;
   let riskFactor = 75;
+  
+  // Set stage statuses (evaded vs blocked) based on security level
   let status1: "evaded" | "blocked" = "evaded";
   let status2: "evaded" | "blocked" = "evaded";
   let status3: "evaded" | "blocked" = "evaded";
+  let status4: "evaded" | "blocked" = "evaded";
+  let status5: "evaded" | "blocked" = "evaded";
+  let status6: "evaded" | "blocked" = "evaded";
 
   if (security === "Medium") {
     compromiseChance = 55;
     riskFactor = 55;
     status1 = "blocked";
+    status3 = "blocked";
   } else if (security === "High") {
     compromiseChance = 25;
     riskFactor = 30;
     status1 = "blocked";
     status2 = "blocked";
+    status4 = "blocked";
   } else if (security === "Enterprise") {
     compromiseChance = 5;
     riskFactor = 12;
     status1 = "blocked";
     status2 = "blocked";
     status3 = "blocked";
+    status4 = "blocked";
+    status5 = "blocked";
+    status6 = "blocked";
   }
 
   return {
@@ -106,24 +117,45 @@ const compileCampaignConfig = (
     primaryTarget: chosenIndustry.target,
     stages: [
       {
-        title: "Foothold Established",
-        description: `Attacker ${actor} successfully injected payload targeting ${chosenIndustry.name} subnets using ${chosenAttack.name} (${chosenAttack.tech}).`,
-        log: `[INGRESS] Source payload injected. Target mailbox / build server triggered. EDR status: ${status1 === "blocked" ? "BLOCKED" : "EVADED"}`,
-        status: status1 === "blocked" ? "blocked" : "evaded",
+        title: "Reconnaissance & Port Scan",
+        description: `Attacker ${actor} initiated active reconnaissance scans mapping the target subnets for ${chosenIndustry.name}.`,
+        log: `[RECON] Mapping subnets on segment 10.0.4.x. Found open ports: 443, 8080. EDR status: ${status1 === "blocked" ? "BLOCKED" : "EVADED"}`,
+        status: status1,
+        severity: "low",
+      },
+      {
+        title: "Initial Access Foothold",
+        description: `Foothold vector established using ${chosenAttack.name} (${chosenAttack.tech}) to bypass gateway filtering.`,
+        log: `[INGRESS] Exploit payload dispatched. Channel established with target client. EDR status: ${status2 === "blocked" ? "BLOCKED" : "EVADED"}`,
+        status: status2,
         severity: "medium",
       },
       {
-        title: "Privilege Escalation & Recon",
-        description: `Emulating local token theft vectors to query Active Directory domain controllers. Searching for paths to root target ${chosenIndustry.target}.`,
-        log: `[PRIVILEGE] Querying LDAP directory catalogs for admin sessions. EDR status: ${status2 === "blocked" ? "BLOCKED" : "EVADED"}`,
-        status: status2 === "blocked" ? "blocked" : "evaded",
+        title: "Credential Swipe",
+        description: `Searching local memory dumps and active directory tables for active session tokens and admin keys.`,
+        log: `[CREDENTIALS] LSASS memory dump initiated / credential extraction requested. EDR status: ${status3 === "blocked" ? "BLOCKED" : "EVADED"}`,
+        status: status3,
+        severity: "medium",
+      },
+      {
+        title: "Lateral Subnet Propagation",
+        description: `Pivoting from compromised host endpoints to jump servers. Internal target segment reached: ${chosenIndustry.target}.`,
+        log: `[LATERAL] Remote session hijacked to cross network subnets. Target node reached: ${chosenIndustry.target}. EDR status: ${status4 === "blocked" ? "BLOCKED" : "EVADED"}`,
+        status: status4,
         severity: "high",
       },
       {
-        title: "Lateral Action on Targets",
-        description: `Establishing Remote Desktop (RDP) or SSH links to the local target database segment containing ${chosenIndustry.target}.`,
-        log: `[LATERAL] Command execution request dispatched to host ${chosenIndustry.target}. EDR status: ${status3 === "blocked" ? "BLOCKED" : "EVADED"}`,
-        status: status3 === "blocked" ? "blocked" : "evaded",
+        title: "Privilege Domain Escalation",
+        description: `Attempting admin privilege elevation via token impersonation on Active Directory controller nodes.`,
+        log: `[ESCALATION] Token impersonation executed. Root credentials retrieved. EDR status: ${status5 === "blocked" ? "BLOCKED" : "EVADED"}`,
+        status: status5,
+        severity: "high",
+      },
+      {
+        title: "Data Exfiltration & Impact",
+        description: `Executing final payload actions on database target ${chosenIndustry.target}. Archiving core customer tables.`,
+        log: `[EXFILTRATION] Compressing database files. Transmitting out of band over port 443. EDR status: ${status6 === "blocked" ? "BLOCKED" : "EVADED"}`,
+        status: status6,
         severity: "critical",
       },
     ],
@@ -131,6 +163,7 @@ const compileCampaignConfig = (
 };
 
 export default function SimulatePage() {
+  const router = useRouter();
   // Field states
   const [industry, setIndustry] = useState("Healthcare");
   const [actor, setActor] = useState("APT29");
@@ -174,6 +207,10 @@ export default function SimulatePage() {
         setLogs(prev => [...prev, log]);
         if (index === compileLogs.length - 1) {
           setSimState("completed");
+          // Automatically redirect to attack-viewer after 1.5 seconds!
+          setTimeout(() => {
+            router.push("/attack-viewer");
+          }, 1500);
         }
       }, (index + 1) * 450);
     });
