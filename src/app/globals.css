@@ -1,0 +1,154 @@
+@import "tailwindcss";
+
+:root {
+  --background: #030303;
+  --foreground: #f8fafc;
+  
+  --color-cyber-bg: #030303;
+  --color-cyber-surface: #0a0b10;
+  --color-cyber-surface-brighter: #0f111a;
+  
+  --color-electric-blue: #2563eb;
+  --color-cyber-cyan: #06b6d4;
+  --color-cyber-green: #10b981;
+  --color-cyber-red: #f43f5e;
+  --color-cyber-border: rgba(30, 41, 59, 0.5);
+  --color-cyber-border-active: rgba(38, 99, 235, 0.4);
+}
+
+@theme {
+  --color-cyber-bg: var(--color-cyber-bg);
+  --color-cyber-surface: var(--color-cyber-surface);
+  --color-cyber-surface-brighter: var(--color-cyber-surface-brighter);
+  --color-electric-blue: var(--color-electric-blue);
+  --color-cyber-cyan: var(--color-cyber-cyan);
+  --color-cyber-green: var(--color-cyber-green);
+  --color-cyber-red: var(--color-cyber-red);
+  --color-cyber-border: var(--color-cyber-border);
+  --color-cyber-border-active: var(--color-cyber-border-active);
+
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, monospace;
+  
+  --animate-scanline: scanline 8s linear infinite;
+  --animate-grid-scroll: grid-scroll 24s linear infinite;
+  --animate-pulse-glow: pulse-glow 2s ease-in-out infinite;
+  --animate-radar: radar-pulse 4s cubic-bezier(0, 0, 0.2, 1) infinite;
+  --animate-ping-slow: ping-slow 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+
+  @keyframes scanline {
+    0% {
+      transform: translateY(-100%);
+    }
+    100% {
+      transform: translateY(100%);
+    }
+  }
+  @keyframes grid-scroll {
+    0% {
+      background-position: 0 0;
+    }
+    100% {
+      background-position: 0 100%;
+    }
+  }
+  @keyframes pulse-glow {
+    0%, 100% {
+      opacity: 0.15;
+      box-shadow: 0 0 15px rgba(37, 99, 235, 0.1);
+    }
+    50% {
+      opacity: 0.35;
+      box-shadow: 0 0 30px rgba(6, 182, 212, 0.3);
+    }
+  }
+  @keyframes radar-pulse {
+    0% {
+      transform: scale(0.95);
+      opacity: 0.8;
+    }
+    50% {
+      opacity: 0.4;
+    }
+    100% {
+      transform: scale(2);
+      opacity: 0;
+    }
+  }
+  @keyframes ping-slow {
+    0% {
+      transform: scale(1);
+      opacity: 1;
+    }
+    75%, 100% {
+      transform: scale(2.2);
+      opacity: 0;
+    }
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+}
+
+/* Custom Cyber Utilities */
+.cyber-grid {
+  background-size: 40px 40px;
+  background-image: 
+    linear-gradient(to right, rgba(30, 41, 59, 0.15) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(30, 41, 59, 0.15) 1px, transparent 1px);
+}
+
+.cyber-grid-fine {
+  background-size: 20px 20px;
+  background-image: 
+    linear-gradient(to right, rgba(6, 182, 212, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(6, 182, 212, 0.04) 1px, transparent 1px);
+}
+
+.glassmorphism {
+  background: rgba(10, 11, 16, 0.65);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--color-cyber-border);
+}
+
+.glassmorphism-card {
+  background: rgba(15, 17, 26, 0.4);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid var(--color-cyber-border);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.glassmorphism-card:hover {
+  border-color: var(--color-cyber-border-active);
+  box-shadow: 0 0 25px rgba(37, 99, 235, 0.1);
+}
+
+.glow-blue {
+  box-shadow: 0 0 40px rgba(37, 99, 235, 0.15);
+}
+
+.glow-cyan {
+  box-shadow: 0 0 40px rgba(6, 182, 212, 0.15);
+}
+
+/* Scrollbar customizations */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #030303;
+}
+::-webkit-scrollbar-thumb {
+  background: #1e293b;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #3b82f6;
+}

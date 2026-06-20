@@ -1,0 +1,305 @@
+"use client";
+
+import React, { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Bot, Eye, BarChart3, ShieldCheck, Terminal, Layers } from "lucide-react";
+
+const STEPS = [
+  {
+    id: "generate",
+    num: "01",
+    label: "Generate",
+    title: "AI Scenario Synthesizer",
+    desc: "Describe your threat model in plain English or select from pre-mapped presets. The scenario engine compiles attack parameters, targeting policies, and initial foothold conditions into a repeatable, sandboxed campaign.",
+    icon: Bot,
+    color: "text-blue-500",
+    badge: "Campaign Builder",
+  },
+  {
+    id: "visualize",
+    num: "02",
+    label: "Visualize",
+    title: "Network Twin Propagation",
+    desc: "Watch the attack vector unfold in real-time on a digital twin of your network architecture. Track asset-to-asset lateral movements, credential hijacking, and subnet hops as they happen without affecting live operations.",
+    icon: Eye,
+    color: "text-cyber-cyan",
+    badge: "Attack Movie Player",
+  },
+  {
+    id: "analyze",
+    num: "03",
+    label: "Analyze",
+    title: "MITRE ATT&CK Mitigation Engine",
+    desc: "Examine simulation outcomes through structured timeline telemetry. The analytics dashboard catalogs every compromise technique, calculates containment risk coefficients, and highlights coverage gaps in your active security stack.",
+    icon: BarChart3,
+    color: "text-amber-500",
+    badge: "Risk Analyzer",
+  },
+  {
+    id: "defend",
+    num: "04",
+    label: "Defend",
+    title: "Predictive Hardening Playbooks",
+    desc: "Generate production-ready hardening templates, firewall rules, and Active Directory containment scripts. Push security adjustments directly to orchestration platforms to patch vulnerable assets before real adversaries strike.",
+    icon: ShieldCheck,
+    color: "text-cyber-green",
+    badge: "Defense Orchestrator",
+  },
+];
+
+export default function HowItWorks() {
+  const [activeStep, setActiveStep] = useState("generate");
+
+  return (
+    <section id="workflow" className="relative py-28 bg-cyber-surface/30 overflow-hidden border-t border-cyber-border/40">
+      <div className="absolute top-1/4 left-1/4 w-[40vw] h-[40vh] bg-electric-blue/5 rounded-full blur-[140px] pointer-events-none z-0" />
+
+      <div className="max-w-7xl mx-auto px-6 relative z-10">
+        
+        {/* Header */}
+        <div className="text-center max-w-3xl mx-auto mb-20">
+          <div className="inline-flex items-center gap-2 text-cyber-cyan text-[10px] font-mono tracking-widest uppercase mb-4">
+            <Layers className="w-3.5 h-3.5 text-cyber-cyan" />
+            Execution Protocol
+          </div>
+          <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight text-white">
+            Four Steps to Pre-emptive Hardening
+          </h2>
+          <p className="mt-4 text-slate-400 text-sm md:text-base leading-relaxed">
+            AEGIS provides a closed-loop platform that translates raw threat profiles into verified network defense parameters.
+          </p>
+        </div>
+
+        {/* Tab buttons / Timeline indicator */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto mb-16">
+          {STEPS.map((step) => {
+            const Icon = step.icon;
+            const isActive = activeStep === step.id;
+
+            return (
+              <button
+                key={step.id}
+                onClick={() => setActiveStep(step.id)}
+                className={`p-4 rounded border text-left transition-all duration-300 relative overflow-hidden group cursor-pointer ${
+                  isActive
+                    ? "bg-cyber-surface border-cyber-border-active/60 shadow-[0_0_20px_rgba(6,182,212,0.05)]"
+                    : "bg-black/30 border-cyber-border/30 hover:border-slate-800"
+                }`}
+              >
+                {/* Accent top line */}
+                {isActive && (
+                  <motion.div
+                    layoutId="activeTabLine"
+                    className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-electric-blue to-cyber-cyan"
+                  />
+                )}
+                
+                <div className="flex justify-between items-center">
+                  <span className={`text-[10px] font-mono font-bold ${isActive ? "text-cyber-cyan" : "text-slate-600"}`}>
+                    STAGE {step.num}
+                  </span>
+                  <Icon className={`w-4 h-4 ${isActive ? "text-cyber-cyan" : "text-slate-500 group-hover:text-slate-400"}`} />
+                </div>
+                <div className={`text-xs font-bold font-mono mt-3 uppercase tracking-wider ${isActive ? "text-white" : "text-slate-400 group-hover:text-slate-200"}`}>
+                  {step.label}
+                </div>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Dynamic Display Panel */}
+        <div className="max-w-6xl mx-auto glassmorphism-card rounded-xl p-8 border border-cyber-border relative overflow-hidden">
+          {/* Subtle decoration lines */}
+          <div className="absolute top-0 right-10 w-[1px] h-4 bg-cyber-cyan/30" />
+          <div className="absolute top-0 right-12 w-[1px] h-8 bg-cyber-cyan/20" />
+
+          <AnimatePresence mode="wait">
+            {STEPS.map((step) => {
+              if (step.id !== activeStep) return null;
+
+              return (
+                <motion.div
+                  key={step.id}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.4 }}
+                  className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center"
+                >
+                  {/* Left Column: Description */}
+                  <div className="lg:col-span-5 flex flex-col justify-center">
+                    <span className="inline-block text-[10px] font-mono px-2 py-0.5 rounded border border-cyber-cyan/30 bg-cyber-cyan/5 text-cyber-cyan font-bold tracking-wider mb-4 uppercase w-fit">
+                      {step.badge}
+                    </span>
+                    <h3 className="text-xl md:text-2xl font-bold text-white tracking-tight">
+                      {step.title}
+                    </h3>
+                    <p className="mt-4 text-xs md:text-sm text-slate-400 leading-relaxed font-sans">
+                      {step.desc}
+                    </p>
+                    <div className="mt-6 flex items-center gap-3 border-t border-cyber-border/40 pt-6">
+                      <div className="w-8 h-8 rounded-full bg-slate-900 border border-cyber-border flex items-center justify-center">
+                        <Terminal className="w-3.5 h-3.5 text-slate-400" />
+                      </div>
+                      <div className="text-[10px] font-mono text-slate-500">
+                        ACTIVE INSTANCE ID: <span className="text-slate-300">inst-aegis-{step.id}-098</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Right Column: Visual Console Widget */}
+                  <div className="lg:col-span-7">
+                    <div className="bg-black/85 rounded-lg border border-cyber-border overflow-hidden min-h-[300px] flex flex-col justify-between">
+                      {/* Widget Header */}
+                      <div className="bg-cyber-surface px-4 py-2 border-b border-cyber-border flex items-center justify-between text-[10px] font-mono text-slate-400">
+                        <span className="flex items-center gap-1.5 uppercase">
+                          <span className="w-1.5 h-1.5 rounded-full bg-cyber-cyan animate-pulse" />
+                          System State Simulator
+                        </span>
+                        <span>v1.0.4</span>
+                      </div>
+
+                      {/* Widget Body Content based on active state */}
+                      <div className="p-5 font-mono text-xs flex-grow flex flex-col justify-center text-slate-300">
+                        {step.id === "generate" && (
+                          <div className="space-y-2">
+                            <div className="text-slate-500 font-mono text-[10px]"># inputs/apt29-spearphish.json</div>
+                            <pre className="text-[11px] leading-relaxed text-cyber-cyan bg-cyber-surface/30 p-4 rounded border border-cyber-border/60">
+{`{
+  "scenario_name": "CozyBear Foothold Emulation",
+  "actor": "APT29",
+  "tactics": ["T1566.002", "T1078.001"],
+  "payload": "invoice_scanner.exe",
+  "targets": ["hr-endpoints", "finance-subnet"],
+  "exfiltration_port": 443,
+  "simulation_rules": {
+    "evade_detection": true,
+    "limit_bandwidth": "20Mbps"
+  }
+}`}
+                            </pre>
+                            <div className="flex items-center gap-2 text-[10px] text-slate-500 mt-2">
+                              <span className="w-2 h-2 rounded-full bg-cyber-green" /> Ready to compile scenario
+                            </div>
+                          </div>
+                        )}
+
+                        {step.id === "visualize" && (
+                          <div className="flex flex-col items-center justify-center py-4 relative">
+                            {/* Graphic tree simulator representing network nodes */}
+                            <div className="flex items-center gap-10 z-10">
+                              <div className="w-10 h-10 rounded border border-slate-700 bg-cyber-surface flex items-center justify-center relative">
+                                <span className="absolute -top-6 text-[8px] text-slate-500 font-mono">GATEWAY</span>
+                                <span className="w-2 h-2 rounded-full bg-cyber-green animate-pulse" />
+                              </div>
+                              <div className="flex flex-col gap-6 relative">
+                                {/* SVG vertical connector */}
+                                <div className="absolute top-1/2 -left-5 w-5 h-[1px] bg-cyber-cyan" />
+                                <div className="w-10 h-10 rounded border border-cyber-cyan bg-cyber-cyan/5 flex items-center justify-center relative shadow-[0_0_10px_rgba(6,182,212,0.15)]">
+                                  <span className="absolute -top-6 text-[8px] text-slate-500 font-mono">DMZ_01</span>
+                                  <span className="w-2 h-2 rounded-full bg-cyber-cyan animate-pulse" />
+                                </div>
+                                <div className="w-10 h-10 rounded border border-cyber-red bg-cyber-red/5 flex items-center justify-center relative shadow-[0_0_10px_rgba(244,63,94,0.15)]">
+                                  <span className="absolute -bottom-6 text-[8px] text-slate-500 font-mono">HOST_04</span>
+                                  <span className="w-2 h-2 rounded-full bg-cyber-red animate-pulse" />
+                                </div>
+                              </div>
+                              <div className="flex flex-col gap-6 relative">
+                                <div className="absolute top-[20%] -left-5 w-5 h-[1px] bg-slate-700" />
+                                <div className="absolute bottom-[20%] -left-5 w-5 h-[1px] bg-cyber-red" />
+                                <div className="w-10 h-10 rounded border border-slate-800 bg-slate-950 flex items-center justify-center relative">
+                                  <span className="absolute -top-6 text-[8px] text-slate-600 font-mono">DB_01</span>
+                                  <span className="w-1.5 h-1.5 rounded-full bg-slate-700" />
+                                </div>
+                                <div className="w-10 h-10 rounded border border-cyber-red bg-cyber-red/5 flex items-center justify-center relative shadow-[0_0_10px_rgba(244,63,94,0.2)]">
+                                  <span className="absolute -bottom-6 text-[8px] text-slate-500 font-mono">LDAP_CORE</span>
+                                  <span className="w-2 h-2 rounded-full bg-cyber-red animate-pulse" />
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Attacking path background SVG connection */}
+                            <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-20">
+                              <path d="M 50,75 L 180,75 L 180,135 L 310,135" fill="none" stroke="#f43f5e" strokeWidth="2" />
+                            </svg>
+                          </div>
+                        )}
+
+                        {step.id === "analyze" && (
+                          <div className="space-y-3 font-mono text-[10px]">
+                            <div className="text-slate-500"># mitre-coverage-matrix.log</div>
+                            <table className="w-full border-collapse border border-cyber-border text-left">
+                              <thead>
+                                <tr className="bg-cyber-surface border-b border-cyber-border font-bold text-slate-300">
+                                  <th className="p-2 border-r border-cyber-border">Technique</th>
+                                  <th className="p-2 border-r border-cyber-border">Category</th>
+                                  <th className="p-2 border-r border-cyber-border">Detection Ratio</th>
+                                  <th className="p-2">Status</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                <tr className="border-b border-cyber-border">
+                                  <td className="p-2 border-r border-cyber-border text-slate-300">T1566 (Spearphish)</td>
+                                  <td className="p-2 border-r border-cyber-border">Initial Access</td>
+                                  <td className="p-2 border-r border-cyber-border text-cyber-cyan">94% (EDR+Mail)</td>
+                                  <td className="p-2 text-cyber-green font-bold">SECURED</td>
+                                </tr>
+                                <tr className="border-b border-cyber-border">
+                                  <td className="p-2 border-r border-cyber-border text-slate-300">T1078 (Valid Creds)</td>
+                                  <td className="p-2 border-r border-cyber-border">Defense Evasion</td>
+                                  <td className="p-2 border-r border-cyber-border text-amber-500">42% (IAM logs)</td>
+                                  <td className="p-2 text-amber-500 font-bold">DEFICIENCY</td>
+                                </tr>
+                                <tr>
+                                  <td className="p-2 border-r border-cyber-border text-slate-300">T1021 (RDP lateral)</td>
+                                  <td className="p-2 border-r border-cyber-border">Lateral Move</td>
+                                  <td className="p-2 border-r border-cyber-border text-cyber-red">12% (Netflow)</td>
+                                  <td className="p-2 text-cyber-red font-bold">CRITICAL GAP</td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </div>
+                        )}
+
+                        {step.id === "defend" && (
+                          <div className="space-y-3 font-mono text-[10px]">
+                            <div className="text-slate-500"># active-remediation-controller --deploy</div>
+                            <div className="space-y-1.5">
+                              <div className="p-2 bg-cyber-surface/60 border border-cyber-border rounded flex items-center justify-between">
+                                <span className="text-slate-300 font-bold">Remediation AD-Lockout Policy</span>
+                                <span className="px-1.5 py-0.5 rounded bg-cyber-green/10 text-cyber-green border border-cyber-green/30 uppercase font-mono text-[8px] font-bold">ENABLED</span>
+                              </div>
+                              <div className="p-2 bg-cyber-surface/60 border border-cyber-border rounded flex items-center justify-between">
+                                <span className="text-slate-300 font-bold">Remediation Firewall Block Port 8080</span>
+                                <span className="px-1.5 py-0.5 rounded bg-cyber-green/10 text-cyber-green border border-cyber-green/30 uppercase font-mono text-[8px] font-bold">DEPLOYED</span>
+                              </div>
+                              <div className="p-2 bg-cyber-surface/60 border border-cyber-border rounded flex items-center justify-between">
+                                <span className="text-slate-300 font-bold">Remediation Patch solarwinds-agent v2.4.9</span>
+                                <span className="px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-500 border border-amber-500/30 uppercase font-mono text-[8px] font-bold">AUTH REQUIRED</span>
+                              </div>
+                            </div>
+                            <button className="px-3 py-1.5 mt-2 bg-cyber-cyan text-black font-bold uppercase rounded text-[9px] hover:bg-cyan-400 transition-all duration-300 cursor-pointer">
+                              Deploy Hardening Suite
+                            </button>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Widget Footer Console Logs */}
+                      <div className="bg-cyber-surface/50 border-t border-cyber-border px-4 py-2 text-[9px] text-slate-500 font-mono flex justify-between">
+                        <div>MODE: STANDALONE RUNNER</div>
+                        <div className="text-slate-400">TELEMETRY_LOG_OK</div>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              );
+            })}
+          </AnimatePresence>
+        </div>
+
+      </div>
+    </section>
+  );
+}
