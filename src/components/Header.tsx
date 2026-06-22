@@ -4,8 +4,8 @@ import React, { useState, useEffect } from "react";
 import { Shield, Terminal, ArrowUpRight } from "lucide-react";
 import { motion } from "framer-motion";
 import Link from "next/link";
-import router from "next/router";
 import { useRouter, usePathname } from "next/navigation";
+import Image from "next/image";
 
 
 export default function Header() {
@@ -55,21 +55,36 @@ export default function Header() {
         <div
           onClick={() => {
             if (pathname === "/") {
-              window.scrollTo(0, 0);
+              window.scrollTo({
+                top: 0,
+                left: 0,
+                behavior: "auto",
+              });
             } else {
               router.push("/");
             }
           }}
           className="flex items-center gap-3 group cursor-pointer select-none hover:opacity-90 transition-opacity"
         >
-          <div className="relative flex items-center justify-center w-9 h-9 rounded-lg bg-cyber-surface border border-cyber-border-active/40 overflow-hidden">
-            <Shield className="w-5 h-5 text-cyber-cyan transition-transform duration-500 group-hover:scale-110" />
+          <div className="relative flex items-center justify-center w-11 h-11 rounded-lg bg-cyber-surface border border-cyber-border-active/40 overflow-hidden">
+
+            <Image
+              src="/sentinel-logo.png"
+              alt="Sentinel Logo"
+              width={22}
+              height={22}
+              className="object-contain transition-transform duration-500 group-hover:scale-110"
+            />
+
+            {/* Subtle Logo Glow */}
+            <div className="absolute inset-0 bg-cyber-cyan/10 blur-md pointer-events-none" />
 
             <motion.div
               animate={{ y: [-15, 25] }}
               transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
               className="absolute left-0 right-0 h-[1.5px] bg-cyber-cyan shadow-[0_0_8px_#06b6d4] opacity-70 pointer-events-none"
             />
+
           </div>
 
           <div className="flex flex-col">
