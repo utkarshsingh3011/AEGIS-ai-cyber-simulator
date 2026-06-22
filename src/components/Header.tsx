@@ -4,10 +4,15 @@ import React, { useState, useEffect } from "react";
 import { Shield, Terminal, ArrowUpRight } from "lucide-react";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import router from "next/router";
+import { useRouter, usePathname } from "next/navigation";
+
 
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [currentTime, setCurrentTime] = useState("");
+  const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -41,34 +46,42 @@ export default function Header() {
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.8, ease: "easeOut" }}
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled
-          ? "py-3 bg-cyber-bg/85 backdrop-blur-md border-b border-cyber-border/70 shadow-[0_4px_30px_rgba(0,0,0,0.4)]"
-          : "py-6 bg-transparent border-b border-transparent"
+        ? "py-3 bg-cyber-bg/85 backdrop-blur-md border-b border-cyber-border/70 shadow-[0_4px_30px_rgba(0,0,0,0.4)]"
+        : "py-6 bg-transparent border-b border-transparent"
         }`}
     >
       <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
         {/* Logo and Brand */}
-        <Link href="/" className="flex items-center gap-3 group cursor-pointer">
+        <div
+          onClick={() => {
+            if (pathname === "/") {
+              window.scrollTo(0, 0);
+            } else {
+              router.push("/");
+            }
+          }}
+          className="flex items-center gap-3 group cursor-pointer select-none hover:opacity-90 transition-opacity"
+        >
           <div className="relative flex items-center justify-center w-9 h-9 rounded-lg bg-cyber-surface border border-cyber-border-active/40 overflow-hidden">
             <Shield className="w-5 h-5 text-cyber-cyan transition-transform duration-500 group-hover:scale-110" />
+
             <motion.div
               animate={{ y: [-15, 25] }}
               transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
               className="absolute left-0 right-0 h-[1.5px] bg-cyber-cyan shadow-[0_0_8px_#06b6d4] opacity-70 pointer-events-none"
             />
           </div>
+
           <div className="flex flex-col">
-            <span className="font-mono text-lg font-bold tracking-[0.2em] text-white flex items-center gap-1">
+            <span className="font-mono text-lg font-bold tracking-[0.2em] text-white">
               SENTINEL
-              <span className="text-xs text-cyber-cyan font-semibold border border-cyber-cyan/30 px-1 rounded bg-cyber-cyan/5 tracking-wider scale-90">
-                AI
-              </span>
             </span>
+
             <span className="text-[9px] font-mono tracking-widest text-slate-500 uppercase">
               Attack Simulation & Defense Platform
             </span>
           </div>
-        </Link>
-
+        </div>
         <nav className="hidden md:flex items-center gap-8">
           <a
             href="#threats"
@@ -140,6 +153,6 @@ export default function Header() {
           </motion.div>
         </div>
       </div>
-    </motion.header>
+    </motion.header >
   );
 }
