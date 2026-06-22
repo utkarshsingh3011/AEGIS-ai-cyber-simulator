@@ -156,7 +156,7 @@ export default function Home() {
 
         <div className="max-w-7xl mx-auto px-6">
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+          <div className="grid grid-cols-1 lg:grid-cols-[1.4fr_1fr_0.8fr] gap-12 items-start">
 
             {/* Brand Section */}
             <div>
@@ -176,10 +176,6 @@ export default function Home() {
                 <div className="text-[10px] text-slate-500 uppercase tracking-widest">
                   Learn • Simulate • Defend
                 </div>
-
-                <div className="text-[9px] text-cyber-cyan uppercase tracking-[0.25em] mt-2">
-                  Version 1.0
-                </div>
               </div>
             </div>
 
@@ -193,20 +189,26 @@ export default function Home() {
                 </span>
 
                 <span className="text-slate-300 text-xs uppercase tracking-widest">
-                  Simulation Network Online
+                  Platform Status
                 </span>
               </div>
 
               <div className="text-center text-[11px] text-slate-500 leading-relaxed">
-                Attack Scenarios Loaded
+                Attack Simulations Ready
                 <br />
-                Defensive Systems Ready
+                Threat Reports Available
+                <br />
+                Educational Sandbox Active
               </div>
 
             </div>
 
             {/* Navigation */}
             <div className="flex flex-col lg:items-end gap-4 text-[10px] uppercase tracking-widest">
+
+              <h4 className="text-white text-xs font-bold uppercase tracking-[0.2em] mb-3">
+                Resources
+              </h4>
 
               <Link
                 href="/about"
@@ -248,18 +250,22 @@ export default function Home() {
           <div className="mt-10 h-px bg-gradient-to-r from-transparent via-cyber-border/50 to-transparent" />
 
           {/* Bottom Bar */}
-          <div className="mt-6 flex flex-col md:flex-row justify-between items-center gap-4">
+          <div className="mt-6 flex flex-wrap justify-center items-center gap-3 text-center">
 
             <span className="text-[10px] text-slate-600 uppercase tracking-widest">
               © {new Date().getFullYear()} Sentinel
             </span>
 
+            <span className="text-slate-700">•</span>
+
             <span className="text-[10px] text-slate-600 uppercase tracking-widest">
-              Educational Cybersecurity Simulation Project
+              Educational Cybersecurity Simulation Platform
             </span>
 
+            <span className="text-slate-700">•</span>
+
             <span className="text-[10px] text-cyber-cyan uppercase tracking-widest">
-              MITRE ATT&CK Driven Learning Platform
+              Built With Next.js & TypeScript
             </span>
 
           </div>
