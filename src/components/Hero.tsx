@@ -6,9 +6,9 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import { Terminal, Shield, Play, Loader, CheckCircle2, ChevronRight } from "lucide-react";
 
 const SIMULATION_CAMPAIGNS = [
-  { id: "apt29", name: "APT29 CozyBear Emulation", technique: "MITRE ATT&CK T1566 (Spearphishing)" },
-  { id: "ransomware", name: "LockBit 3.0 Propagation", technique: "MITRE ATT&CK T1486 (Data Encrypted)" },
-  { id: "zero-day", name: "SolarWinds Supply Chain", technique: "MITRE ATT&CK T1195 (Compromise Pipeline)" },
+  { id: "apt29", name: "Phishing Attack Simulation", actor: "Based on APT29 Techniques", technique: "MITRE ATT&CK T1566 (Spearphishing)" },
+  { id: "ransomware", name: "Ransomware Attack Simulation", actor: "Based on LockBit 3.0 Techniques", technique: "MITRE ATT&CK T1486 (Data Encrypted)" },
+  { id: "zero-day", name: "Supply Chain Attack Simulation", actor: "Based on SolarWinds Compromise", technique: "MITRE ATT&CK T1195 (Compromise Pipeline)" },
 ];
 
 export default function Hero() {
@@ -32,13 +32,13 @@ export default function Hero() {
     setLogs([]);
     
     const steps = [
-      `Initializing AEGIS Digital Twin Engine v4.2.9...`,
-      `Mapping local network topologies (142 nodes, 37 subnets)`,
-      `Injecting initial payload via ${SIMULATION_CAMPAIGNS.find(c => c.id === selectedCampaign)?.technique}...`,
-      `Scanning boundary routers and firewall state tables...`,
-      `Lateral movement detected: Active Directory domain controller targeted.`,
-      `Compiling MITRE ATT&CK behavioral mitigation heuristics...`,
-      `Digital Twin simulation completed. Data export generated successfully.`
+      `Initializing AEGIS educational simulation engine...`,
+      `Mapping virtual network topology (endpoints, servers, and firewall)...`,
+      `Injecting simulated attack via ${SIMULATION_CAMPAIGNS.find(c => c.id === selectedCampaign)?.technique}...`,
+      `Checking firewall rules and network port statuses...`,
+      `Attacker moved to internal server: Admin credentials targeted.`,
+      `Compiling educational defense guidelines...`,
+      `Simulation completed. Security analysis report ready.`
     ];
 
     steps.forEach((step, index) => {
@@ -103,7 +103,7 @@ export default function Hero() {
             className="inline-flex items-center gap-2 px-3 py-1 rounded bg-electric-blue/10 border border-electric-blue/30 text-[10px] font-mono tracking-widest text-cyber-cyan uppercase mb-6"
           >
             <Shield className="w-3 h-3 animate-pulse" />
-            Next-Gen Cyber Attack Simulation
+            Educational Cyber Attack Simulation & Defense
           </motion.div>
 
           <motion.h1
@@ -112,12 +112,12 @@ export default function Hero() {
             transition={{ duration: 0.8, delay: 0.1 }}
             className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.08] text-white"
           >
-            Visualize Cyber <br />
+            Understand Real <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-electric-blue via-cyber-cyan to-white">
-              Warfare Before
+              Cyber Attacks
             </span>{" "}
             <br />
-            It Happens
+            in a Safe Environment
           </motion.h1>
 
           <motion.p
@@ -126,8 +126,20 @@ export default function Hero() {
             transition={{ duration: 0.8, delay: 0.2 }}
             className="mt-6 text-sm md:text-base text-slate-400 max-w-xl font-sans leading-relaxed"
           >
-            AEGIS generates live, deterministic threat campaigns inside your network&apos;s digital twin. Emulate advanced hacking groups, record threat movies, and deploy pre-emptive mitigations automatically.
+            AEGIS generates real-time, step-by-step attack simulations inside a safe virtual network. Select an attack scenario, watch how it spreads, and learn how to configure security rules to protect network systems.
           </motion.p>
+
+          {/* Project Purpose Section */}
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.25 }}
+            className="mt-6 p-4 rounded bg-cyber-surface/60 border border-cyber-border/80 text-xs text-slate-300 leading-relaxed max-w-xl relative overflow-hidden"
+          >
+            <div className="absolute top-0 left-0 bottom-0 w-[3px] bg-cyber-cyan" />
+            <span className="font-mono text-[9px] uppercase tracking-widest text-cyber-cyan font-bold block mb-1">Project Purpose</span>
+            AEGIS is an educational cybersecurity simulation platform that helps students, beginners, and security enthusiasts understand how modern cyberattacks work and how organizations defend against them.
+          </motion.div>
 
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -139,13 +151,13 @@ export default function Hero() {
               href="#workflow"
               className="px-6 py-3 rounded bg-white hover:bg-slate-200 text-black text-xs font-mono tracking-widest uppercase transition-all duration-300 shadow-[0_0_20px_rgba(255,255,255,0.2)]"
             >
-              Analyze Platform
+              View Security Report
             </a>
             <Link
               href="/simulate"
               className="px-6 py-3 rounded bg-cyber-surface border border-cyber-border hover:border-cyber-border-active text-xs font-mono tracking-widest uppercase text-slate-300 hover:text-white transition-all duration-300"
             >
-              Explore Studio
+              Build a Scenario
             </Link>
           </motion.div>
         </motion.div>
@@ -178,7 +190,7 @@ export default function Hero() {
               {simulationState === "idle" && (
                 <div className="flex flex-col gap-4">
                   <div className="text-slate-400">
-                    <span className="text-cyber-green">$</span> choose campaign to execute:
+                    <span className="text-cyber-green">$</span> choose attack scenario to run:
                   </div>
 
                   <div className="grid grid-cols-1 gap-2.5">
@@ -194,7 +206,7 @@ export default function Hero() {
                       >
                         <div>
                           <div className="text-xs font-bold font-mono">{campaign.name}</div>
-                          <div className="text-[10px] opacity-60 mt-0.5">{campaign.technique}</div>
+                          <div className="text-[10px] opacity-60 mt-0.5">{campaign.actor} <span className="text-slate-600">|</span> {campaign.technique}</div>
                         </div>
                         <div
                           className={`w-4 h-4 rounded-full border flex items-center justify-center ${
@@ -216,7 +228,7 @@ export default function Hero() {
                     className="w-full mt-2 py-3 rounded bg-electric-blue hover:bg-blue-600 text-white font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 hover:shadow-[0_0_15px_rgba(37,99,235,0.4)] transition-all duration-300 cursor-pointer"
                   >
                     <Play className="w-3.5 h-3.5 fill-current" />
-                    Generate Simulation Run
+                    Start Attack Simulation
                   </button>
                 </div>
               )}
@@ -226,7 +238,7 @@ export default function Hero() {
                   <div className="flex flex-col gap-2 flex-grow overflow-y-auto max-h-[220px]">
                     <div className="text-slate-400 flex items-center gap-2">
                       <Loader className="w-3.5 h-3.5 text-cyber-cyan animate-spin" />
-                      <span>Simulating attack propagation campaign...</span>
+                      <span>Simulating attack sequence...</span>
                     </div>
                     {logs.map((log, i) => (
                       <motion.div
@@ -256,9 +268,9 @@ export default function Hero() {
                   </motion.div>
 
                   <div>
-                    <h3 className="text-sm font-bold text-white uppercase tracking-wider">Simulation Completed Successfully</h3>
+                    <h3 className="text-sm font-bold text-white uppercase tracking-wider">Simulation Completed</h3>
                     <p className="text-[11px] text-slate-400 mt-2 max-w-sm mx-auto">
-                      All threat vectors successfully emulated and mapped to MITRE mitigations. Network Twin has been updated.
+                      The attack was successfully simulated and mapped to prevention guidelines. The virtual network model has been updated.
                     </p>
                   </div>
 
@@ -273,7 +285,7 @@ export default function Hero() {
                       href="#preview"
                       className="px-4 py-2 rounded bg-electric-blue hover:bg-blue-600 text-[10px] uppercase font-mono text-white tracking-wider flex items-center gap-1.5 hover:shadow-[0_0_15px_rgba(37,99,235,0.4)] transition-all duration-300"
                     >
-                      View Attack Movie
+                      View Simulation Playback
                       <ChevronRight className="w-3.5 h-3.5" />
                     </a>
                   </div>

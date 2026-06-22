@@ -5,12 +5,11 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   ArrowLeft, Terminal, Activity, ShieldCheck, ShieldAlert, 
-  AlertTriangle, Database, Clock, RefreshCw, Brain, 
-  ChevronRight, ExternalLink, Shield, Flame, Cpu
+  Database, RefreshCw, Brain, ChevronRight, Flame
 } from "lucide-react";
 import { 
   getCampaignHistory, StoredCampaign, getActorName, 
-  getAttackName, getIndustryName 
+  getAttackName
 } from "../../components/campaignStore";
 
 export default function CommandCenterPage() {
@@ -19,9 +18,10 @@ export default function CommandCenterPage() {
   const [currentTime, setCurrentTime] = useState("");
   const [activeTab, setActiveTab] = useState<"all" | "blocked" | "successful">("all");
 
-  // Load history and update live UTC clock
   useEffect(() => {
-    setHistory(getCampaignHistory());
+    setTimeout(() => {
+      setHistory(getCampaignHistory());
+    }, 0);
 
     const updateClock = () => {
       const now = new Date();
@@ -193,7 +193,7 @@ export default function CommandCenterPage() {
             className="inline-flex items-center gap-2 text-[10px] font-mono tracking-widest text-slate-400 hover:text-white uppercase transition-colors group"
           >
             <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform" />
-            Simulation Studio
+            Simulation Builder
           </Link>
 
           <div className="flex items-center gap-4 text-[10px] font-mono tracking-wider text-slate-400">
@@ -208,18 +208,32 @@ export default function CommandCenterPage() {
           </div>
         </div>
 
+        {/* Top Human-Readable Explanation */}
+        <div className="mb-8 p-5 rounded bg-cyber-surface/60 border border-cyber-border/80 text-xs text-slate-300 leading-relaxed max-w-4xl relative overflow-hidden space-y-3">
+          <div className="absolute top-0 left-0 bottom-0 w-[3px] bg-cyber-cyan" />
+          <div>
+            <strong className="text-white block mb-0.5">What is this?</strong>
+            A dashboard gathering aggregated statistics and logs from all simulations run on the platform.
+          </div>
+          <div>
+            <strong className="text-white block mb-0.5">Why does it matter?</strong>
+            It offers a bird&apos;s-eye view of your overall network defense health, attacker trends, and security gaps.
+          </div>
+          <div>
+            <strong className="text-white block mb-0.5">What can I do here?</strong>
+            Track the overall defense health score, review block rates for each attack type, and browse past simulation records.
+          </div>
+        </div>
+
         {/* Dashboard Title Header */}
         <div className="mb-12 max-w-4xl">
           <div className="inline-flex items-center gap-2 text-cyber-cyan text-[10px] font-mono tracking-widest uppercase mb-4">
             <Terminal className="w-3.5 h-3.5 text-cyber-cyan" />
-            Executive Security Intelligence: command-center.exe
+            Security Insights Dashboard: security-insights.exe
           </div>
           <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight text-white uppercase">
-            Aegis Command Center
+            Security Insights Dashboard
           </h1>
-          <p className="mt-4 text-slate-400 text-sm md:text-base leading-relaxed">
-            Centralized Security Operations dashboard aggregating live digital-twin attack movies. Audit real-time vulnerability heatmaps, verify MITRE technique coverage, and review pre-emptive remediation advice.
-          </p>
         </div>
 
         {/* Layout Grid */}
@@ -237,7 +251,7 @@ export default function CommandCenterPage() {
               
               <div className="w-full text-left">
                 <span className="text-[9px] font-mono text-slate-500 uppercase tracking-widest block font-bold mb-2">
-                  [01] SYSTEM SECURITY POSTURE
+                  [01] OVERALL SECURITY SCORE
                 </span>
               </div>
 
@@ -277,7 +291,7 @@ export default function CommandCenterPage() {
                     {securityScore}%
                   </motion.span>
                   <span className="text-[9px] font-mono text-slate-500 uppercase tracking-widest mt-1">
-                    DEFENSE INDEX
+                    SECURITY INDEX
                   </span>
                 </div>
               </div>
@@ -286,8 +300,8 @@ export default function CommandCenterPage() {
                 <div className={`py-1.5 px-3 rounded border text-xs font-mono font-bold tracking-widest uppercase inline-block ${statusInfo.color} ${statusInfo.border} ${statusInfo.bg}`}>
                   {statusInfo.label}
                 </div>
-                <p className="text-[10px] text-slate-500 font-mono mt-3">
-                  Score derived from inverse average simulation risk factors.
+                <p className="text-[10px] text-slate-400 font-sans mt-3 leading-relaxed text-left">
+                  <strong>Overall Security Score</strong>: Measures the percentage of attacks successfully blocked. A higher score indicates stronger overall defense.
                 </p>
               </div>
             </motion.div>
@@ -313,8 +327,8 @@ export default function CommandCenterPage() {
                     <Activity className="w-5 h-5" />
                   </div>
                 </div>
-                <p className="text-xs text-slate-500 font-mono mt-4 border-t border-cyber-border/40 pt-4">
-                  Aggregated emulations from standard threat configurations.
+                <p className="text-[10px] text-slate-400 font-sans mt-4 border-t border-cyber-border/40 pt-4 leading-relaxed">
+                  Aggregated number of completed threat simulations across all configurations.
                 </p>
               </motion.div>
 
@@ -327,7 +341,7 @@ export default function CommandCenterPage() {
                 <div className="flex justify-between items-start">
                   <div>
                     <span className="text-[9px] font-mono text-slate-500 uppercase tracking-widest block font-bold">
-                      CRITICAL THREATS
+                      HIGH RISK SIMULATIONS
                     </span>
                     <h3 className="text-4xl font-extrabold font-mono text-cyber-red mt-2">
                       {criticalThreats}
@@ -337,8 +351,8 @@ export default function CommandCenterPage() {
                     <Flame className="w-5 h-5" />
                   </div>
                 </div>
-                <p className="text-xs text-slate-500 font-mono mt-4 border-t border-cyber-border/40 pt-4">
-                  Simulations resulting in risk scores exceeding 70%.
+                <p className="text-[10px] text-slate-400 font-sans mt-4 border-t border-cyber-border/40 pt-4 leading-relaxed">
+                  <strong>Risk Score</strong>: Calculated based on attack severity, defense configurations, and potential business impact. Scores over 70% represent critical exposures.
                 </p>
               </motion.div>
 
@@ -351,7 +365,7 @@ export default function CommandCenterPage() {
                 <div className="flex justify-between items-start">
                   <div>
                     <span className="text-[9px] font-mono text-slate-500 uppercase tracking-widest block font-bold">
-                      BLOCKED ATTACKS
+                      SUCCESSFULLY STOPPED ATTACKS
                     </span>
                     <h3 className="text-4xl font-extrabold font-mono text-cyber-green mt-2">
                       {blockedAttacks}
@@ -361,8 +375,8 @@ export default function CommandCenterPage() {
                     <ShieldCheck className="w-5 h-5" />
                   </div>
                 </div>
-                <p className="text-xs text-slate-500 font-mono mt-4 border-t border-cyber-border/40 pt-4">
-                  Intrusions successfully mitigated at early kill chain phases.
+                <p className="text-[10px] text-slate-400 font-sans mt-4 border-t border-cyber-border/40 pt-4 leading-relaxed">
+                  <strong>Blocked Attacks</strong>: Simulations where AEGIS security configurations detected and stopped the intrusion path before the final target was reached.
                 </p>
               </motion.div>
 
@@ -375,7 +389,7 @@ export default function CommandCenterPage() {
                 <div className="flex justify-between items-start">
                   <div>
                     <span className="text-[9px] font-mono text-slate-500 uppercase tracking-widest block font-bold">
-                      SUCCESSFUL ATTACKS
+                      ATTACKS THAT BYPASSED SECURITY
                     </span>
                     <h3 className="text-4xl font-extrabold font-mono text-cyber-red mt-2">
                       {successfulAttacks}
@@ -385,8 +399,8 @@ export default function CommandCenterPage() {
                     <ShieldAlert className="w-5 h-5" />
                   </div>
                 </div>
-                <p className="text-xs text-slate-500 font-mono mt-4 border-t border-cyber-border/40 pt-4">
-                  Campaigns that bypassed protections to exfiltrate database targets.
+                <p className="text-[10px] text-slate-400 font-sans mt-4 border-t border-cyber-border/40 pt-4 leading-relaxed">
+                  <strong>Successful Attacks</strong>: Attacks that bypassed defenses to reach the final asset. These point to security policy vulnerabilities that need patching.
                 </p>
               </motion.div>
             </div>
@@ -403,10 +417,10 @@ export default function CommandCenterPage() {
             >
               <div>
                 <span className="text-[9px] font-mono text-slate-500 uppercase tracking-widest block font-bold mb-4">
-                  [02] TARGETED INDUSTRY DISTRIBUTION
+                  [02] ATTACKED INDUSTRIES DISTRIBUTION
                 </span>
                 <p className="text-xs text-slate-400 mb-6 font-mono">
-                  Telemetry distribution tracking industry sector targeting frequency.
+                  Distribution tracking industry sector targeting frequency.
                 </p>
 
                 <div className="space-y-4">
@@ -470,10 +484,10 @@ export default function CommandCenterPage() {
             >
               <div>
                 <span className="text-[9px] font-mono text-slate-500 uppercase tracking-widest block font-bold mb-4">
-                  [03] MITRE ATT&CK MITIGATION COVERAGE
+                  [03] ATTACK TECHNIQUES USED (MITRE ATT&CK)
                 </span>
                 <p className="text-xs text-slate-400 mb-6 font-mono">
-                  Technique block rate calculated across historical attack vector emulations.
+                  Technique block rate calculated across historical attack scenario simulations.
                 </p>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -523,8 +537,8 @@ export default function CommandCenterPage() {
                 </div>
               </div>
 
-              <div className="text-[9px] font-mono text-slate-500 uppercase mt-6 pt-4 border-t border-cyber-border/40">
-                COVERAGE METRIC DETERMINED BY EMPIRICAL MITIGATION STATS
+              <div className="text-[10px] text-slate-400 font-sans mt-6 pt-4 border-t border-cyber-border/40 leading-relaxed text-left">
+                <strong>Attack Coverage</strong>: Measures defensive readiness against specific attack patterns mapped to the MITRE ATT&CK framework. It shows the percentage of simulations blocked for each attack type.
               </div>
             </motion.div>
           </div>
@@ -541,7 +555,7 @@ export default function CommandCenterPage() {
               <div>
                 <div className="flex justify-between items-center border-b border-cyber-border/40 pb-4 mb-6">
                   <span className="text-[9px] font-mono text-slate-500 uppercase tracking-widest block font-bold">
-                    [04] SIMULATION CAMPAIGN HISTORY
+                    [04] PAST SIMULATION RECORDS
                   </span>
                   
                   {/* Filters */}
@@ -571,11 +585,11 @@ export default function CommandCenterPage() {
                   <table className="w-full text-left font-mono text-[10px]">
                     <thead>
                       <tr className="border-b border-cyber-border/50 text-slate-500 text-[9px]">
-                        <th className="pb-3 uppercase tracking-wider">Campaign ID</th>
+                        <th className="pb-3 uppercase tracking-wider">Simulation ID</th>
                         <th className="pb-3 uppercase tracking-wider">Timestamp</th>
-                        <th className="pb-3 uppercase tracking-wider">Threat Actor</th>
-                        <th className="pb-3 uppercase tracking-wider">Target Industry</th>
-                        <th className="pb-3 uppercase tracking-wider">Attack Type</th>
+                        <th className="pb-3 uppercase tracking-wider">Attacker Profile</th>
+                        <th className="pb-3 uppercase tracking-wider">Target Environment</th>
+                        <th className="pb-3 uppercase tracking-wider">Attack Scenario</th>
                         <th className="pb-3 uppercase tracking-wider text-center">Risk Score</th>
                         <th className="pb-3 uppercase tracking-wider text-right">Status</th>
                       </tr>
@@ -584,7 +598,7 @@ export default function CommandCenterPage() {
                       {filteredHistory.length === 0 ? (
                         <tr>
                           <td colSpan={7} className="py-8 text-center text-slate-500 uppercase">
-                            No campaigns recorded matching filter parameters.
+                            No simulations recorded matching filter parameters.
                           </td>
                         </tr>
                       ) : (
@@ -627,13 +641,13 @@ export default function CommandCenterPage() {
               </div>
 
               <div className="flex justify-between items-center text-[9px] font-mono text-slate-500 mt-6 pt-4 border-t border-cyber-border/40">
-                <span>SELECT ROW TO VIEW MOVIE TIMELINE & REMEDIATION STAGES</span>
+                <span>SELECT ROW TO VIEW TIMELINE & REMEDIATION STAGES</span>
                 <button
                   onClick={refreshHistory}
                   className="flex items-center gap-1 hover:text-white cursor-pointer transition-colors uppercase"
                 >
                   <RefreshCw className="w-3 h-3" />
-                  Reload Telemetry
+                  Reload Records
                 </button>
               </div>
             </motion.div>
@@ -727,19 +741,19 @@ export default function CommandCenterPage() {
                 {/* Meta summary */}
                 <div className="grid grid-cols-2 gap-4 text-[10px]">
                   <div className="bg-black/40 p-3 rounded border border-cyber-border">
-                    <div className="text-slate-500 uppercase">Industry Target</div>
+                    <div className="text-slate-500 uppercase">Target Environment</div>
                     <div className="text-white font-bold mt-1 uppercase">{selectedCampaign.industry}</div>
                   </div>
                   <div className="bg-black/40 p-3 rounded border border-cyber-border">
-                    <div className="text-slate-500 uppercase">Threat Actor</div>
+                    <div className="text-slate-500 uppercase">Attacker Profile</div>
                     <div className="text-white font-bold mt-1 uppercase">{getActorName(selectedCampaign.threatActor)}</div>
                   </div>
                   <div className="bg-black/40 p-3 rounded border border-cyber-border">
-                    <div className="text-slate-500 uppercase">Attack Type</div>
+                    <div className="text-slate-500 uppercase">Attack Scenario</div>
                     <div className="text-white font-bold mt-1 uppercase">{getAttackName(selectedCampaign.attackType)}</div>
                   </div>
                   <div className="bg-black/40 p-3 rounded border border-cyber-border">
-                    <div className="text-slate-500 uppercase">Defense Level</div>
+                    <div className="text-slate-500 uppercase">Security Strength</div>
                     <div className="text-white font-bold mt-1 uppercase">{selectedCampaign.securityLevel}</div>
                   </div>
                 </div>
@@ -747,7 +761,7 @@ export default function CommandCenterPage() {
                 {/* Score meters */}
                 <div className="space-y-3 bg-black/25 p-4 rounded border border-cyber-border">
                   <div className="flex justify-between items-center text-[10px]">
-                    <span className="text-slate-400">Campaign Risk Score</span>
+                    <span className="text-slate-400">Simulation Risk Score</span>
                     <span className={`font-bold ${selectedCampaign.riskScore >= 70 ? "text-cyber-red" : selectedCampaign.riskScore >= 45 ? "text-amber-500" : "text-cyber-green"}`}>
                       {selectedCampaign.riskScore}%
                     </span>
@@ -815,7 +829,7 @@ export default function CommandCenterPage() {
                     Gemini AI Remediation Analysis
                   </div>
                   <p className="text-[10px] text-slate-400 leading-relaxed mb-4">
-                    Synthesize campaign logs using Gemini's LLM model to compile a customized mitigation playbook. Automatically generates command-line scripts to secure your digital twin.
+                    Synthesize simulation logs using Gemini&apos;s AI model to compile a customized mitigation plan. Automatically generates command-line scripts to secure your virtual system.
                   </p>
 
                   <Link
@@ -823,7 +837,7 @@ export default function CommandCenterPage() {
                     className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded border border-cyber-cyan bg-cyber-cyan/15 hover:bg-cyber-cyan/25 text-cyber-cyan text-xs font-bold uppercase transition-all duration-300 hover:shadow-[0_0_15px_rgba(6,182,212,0.3)] text-center cursor-pointer"
                   >
                     <Brain className="w-4 h-4 text-cyber-cyan animate-pulse" />
-                    Analyze Campaign (Gemini AI)
+                    Analyze Simulation (Gemini AI)
                   </Link>
                   <span className="text-[8px] text-cyber-green text-center block mt-2 font-semibold">
                     ACTIVE TELEMETRY READY - CLICK TO EXECUTE ANALYSIS

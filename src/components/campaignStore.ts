@@ -21,6 +21,18 @@ export interface StoredCampaign {
   stages: CampaignStage[];
 }
 
+export interface SaveCampaignInput {
+  id?: string;
+  timestamp?: string;
+  threatActor: string;
+  industry: string;
+  attackType: string;
+  riskFactor?: number;
+  securityLevel?: string;
+  primaryTarget?: string;
+  stages?: CampaignStage[];
+}
+
 // Helpers to resolve names from IDs
 export const getActorName = (id: string): string => {
   const map: Record<string, string> = {
@@ -44,6 +56,17 @@ export const getAttackName = (id: string): string => {
   return map[id] || id;
 };
 
+export const getFriendlySimulationName = (attackType: string): string => {
+  const map: Record<string, string> = {
+    Phishing: "Phishing Attack Simulation",
+    Ransomware: "Ransomware Attack Simulation",
+    DDoS: "Denial of Service (DDoS) Simulation",
+    "Supply Chain": "Software Dependency Supply Chain Attack Simulation",
+    "SQL Injection": "Database Command Injection (SQL Injection) Simulation",
+  };
+  return map[attackType] || `${attackType} Simulation`;
+};
+
 export const getIndustryName = (id: string): string => {
   return id; // IDs are same as names for industries
 };
@@ -58,7 +81,7 @@ const getMockCampaigns = (): StoredCampaign[] => {
     return d.toISOString();
   };
 
-  return [
+  const rawMocks: StoredCampaign[] = [
     {
       id: "SIM-8492",
       timestamp: createPastDate(2),
@@ -390,6 +413,40 @@ const getMockCampaigns = (): StoredCampaign[] => {
       ],
     },
   ];
+
+  return rawMocks.map(c => ({
+    ...c,
+    stages: c.stages.map((stage, idx) => {
+      const mappedStage = { ...stage };
+      const statusText = stage.status.toUpperCase();
+      if (idx === 0) {
+        mappedStage.title = "Scanning the Network";
+        mappedStage.description = `Attacker scanned the network to find active computers and open ports.`;
+        mappedStage.log = `[RECON] Scan complete. Found open ports: 443, 8080. Status: ${statusText}`;
+      } else if (idx === 1) {
+        mappedStage.title = "Attacker Gained Access";
+        mappedStage.description = `Attacker established a foothold in the network, bypassing outer defenses.`;
+        mappedStage.log = `[INGRESS] Entry payload executed. Connection established with target device. Status: ${statusText}`;
+      } else if (idx === 2) {
+        mappedStage.title = "Passwords Were Stolen";
+        mappedStage.description = `Attacker searched computer memory and tables to find login passwords and session tokens.`;
+        mappedStage.log = `[CREDENTIALS] Stole administrative credentials and login keys from memory. Status: ${statusText}`;
+      } else if (idx === 3) {
+        mappedStage.title = "Moved to Another System";
+        mappedStage.description = `Attacker moved from the first compromised computer to a server deeper in the network.`;
+        mappedStage.log = `[LATERAL] Moved to server node segment containing ${c.primaryTarget}. Status: ${statusText}`;
+      } else if (idx === 4) {
+        mappedStage.title = "Gained Admin Access";
+        mappedStage.description = `Attacker elevated their access level to become a network administrator.`;
+        mappedStage.log = `[ESCALATION] Root credentials retrieved. Gained administrator rights. Status: ${statusText}`;
+      } else if (idx === 5) {
+        mappedStage.title = "Data Was Stolen and Locked";
+        mappedStage.description = `Attacker copied sensitive files out of the network and started encrypting systems.`;
+        mappedStage.log = `[EXFILTRATION] Copied customer database tables and encrypted database files. Status: ${statusText}`;
+      }
+      return mappedStage;
+    })
+  }));
 };
 
 export const getCampaignHistory = (): StoredCampaign[] => {
@@ -409,7 +466,7 @@ export const getCampaignHistory = (): StoredCampaign[] => {
   }
 };
 
-export const saveCampaignToHistory = (campaign: any): StoredCampaign => {
+export const saveCampaignToHistory = (campaign: SaveCampaignInput): StoredCampaign => {
   const history = getCampaignHistory();
   
   // Determine if this campaign is already saved (by timestamp or matching config details)

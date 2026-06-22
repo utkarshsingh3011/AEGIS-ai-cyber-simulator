@@ -14,14 +14,14 @@ export default function CTA() {
     if (!email || status !== "idle") return;
 
     setStatus("submitting");
-    setConsoleMsg("Initiating sandbox provisioning sequence...");
+    setConsoleMsg("Preparing local simulation workspace...");
 
     setTimeout(() => {
-      setConsoleMsg("Generating tactical deployment key pairs...");
+      setConsoleMsg("Creating your access keys...");
     }, 800);
 
     setTimeout(() => {
-      setConsoleMsg("Dispatching credentials payload to endpoint mailbox...");
+      setConsoleMsg("Sending access information to your email...");
     }, 1600);
 
     setTimeout(() => {
@@ -47,12 +47,12 @@ export default function CTA() {
         </motion.div>
 
         <h2 className="text-3xl md:text-5xl font-extrabold tracking-tight text-white leading-tight">
-          Ready to Stress-Test <br />
-          Your Defensive Controls?
+          Ready to Learn <br />
+          Cyber Defenses?
         </h2>
 
         <p className="mt-6 text-slate-400 text-sm md:text-base max-w-xl mx-auto leading-relaxed">
-          Request access to the AEGIS Tactical Simulator sandbox. Initialize custom ransomware templates, inspect lateral sweeps, and download mitigation files.
+          Get access to the AEGIS simulation workspace. Select attack simulations, see how they spread, and learn how to secure networks.
         </p>
 
         {/* Console Signup Card */}
@@ -61,7 +61,7 @@ export default function CTA() {
           <div className="bg-cyber-surface px-4 py-2.5 border-b border-cyber-border flex items-center justify-between text-[10px] font-mono text-slate-500">
             <span className="flex items-center gap-1.5 uppercase">
               <Terminal className="w-3.5 h-3.5 text-cyber-cyan" />
-              provision-sandbox-access.exe
+              request-simulation-access
             </span>
             <span className="text-cyber-green animate-pulse">SYSTEM READY</span>
           </div>
@@ -73,7 +73,7 @@ export default function CTA() {
                 <form onSubmit={handleSubmit} className="space-y-4">
                   <div className="space-y-1">
                     <label htmlFor="email-address" className="text-[9px] font-mono text-slate-500 uppercase tracking-widest block">
-                      Target Mailbox Address
+                      Your Email Address
                     </label>
                     <div className="relative">
                       <input
@@ -82,7 +82,7 @@ export default function CTA() {
                         required
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        placeholder="operator@agency.local"
+                        placeholder="student@example.com"
                         disabled={status === "submitting"}
                         className="w-full bg-cyber-surface/50 border border-cyber-border focus:border-cyber-border-active focus:ring-1 focus:ring-cyber-cyan/30 rounded px-3 py-2.5 font-mono text-xs text-white placeholder-slate-600 outline-none transition-all duration-300"
                       />
@@ -97,11 +97,11 @@ export default function CTA() {
                     {status === "submitting" ? (
                       <>
                         <Loader className="w-3.5 h-3.5 animate-spin" />
-                        Provisioning Sandbox...
+                        Setting Up Sandbox...
                       </>
                     ) : (
                       <>
-                        Dispatch Sandbox Key
+                        Request Sandbox Access
                         <ArrowRight className="w-3.5 h-3.5" />
                       </>
                     )}
@@ -127,9 +127,9 @@ export default function CTA() {
                     <CheckCircle2 className="w-10 h-10 text-cyber-green" />
                   </div>
                   <div>
-                    <h3 className="text-xs font-bold text-white uppercase tracking-wider">SANDBOX KEY SENT</h3>
+                    <h3 className="text-xs font-bold text-white uppercase tracking-wider">ACCESS KEY SENT</h3>
                     <p className="text-[10px] text-slate-400 mt-2 max-w-xs mx-auto leading-relaxed">
-                      Sandbox provisioning complete. Check <span className="text-cyber-cyan">{email}</span> for your terminal deployment keys and login tokens.
+                      Access keys sent. Check <span className="text-cyber-cyan">{email}</span> for your login instructions.
                     </p>
                   </div>
                 </motion.div>

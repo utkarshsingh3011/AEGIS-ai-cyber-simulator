@@ -36,9 +36,9 @@ export default function RootLayout({
       style={{ colorScheme: "dark" }}
     >
       <body className="bg-cyber-bg text-slate-100 font-sans antialiased min-h-screen selection:bg-electric-blue/30 selection:text-white relative">
-        {/* Global Tactical Monitor CRT Filter Overlays */}
+        {/* Global Monitor CRT Filter Overlays */}
         {/* Subtle horizontal scanline mesh pattern */}
-        <div className="fixed inset-0 pointer-events-none z-50 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.15)_50%)] bg-[length:100%_4px] opacity-10" />
+        <div className="fixed inset-0 pointer-events-none z-50 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.15)_50%)] bg-[length:100%_4px] opacity-[0.03]" />
         
         {/* Slow vertical sweeping scanline beam */}
         <div className="fixed inset-0 pointer-events-none z-50 animate-scanline bg-gradient-to-b from-transparent via-cyber-cyan/[0.012] to-transparent h-16 w-full" />

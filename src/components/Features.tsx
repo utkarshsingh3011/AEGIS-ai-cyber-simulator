@@ -6,8 +6,8 @@ import { Bot, Clapperboard, Network, GitFork, ShieldAlert, Cpu, ArrowUpRight } f
 const FEATURES = [
   {
     id: "scenario-gen",
-    title: "AI Scenario Generation",
-    desc: "Convert text prompts into validated machine-readable simulation profiles. Synthesize attacker payloads, scheduling rules, and target priorities automatically.",
+    title: "AI Scenario Builder",
+    desc: "Create custom attack simulations using simple text. Learn how different attack styles and targets are structured, helping you understand how scenarios are planned.",
     icon: Bot,
     glowColor: "group-hover:shadow-[0_0_30px_rgba(37,99,235,0.15)]",
     borderColor: "hover:border-blue-500/50",
@@ -15,7 +15,7 @@ const FEATURES = [
     widget: (
       <div className="mt-4 p-3 bg-black/40 rounded border border-cyber-border font-mono text-[9px] text-slate-400 space-y-1">
         <div className="text-[8px] text-slate-500">{"// PROMPT"}</div>
-        <div className="text-white">&quot;Simulate a key-theft campaign on S3 buckets...&quot;</div>
+        <div className="text-white">&quot;Simulate a key-theft campaign on cloud storage...&quot;</div>
         <div className="text-[8px] text-slate-500 mt-2">{"// OUTPUT COMPILED"}</div>
         <div className="text-cyber-cyan">✓ T1530: Data from Cloud Storage Object</div>
       </div>
@@ -23,12 +23,12 @@ const FEATURES = [
   },
   {
     id: "movie-engine",
-    title: "Attack Movie Engine",
-    desc: "Record, pause, rewind, and replay attack propagation vectors. Inspect exact asset metrics, process logs, and memory tables at each frame of the threat timeline.",
+    title: "Simulation Playback",
+    desc: "Watch simulations step-by-step with play, pause, and rewind controls. Inspect network activity and logs at each point to see how security issues unfold.",
     icon: Clapperboard,
     glowColor: "group-hover:shadow-[0_0_30px_rgba(6,182,212,0.15)]",
     borderColor: "hover:border-cyan-500/50",
-    badge: "Playback Core",
+    badge: "Simulation Core",
     widget: (
       <div className="mt-4 p-3 bg-black/40 rounded border border-cyber-border font-mono text-[9px] text-slate-400 space-y-2">
         <div className="flex justify-between text-[8px] text-slate-500">
@@ -45,8 +45,8 @@ const FEATURES = [
   },
   {
     id: "twin-infra",
-    title: "Digital Twin Infrastructure",
-    desc: "Model your network topologies, firewall routing, and identity access definitions down to specific policy rules without installing local agents on production systems.",
+    title: "Virtual Network Model",
+    desc: "Model network layouts and firewalls without touching real systems. Gain hands-on practice configuring safety rules and testing defenses in a safe sandbox.",
     icon: Network,
     glowColor: "group-hover:shadow-[0_0_30px_rgba(10,185,129,0.15)]",
     borderColor: "hover:border-emerald-500/50",
@@ -67,8 +67,8 @@ const FEATURES = [
   },
   {
     id: "mitre-mapping",
-    title: "MITRE ATT&CK Mapping",
-    desc: "Automatically map simulation tactics to active MITRE ATT&CK matrices. Discover detection gaps, validation weaknesses, and rule deficiencies instantly.",
+    title: "Security Mapping (MITRE ATT&CK)",
+    desc: "Map simulated attacks to standard security frameworks. Learn how real-world professionals categorize attack tactics and identify defense weaknesses.",
     icon: GitFork,
     glowColor: "group-hover:shadow-[0_0_30px_rgba(245,158,11,0.15)]",
     borderColor: "hover:border-amber-500/50",
@@ -83,8 +83,8 @@ const FEATURES = [
   },
   {
     id: "defense-simulator",
-    title: "Defense Simulator",
-    desc: "Deploy, verify, and tune security rule responses. Test the resilience of firewalls, endpoint policies, and containment actions against active threat scripts.",
+    title: "Security Rule Tester",
+    desc: "Test firewall rules and security controls against incoming threats. See how changing defense settings can successfully stop attacks from spreading.",
     icon: ShieldAlert,
     glowColor: "group-hover:shadow-[0_0_30px_rgba(244,63,94,0.15)]",
     borderColor: "hover:border-rose-500/50",
@@ -117,13 +117,13 @@ export default function Features() {
         <div className="text-center max-w-3xl mx-auto mb-20">
           <div className="inline-flex items-center gap-2 text-cyber-cyan text-[10px] font-mono tracking-widest uppercase mb-4">
             <Cpu className="w-3.5 h-3.5 text-cyber-cyan" />
-            Remediation Subsystems
+            Simulation Modules
           </div>
           <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight text-white">
-            Enterprise Module Hardening Suite
+            Core Educational Modules
           </h2>
           <p className="mt-4 text-slate-400 text-sm md:text-base leading-relaxed">
-            AEGIS houses five modular components designed to simulate campaigns, visualize flows, model topologies, verify compliance, and automate response.
+            AEGIS houses five modular components designed to customize scenarios, visualize playbacks, model network environments, verify security compliance, and automate defenses.
           </p>
         </div>
 
@@ -162,6 +162,72 @@ export default function Features() {
               </div>
             );
           })}
+        </div>
+
+        {/* What You Can Learn Section */}
+        <div className="mt-28">
+          <div className="text-center max-w-3xl mx-auto mb-16">
+            <div className="inline-flex items-center gap-2 text-cyber-cyan text-[10px] font-mono tracking-widest uppercase mb-4">
+              <ShieldAlert className="w-3.5 h-3.5 text-cyber-cyan" />
+              Educational Curriculum
+            </div>
+            <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight text-white">
+              What You Can Learn
+            </h2>
+            <p className="mt-4 text-slate-400 text-sm md:text-base leading-relaxed">
+              Explore hands-on concepts that model real-world cybersecurity attacks and organizational defense procedures.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[
+              {
+                title: "Phishing Attacks",
+                desc: "Learn how phishing emails work, how users are tricked, and how to spot malicious links.",
+                topic: "Initial Access",
+              },
+              {
+                title: "Ransomware Operations",
+                desc: "Understand how ransomware locks files, why attackers do it, and how to recover using backups.",
+                topic: "Impact & Mitigation",
+              },
+              {
+                title: "Supply Chain Compromise",
+                desc: "See how untrusted code can slip into software updates, and how developers verify third-party libraries.",
+                topic: "Software Security",
+              },
+              {
+                title: "Credential Theft",
+                desc: "Learn how passwords and login tokens are stolen from computer memory, and how to protect them.",
+                topic: "Access Control",
+              },
+              {
+                title: "Network Compromise",
+                desc: "Understand how attackers move between computers in a network, and how to segment networks to contain them.",
+                topic: "Internal Defenses",
+              },
+              {
+                title: "Security Best Practices",
+                desc: "Explore modern defense rules like multi-factor authentication (MFA) and zero-trust policies.",
+                topic: "Preventative Controls",
+              },
+            ].map((learn, i) => (
+              <div
+                key={i}
+                className="bg-black/30 border border-cyber-border rounded-xl p-5 hover:border-cyber-cyan/30 transition-all duration-300 relative overflow-hidden"
+              >
+                <div className="absolute top-0 right-0 px-2 py-0.5 bg-cyber-cyan/10 border-b border-l border-cyber-cyan/20 rounded-bl text-[8px] font-mono text-cyber-cyan uppercase font-bold">
+                  {learn.topic}
+                </div>
+                <h3 className="text-white text-sm font-bold uppercase font-mono tracking-wider mb-2">
+                  {learn.title}
+                </h3>
+                <p className="text-xs text-slate-400 leading-relaxed font-sans">
+                  {learn.desc}
+                </p>
+              </div>
+            ))}
+          </div>
         </div>
 
       </div>

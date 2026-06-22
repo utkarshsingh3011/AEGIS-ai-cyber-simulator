@@ -4,14 +4,13 @@ import React, { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
-import { 
-  ArrowLeft, Terminal, Brain, ShieldAlert, ShieldCheck, 
-  Layers, AlertTriangle, FileText, Download, Printer, 
-  ChevronRight, TrendingUp, Shield, Cpu, Activity, Clock
+import {
+  ArrowLeft, Brain, ShieldAlert, Layers, AlertTriangle,
+  FileText, Download, Printer, ChevronRight, TrendingUp, Shield
 } from "lucide-react";
-import { 
-  getCampaignHistory, StoredCampaign, getActorName, 
-  getAttackName, getIndustryName, CampaignStage 
+import {
+  getCampaignHistory, StoredCampaign, getActorName,
+  getAttackName, getIndustryName, CampaignStage
 } from "../../components/campaignStore";
 
 // Fallback campaign configuration
@@ -27,44 +26,44 @@ const DEFAULT_ANALYST_CAMPAIGN: StoredCampaign = {
   primaryTarget: "Swift-Transfer-Core",
   stages: [
     {
-      title: "Reconnaissance & Port Scan",
-      description: "Attacker Lazarus Group initiated active reconnaissance scans mapping the target subnets for Banking.",
-      log: "[RECON] Mapping subnets on segment 10.0.4.x. Found open ports: 443, 8080. EDR status: BLOCKED",
+      title: "Scanning the Network",
+      description: "Attacker scanned the network to find active computers and open ports.",
+      log: "[RECON] Scan complete. Found open ports: 443, 8080. EDR status: BLOCKED",
       status: "blocked",
       severity: "low",
     },
     {
-      title: "Initial Access Foothold",
-      description: "Foothold vector established using Supply Chain (T1195.002) to bypass gateway filtering.",
-      log: "[INGRESS] Exploit payload dispatched. Channel established with target client. EDR status: BLOCKED",
+      title: "Attacker Gained Access",
+      description: "Attacker established a foothold in the network, bypassing outer defenses.",
+      log: "[INGRESS] Entry payload executed. Connection established with target device. EDR status: BLOCKED",
       status: "blocked",
       severity: "medium",
     },
     {
-      title: "Credential Swipe",
-      description: "Searching local memory dumps and active directory tables for active session tokens and admin keys.",
-      log: "[CREDENTIALS] LSASS memory dump initiated / credential extraction requested. EDR status: EVADED",
+      title: "Passwords Were Stolen",
+      description: "Attacker searched computer memory and tables to find login passwords and session tokens.",
+      log: "[CREDENTIALS] Stole administrative credentials and login keys from memory. EDR status: EVADED",
       status: "evaded",
       severity: "medium",
     },
     {
-      title: "Lateral Subnet Propagation",
-      description: "Pivoting from compromised host endpoints to jump servers. Internal target segment reached: Swift-Transfer-Core.",
-      log: "[LATERAL] Remote session hijacked to cross network subnets. Target node reached: Swift-Transfer-Core. EDR status: BLOCKED",
+      title: "Moved to Another System",
+      description: "Attacker moved from the first compromised computer to a server deeper in the network.",
+      log: "[LATERAL] Moved to server node segment containing Swift-Transfer-Core. EDR status: BLOCKED",
       status: "blocked",
       severity: "high",
     },
     {
-      title: "Privilege Domain Escalation",
-      description: "Attempting admin privilege elevation via token impersonation on Active Directory controller nodes.",
-      log: "[ESCALATION] Token impersonation executed. Root credentials retrieved. EDR status: EVADED",
+      title: "Gained Admin Access",
+      description: "Attacker elevated their access level to become a network administrator.",
+      log: "[ESCALATION] Root credentials retrieved. Gained administrator rights. EDR status: EVADED",
       status: "evaded",
       severity: "high",
     },
     {
-      title: "Data Exfiltration & Impact",
-      description: "Executing final payload actions on database target Swift-Transfer-Core. Archiving core customer tables.",
-      log: "[EXFILTRATION] Compressing database files. Transmitting out of band over port 443. EDR status: EVADED",
+      title: "Data Was Stolen and Locked",
+      description: "Attacker copied sensitive files out of the network and started encrypting systems.",
+      log: "[EXFILTRATION] Copied customer database tables and encrypted database files. EDR status: EVADED",
       status: "evaded",
       severity: "critical",
     },
@@ -120,7 +119,7 @@ const getMitreAttackMapping = (attackType: string, stageIdx: number) => {
   return list[stageIdx] || { code: "T1059", name: "Command and Scripting Interpreter" };
 };
 
-// CTI Report Generator
+// Local Fallback CTI Report Generator
 const generateCTIReport = (campaign: StoredCampaign) => {
   const actor = getActorName(campaign.threatActor);
   const vector = getAttackName(campaign.attackType);
@@ -128,29 +127,29 @@ const generateCTIReport = (campaign: StoredCampaign) => {
   const target = campaign.primaryTarget;
   const isBlocked = campaign.status === "Blocked";
 
-  // 1. Executive Summary
+  // Executive Summary
   let execSummary = "";
   if (isBlocked) {
-    execSummary = `A simulated adversary campaign emulating ${actor} tactics was launched against the ${industry} network segments targeting the core ${target} asset. The campaign deployed a ${vector} attack vector to establish initial access. Aegis defensive configurations, operating at a ${campaign.securityLevel} zero-trust posture, successfully flagged, contained, and blocked the intrusion steps. EDR agents executed localized block policies, preventing lateral movement propagation and data exfiltration. The target data remains secure, and system defenses operated as designed.`;
+    execSummary = `A simulated attack emulating ${actor} was run against the ${industry} network target ${target}. The attacker attempted access via ${vector}. Under your current security strength (${campaign.securityLevel}), the platform's security rules successfully detected and stopped the attack. Defensive controls blocked the attacker from spreading through the network or copying files. Your target database remains safe, and defenses functioned as expected.`;
   } else {
-    execSummary = `A critical security compromise was logged during a simulated adversary campaign emulating ${actor} tactics against the ${industry} production network. Utilizing a ${vector} intrusion vector, the adversary successfully bypassed edge firewalls, established a command-and-control (C2) communications channel, and executed credential harvesting dumps. Subsequent lateral pivoting allowed full compromise of the primary database target ${target}. Critical database tables were compressed and exfiltrated over non-standard ports. EDR telemetry failed to block core escalations, indicating severe monitoring gaps.`;
+    execSummary = `A security compromise was simulated representing a ${actor} attack against the ${industry} network. Using a ${vector} scenario, the attacker bypassed outer defenses, established a connection to the compromised device, and harvested active login credentials. The attacker then moved laterally across the network to access the target system ${target}, copying sensitive database tables and encrypting files. Local security rules failed to block these actions, highlighting a need for stronger security settings.`;
   }
 
-  // 2. Threat Actor Profile
+  // Threat Actor Profile
   let actorProfile = "";
   if (campaign.threatActor === "APT29") {
     actorProfile = "APT29 (also known as CozyBear) is a state-sponsored advanced persistent threat group known for stealthy, long-term intelligence operations. They typically target government entities, foreign ministries, and critical research infrastructure. Their operational profile focuses heavily on defense evasion, utilizing spearphishing campaigns carrying weaponized attachments, API token hijacking, and custom backdoor loaders. APT29 prioritizes credential theft and lateral pivoting to establish persistent footholds while keeping log signatures minimal.";
   } else if (campaign.threatActor === "Lazarus") {
     actorProfile = "Lazarus Group is a state-sponsored cyber warfare actor famous for highly destructive attacks, financial cyber-heists, and cryptocurrency network infiltrations. Lazarus employs diverse, aggressive tactics, ranging from Blind SQL Injection on database services to weaponized supply chain dependencies. Their campaigns are characterized by rapid propagation, custom network evasion tunnels, and the deployment of wiper malware. Lazarus exhibits high operational flexibility and will pivot quickly to exfiltration or system ransom.";
   } else if (campaign.threatActor === "LockBit") {
-    actorProfile = "LockBit 3.0 is one of the most prolific Ransomware-as-a-Service (RaaS) syndicates globally. Operating on a double-extortion model, they exfiltrate sensitive corporate databases before triggering local file encryption. LockBit targets commercial entities, municipal backbones, and healthcare infrastructures. They utilize automated network scanners, lateral service transfers, and memory dump scripts to steal administrative domain controller tokens. LockBit leverages aggressive double-extortion leak sites as leverage for payout.";
+    actorProfile = "LockBit 3.0 is one of the most prolific Ransomware-as-a-Service (RaaS) syndicate globally. Operating on a double-extortion model, they exfiltrate sensitive corporate databases before triggering local file encryption. LockBit targets commercial entities, municipal backbones, and healthcare infrastructures. They utilize automated network scanners, lateral service transfers, and memory dump scripts to steal administrative domain controller tokens. LockBit leverages aggressive double-extortion leak sites as leverage for payout.";
   } else if (campaign.threatActor === "FIN7") {
     actorProfile = "FIN7 is a highly organized, financially motivated cybercriminal syndicate specializing in targeting point-of-sale (POS) environments, corporate billing pipelines, and financial ledger services. FIN7 relies heavily on spearphishing campaigns with highly polished social engineering scripts. They deploy modular malware backdoors and memory scrapers to capture domain keys. FIN7 typically monitors compromised networks for weeks to map financial systems before executing final asset theft.";
   } else {
-    actorProfile = "Anonymous is a decentralized, global hacktivist collective specializing in public-facing service disruptions, volumetric packet floods, and public data leaks. Their operational focus is ideological rather than financial, targeting public corporate portals and Registrarstudent backends. They utilize open-source stressor tools to execute volumetric DDoS packet floods and exploit SQL flaws on vulnerable web applications to leak customer lists. Anonymous actions are designed to cause maximum reputational damage.";
+    actorProfile = "Anonymous is a decentralized, global hacktivist collective specializing in public-facing service disruptions, volumetric packet floods, and public data leaks. Their operational focus is ideological rather than financial, targeting public corporate portals and Registrar student backends. They utilize open-source stressor tools to execute volumetric DDoS packet floods and exploit SQL flaws on vulnerable web applications to leak customer lists. Anonymous actions are designed to cause maximum reputational damage.";
   }
 
-  // 3. Business Impact Assessment
+  // Business Impact Assessment
   let financialLoss = "";
   let operationalImpact = "";
   let downtime = "";
@@ -177,31 +176,31 @@ const generateCTIReport = (campaign: StoredCampaign) => {
     downtime = isBlocked ? "0 Hours" : "18 Hours";
   }
 
-  // 4. Recommended Defenses
+  // Recommended Defenses
   const mitigations = [];
   if (campaign.attackType === "Phishing") {
-    mitigations.push("Mandate FIDO2-compliant hardware security keys (e.g. YubiKeys) for all employee access points to eliminate credential phishing vectors.");
-    mitigations.push("Deploy advanced email sandbox systems with heuristic link evaluation to detonate weaponized URL payloads before inbox delivery.");
-    mitigations.push("Enforce strict host credential guard controls in Windows registry to block LSASS memory dumping tools like Mimikatz.");
+    mitigations.push("Enforce hardware multi-factor authentication (MFA) like security keys to stop attackers from using stolen credentials.");
+    mitigations.push("Use email filtering rules to detect and block malicious phishing links before they reach users.");
+    mitigations.push("Enable endpoint protection rules to block credential harvesting tools from scanning system memory.");
   } else if (campaign.attackType === "Ransomware") {
-    mitigations.push("Establish air-gapped, immutable write-once read-many (WORM) offline backup vaults to guarantee rapid recovery without ransom payments.");
-    mitigations.push("Implement strict Active Directory service account limits and disable administrative shares (Admin$, C$) on endpoints.");
-    mitigations.push("Deploy heuristic EDR ransomware canary file monitoring to detect and auto-block rapid cryptographic write file patterns.");
+    mitigations.push("Set up offline, immutable backups so data can be restored easily without paying a ransom.");
+    mitigations.push("Disable default administrative folders (like Admin$ and C$) on endpoints to block spreading.");
+    mitigations.push("Deploy active endpoint rules to detect and stop rapid file encryption attempts.");
   } else if (campaign.attackType === "DDoS") {
-    mitigations.push("Deploy global edge traffic scrubbing services (e.g. Cloudflare Magic Transit) to absorb volumetric UDP/TCP floods.");
-    mitigations.push("Configure strict API gateway rate-limiting and connection throttling rules on public-facing internet routing boundaries.");
-    mitigations.push("Configure CDN caching rules on all static web elements to buffer application servers against packet depletion loads.");
+    mitigations.push("Use traffic scrubbing and web gateways to filter out large surges of malicious traffic.");
+    mitigations.push("Configure rate limits on border firewalls to throttle excessive connection requests.");
+    mitigations.push("Enable content delivery networks (CDNs) and caching to protect application servers under load.");
   } else if (campaign.attackType === "Supply Chain") {
-    mitigations.push("Mandate checksum validation and SHA-256 cryptographic pinning for all external packages inside build deployment pipelines.");
-    mitigations.push("Establish a localized private software package repository and run automated vulnerability scanners (e.g. Snyk) on all dependencies.");
-    mitigations.push("Enforce strict egress firewall filtering, blocking server nodes from initiating unauthorized outbound internet connections.");
+    mitigations.push("Validate package integrity (using SHA-256 checks) before importing third-party libraries.");
+    mitigations.push("Use software scan tools to identify known security vulnerabilities in external code dependencies.");
+    mitigations.push("Configure firewall rules to block build servers from initiating unauthorized outbound connections.");
   } else { // SQL Injection
-    mitigations.push("Upgrade software frameworks to mandate parameterized SQL queries and object-relational mapping (ORM) across database queries.");
-    mitigations.push("Deploy a Web Application Firewall (WAF) with active SQL injection signature blocking profiles on edge API endpoints.");
-    mitigations.push("Apply the principle of least privilege to database users, disabling file-system access (e.g. xp_cmdshell) and dropping unnecessary permissions.");
+    mitigations.push("Use parameterized queries (prepared statements) in code to ensure input parameters cannot run database commands.");
+    mitigations.push("Deploy a Web Application Firewall (WAF) to intercept database injection entries.");
+    mitigations.push("Apply the principle of least privilege by removing write and file access permissions for the database user account.");
   }
 
-  // 5. Risk Reduction metrics
+  // Risk Reduction metrics
   const currentRisk = isBlocked ? campaign.riskScore : Math.max(70, campaign.riskScore);
   const projectedRisk = 5;
   const riskReduction = Math.max(0, currentRisk - projectedRisk);
@@ -227,16 +226,55 @@ const generateCTIReport = (campaign: StoredCampaign) => {
     projectedRisk,
     riskReduction,
     stages: campaign.stages,
+    mitreMapping: undefined as { stageIndex: number; code: string; name: string }[] | undefined // local has no overrides
   };
 };
+
+function LiveClock() {
+  const [time, setTime] = useState("");
+  useEffect(() => {
+    const updateTime = () => {
+      setTime(new Date().toUTCString());
+    };
+    updateTime();
+    const interval = setInterval(updateTime, 1000);
+    return () => clearInterval(interval);
+  }, []);
+  return <span className="text-cyber-cyan">{time || "00:00:00 UTC"}</span>;
+}
+
+interface CTIReport {
+  id: string;
+  timestamp: string;
+  actorName: string;
+  actorId: string;
+  vectorName: string;
+  vectorId: string;
+  industryName: string;
+  targetName: string;
+  status: "Blocked" | "Successful";
+  securityLevel: string;
+  executiveSummary: string;
+  actorProfile: string;
+  financialLoss: string;
+  operationalImpact: string;
+  downtime: string;
+  mitigations: string[];
+  currentRisk: number;
+  projectedRisk: number;
+  riskReduction: number;
+  stages: CampaignStage[];
+  mitreMapping?: { stageIndex: number; code: string; name: string }[];
+}
 
 function AIAnalystContent() {
   const searchParams = useSearchParams();
   const campaignId = searchParams.get("campaignId");
 
   const [campaign, setCampaign] = useState<StoredCampaign | null>(null);
-  const [reportData, setReportData] = useState<ReturnType<typeof generateCTIReport> | null>(null);
-  const [currentTime, setCurrentTime] = useState("");
+  const [reportData, setReportData] = useState<CTIReport | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [isLiveAI, setIsLiveAI] = useState(false);
   const [activeMenuSection, setActiveMenuSection] = useState("exec-summary");
 
   useEffect(() => {
@@ -253,7 +291,6 @@ function AIAnalystContent() {
       if (saved) {
         try {
           const parsed = JSON.parse(saved);
-          // Map to stored campaign format
           resolvedCampaign = {
             id: parsed.id || `SIM-${Math.floor(1000 + Math.random() * 9000)}`,
             timestamp: parsed.timestamp || new Date().toISOString(),
@@ -276,27 +313,78 @@ function AIAnalystContent() {
       resolvedCampaign = history[0] || DEFAULT_ANALYST_CAMPAIGN;
     }
 
-    setCampaign(resolvedCampaign);
-    setReportData(generateCTIReport(resolvedCampaign));
+    // Call server API for live Gemini analysis!
+    const fetchAIReport = async (camp: StoredCampaign) => {
+      setCampaign(camp);
+      setLoading(true);
+      try {
+        const res = await fetch("/api/analyze", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(camp),
+        });
 
-    // UTC clock
-    const updateTime = () => {
-      const now = new Date();
-      setCurrentTime(now.toUTCString());
+        if (!res.ok) throw new Error(`Server returned status: ${res.status}`);
+
+        const data = await res.json();
+
+        if (data.isFallback) {
+          console.warn("[AEGIS] Live Gemini API not configured or returned fallback. Using local generator.");
+          setReportData(generateCTIReport(camp));
+          setIsLiveAI(false);
+        } else {
+          console.log("[AEGIS] Live Gemini CTI report generated successfully.");
+          setReportData({
+            id: camp.id,
+            timestamp: camp.timestamp,
+            actorName: getActorName(camp.threatActor),
+            actorId: camp.threatActor,
+            vectorName: getAttackName(camp.attackType),
+            vectorId: camp.attackType,
+            industryName: getIndustryName(camp.industry),
+            targetName: camp.primaryTarget,
+            status: camp.status,
+            securityLevel: camp.securityLevel,
+            executiveSummary: data.executiveSummary,
+            actorProfile: data.actorProfile,
+            financialLoss: data.businessImpact.financialLoss,
+            operationalImpact: data.businessImpact.operationalImpact,
+            downtime: data.businessImpact.downtime,
+            mitigations: data.mitigations,
+            currentRisk: data.riskAssessment.currentRisk,
+            projectedRisk: data.riskAssessment.projectedRisk,
+            riskReduction: data.riskAssessment.riskReduction,
+            stages: camp.stages,
+            mitreMapping: data.mitreMapping
+          });
+          setIsLiveAI(true);
+        }
+      } catch (error) {
+        console.error("[AEGIS ERROR] Fetching Gemini report failed. Using local compiler:", error);
+        setReportData(generateCTIReport(camp));
+        setIsLiveAI(false);
+      } finally {
+        setLoading(false);
+      }
     };
-    updateTime();
-    const interval = setInterval(updateTime, 1000);
-    return () => clearInterval(interval);
+
+    fetchAIReport(resolvedCampaign);
+
   }, [campaignId]);
 
   // Export report to Markdown
   const handleExportMarkdown = () => {
     if (!reportData) return;
     const dateStr = new Date(reportData.timestamp).toUTCString();
-    
-    const mitreMappingStr = reportData.stages.map((stage, idx) => {
-      const mapping = getMitreAttackMapping(reportData.vectorId, idx);
-      return `Phase ${idx+1}: ${stage.title} -> MITRE ATT&CK: ${mapping.code} [${mapping.name}] - Status: ${stage.status.toUpperCase()}`;
+
+    const mitreMappingStr = reportData.stages.map((stage: CampaignStage, idx: number) => {
+      const customMapping = reportData.mitreMapping?.find((m: { stageIndex: number; code: string; name: string }) => m.stageIndex === idx);
+      const mapping = customMapping
+        ? { code: customMapping.code, name: customMapping.name }
+        : getMitreAttackMapping(reportData.vectorId, idx);
+      return `Phase ${idx + 1}: ${stage.title} -> MITRE ATT&CK: ${mapping.code} [${mapping.name}] - Status: ${stage.status.toUpperCase()}`;
     }).join("\n");
 
     const content = `# AEGIS CYBER THREAT INTELLIGENCE (CTI) REPORT
@@ -305,22 +393,22 @@ Campaign Reference: ${reportData.id}
 Telemetry Log Time: ${dateStr}
 
 ======================================================================
-1. EXECUTIVE SUMMARY
+1. QUICK SUMMARY
 ----------------------------------------------------------------------
 ${reportData.executiveSummary}
 
 ======================================================================
-2. ADVERSARY INTEL: ${reportData.actorName.toUpperCase()} PROFILE
+2. ATTACKER PROFILE: ${reportData.actorName.toUpperCase()}
 ----------------------------------------------------------------------
 ${reportData.actorProfile}
 
 ======================================================================
-3. MITRE ATT&CK TACTICS & TECHNIQUES MAPPING
+3. ATTACK TECHNIQUES USED (MITRE ATT&CK)
 ----------------------------------------------------------------------
 ${mitreMappingStr}
 
 ======================================================================
-4. BUSINESS IMPACT ASSESSMENT
+4. POTENTIAL DAMAGE ESTIMATE
 ----------------------------------------------------------------------
 Adversary Target Endpoint: ${reportData.targetName}
 Operational Downtime: ${reportData.downtime}
@@ -328,12 +416,12 @@ Financial Liability Impact: ${reportData.financialLoss}
 Core Infrastructure Impact: ${reportData.operationalImpact}
 
 ======================================================================
-5. RECOMMENDED CYBER DEFENSES & REMEDIATIONS
+5. RECOMMENDED SECURITY IMPROVEMENTS
 ----------------------------------------------------------------------
-${reportData.mitigations.map((mit, i) => `${i + 1}. [Mitigation] ${mit}`).join("\n")}
+${reportData.mitigations.map((mit: string, i: number) => `${i + 1}. [Mitigation] ${mit}`).join("\n")}
 
 ======================================================================
-6. RISK REDUCTION PROJECTIONS
+6. RISK REDUCTION ESTIMATE
 ----------------------------------------------------------------------
 Current Infrastructure Risk: ${reportData.currentRisk}%
 Projected Risk Post-Remediation: < 5%
@@ -343,7 +431,7 @@ Net Security Posture Risk Reduction: ${reportData.riskReduction}%
 Report Generated Authenticated by Aegis AI Security Core Node
 VERIFICATION TELEMETRY: COMPLETED // DEFENSE BLOCK STATUS: ${reportData.status.toUpperCase()}
 `;
-    
+
     const blob = new Blob([content], { type: "text/markdown" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
@@ -357,16 +445,33 @@ VERIFICATION TELEMETRY: COMPLETED // DEFENSE BLOCK STATUS: ${reportData.status.t
     window.print();
   };
 
-  if (!reportData || !campaign) {
+  // High-fidelity dynamic analysis loading screen
+  if (loading || !reportData || !campaign) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-cyber-bg text-cyber-cyan font-mono text-xs uppercase tracking-widest">
-        Compiling Telemetry Logs...
+        <div className="flex flex-col items-center gap-4 text-center max-w-sm px-6">
+          <span className="relative flex h-8 w-8">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyber-cyan opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-8 w-8 bg-cyber-cyan/35 flex items-center justify-center border border-cyber-cyan/50">
+              <Brain className="w-4 h-4 text-cyber-cyan animate-pulse animate-duration-1000" />
+            </span>
+          </span>
+          <div className="space-y-1">
+            <div className="font-extrabold text-white uppercase tracking-[0.12em]">AI Threat Analysis Active</div>
+            <div className="text-[9px] text-slate-500 uppercase tracking-widest leading-relaxed">
+              Querying Gemini Security Telemetry nodes & compiling TTP brief...
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="relative min-h-screen flex flex-col justify-between overflow-x-hidden bg-cyber-bg text-slate-100 selection:bg-electric-blue/30 selection:text-white print:bg-white print:text-black">
+    <div 
+      style={{ overflowAnchor: "none" }}
+      className="relative min-h-screen flex flex-col justify-between overflow-x-hidden bg-cyber-bg text-slate-100 selection:bg-electric-blue/30 selection:text-white print:bg-white print:text-black"
+    >
       {/* Background elements - hidden on print */}
       <div className="absolute inset-0 cyber-grid opacity-30 pointer-events-none z-0 print:hidden" />
       <div className="absolute inset-0 cyber-grid-fine opacity-50 pointer-events-none z-0 print:hidden" />
@@ -374,11 +479,11 @@ VERIFICATION TELEMETRY: COMPLETED // DEFENSE BLOCK STATUS: ${reportData.status.t
       <div className="fixed inset-0 pointer-events-none z-50 animate-scanline bg-gradient-to-b from-transparent via-cyber-cyan/[0.012] to-transparent h-16 w-full print:hidden" />
 
       <div className="max-w-7xl mx-auto px-6 relative z-10 w-full flex-grow pt-8 pb-12 print:pt-0">
-        
+
         {/* Navigation back and telemetry info - hidden on print */}
         <div className="flex justify-between items-center mb-8 flex-wrap gap-4 print:hidden">
-          <Link 
-            href="/command-center" 
+          <Link
+            href="/command-center"
             className="inline-flex items-center gap-2 text-[10px] font-mono tracking-widest text-slate-400 hover:text-white uppercase transition-colors group"
           >
             <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform" />
@@ -393,27 +498,145 @@ VERIFICATION TELEMETRY: COMPLETED // DEFENSE BLOCK STATUS: ${reportData.status.t
               </span>
               AI INTEL PARSER
             </span>
-            <span className="text-cyber-cyan">{currentTime || "00:00:00 UTC"}</span>
+            <LiveClock />
+          </div>
+        </div>
+
+        {/* Top Human-Readable Explanation */}
+        <div className="mb-8 p-5 rounded bg-cyber-surface/60 border border-cyber-border/80 text-xs text-slate-300 leading-relaxed max-w-4xl relative overflow-hidden space-y-3 print:hidden">
+          <div className="absolute top-0 left-0 bottom-0 w-[3px] bg-cyber-cyan" />
+          <div>
+            <strong className="text-white block mb-0.5">What is this?</strong>
+            An AI-generated security briefing analyzing the results of your simulation logs.
+          </div>
+          <div>
+            <strong className="text-white block mb-0.5">Why does it matter?</strong>
+            It translates complex host activity and firewall logs into a clear, business-focused report detailing real-world impacts and recommendations.
+          </div>
+          <div>
+            <strong className="text-white block mb-0.5">What can I do here?</strong>
+            Read the 30-second Executive Summary briefing, study detailed attacker behaviors, download or print the report, and copy mitigation scripts.
           </div>
         </div>
 
         {/* Title Header - print:hidden */}
         <div className="mb-10 max-w-4xl print:hidden">
           <div className="inline-flex items-center gap-2 text-cyber-cyan text-[10px] font-mono tracking-widest uppercase mb-4">
-            <Brain className="w-3.5 h-3.5 text-cyber-cyan" />
-            Adversary TTP Synthesizer: threat-intelligence-brief.exe
+            <Brain className="w-3.5 h-3.5 text-cyber-cyan animate-pulse" />
+            AI Security Brief: security-report.exe
           </div>
           <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight text-white uppercase">
-            AI Threat Analyst Console
+            AI Security Analyst Console
           </h1>
-          <p className="mt-4 text-slate-400 text-sm md:text-base leading-relaxed">
-            Automated intelligence synthesizer compile adversary tactics, techniques, and procedures (TTPs). Review the generated Cyber Threat Intelligence report, audit financial risk exposures, and export execution scripts.
-          </p>
+        </div>
+
+        {/* 30-Second Executive Summary Dashboard Card */}
+        <div className="glassmorphism-card rounded-xl p-6 border border-cyber-border mb-8 print:hidden relative overflow-hidden">
+          <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-electric-blue via-cyber-cyan to-transparent" />
+          <div className="flex items-center gap-2 border-b border-cyber-border/40 pb-3 mb-4 font-mono">
+            <Brain className="w-4 h-4 text-cyber-cyan animate-pulse" />
+            <h2 className="text-white font-bold text-xs uppercase tracking-widest">
+              [30-Second Briefing] Executive Summary Dashboard
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 font-sans text-xs">
+            {/* Grid 1: Attack Overview */}
+            <div className="md:col-span-1 bg-black/35 p-4 rounded border border-cyber-border flex flex-col justify-between">
+              <div>
+                <span className="text-[9px] font-mono text-slate-500 uppercase tracking-widest block font-bold mb-1">
+                  Attack Overview
+                </span>
+                <p className="text-slate-300 leading-relaxed text-[11px]">
+                  Attacker <strong className="text-white uppercase">{reportData.actorName}</strong> emulated a campaign targeting the <strong className="text-white uppercase">{reportData.industryName}</strong> network sector, utilizing a <strong className="text-white uppercase">{reportData.vectorName}</strong> entry. Target asset: <strong className="text-white font-mono">{reportData.targetName}</strong>.
+                </p>
+              </div>
+              <div className="mt-4 pt-2 border-t border-cyber-border/20 text-[9px] font-mono text-slate-500">
+                SIMULATION OUTCOME: <span className={reportData.status === "Blocked" ? "text-cyber-green font-bold" : "text-cyber-red font-bold"}>{reportData.status.toUpperCase()}</span>
+              </div>
+            </div>
+
+            {/* Grid 2: Risk Level */}
+            <div className="md:col-span-1 bg-black/35 p-4 rounded border border-cyber-border flex flex-col justify-between">
+              <div>
+                <span className="text-[9px] font-mono text-slate-500 uppercase tracking-widest block font-bold mb-1">
+                  Assessed Risk Summary
+                </span>
+                <div className="flex items-center gap-2 mt-2">
+                  <span className={`px-2 py-1 rounded border text-xs font-mono font-bold tracking-widest ${
+                    reportData.status === "Blocked"
+                      ? "border-cyber-green/35 bg-cyber-green/10 text-cyber-green"
+                      : reportData.currentRisk >= 70
+                      ? "border-cyber-red/35 bg-cyber-red/10 text-cyber-red"
+                      : "border-amber-500/35 bg-amber-500/10 text-amber-500"
+                  }`}>
+                    {reportData.status === "Blocked" ? "LOW RISK" : reportData.currentRisk >= 70 ? "CRITICAL RISK" : "HIGH RISK"}
+                  </span>
+                  <span className="text-slate-400 font-mono text-[10px]">{reportData.currentRisk}%</span>
+                </div>
+                <p className="text-slate-400 mt-3 text-[10px] leading-relaxed">
+                  Calculated compromise likelihood prior to patching. Post-remediation safety projects a reduction to &lt; {reportData.projectedRisk}%.
+                </p>
+              </div>
+              <div className="mt-4 pt-2 border-t border-cyber-border/20 text-[9px] font-mono text-slate-500">
+                RISK REDUCTION: -{reportData.riskReduction}%
+              </div>
+            </div>
+
+            {/* Grid 3: Business Impact */}
+            <div className="md:col-span-1 bg-black/35 p-4 rounded border border-cyber-border flex flex-col justify-between">
+              <div>
+                <span className="text-[9px] font-mono text-slate-500 uppercase tracking-widest block font-bold mb-1">
+                  Operational Impact
+                </span>
+                <div className="space-y-2 mt-2">
+                  <div className="flex justify-between items-center text-[10px]">
+                    <span className="text-slate-500 font-mono">FINANCIAL:</span>
+                    <span className="text-cyber-red font-bold font-mono">
+                      {reportData.financialLoss.includes("(") ? reportData.financialLoss.split(" ")[0] : reportData.financialLoss}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center text-[10px]">
+                    <span className="text-slate-500 font-mono">DOWNTIME:</span>
+                    <span className="text-cyber-cyan font-bold font-mono">{reportData.downtime}</span>
+                  </div>
+                </div>
+                <p className="text-slate-400 mt-3 text-[10px] leading-relaxed line-clamp-3">
+                  {reportData.operationalImpact.includes(".") ? reportData.operationalImpact.split(".")[0] + "." : reportData.operationalImpact}
+                </p>
+              </div>
+              <div className="mt-4 pt-2 border-t border-cyber-border/20 text-[9px] font-mono text-slate-500">
+                RESTORE ESTIMATE
+              </div>
+            </div>
+
+            {/* Grid 4: Recommended Actions */}
+            <div className="md:col-span-1 bg-black/35 p-4 rounded border border-cyber-border flex flex-col justify-between">
+              <div>
+                <span className="text-[9px] font-mono text-slate-500 uppercase tracking-widest block font-bold mb-2">
+                  Key Recommended Actions
+                </span>
+                <ul className="list-disc list-inside space-y-1.5 text-slate-300 text-[10px] leading-relaxed">
+                  {reportData.mitigations.slice(0, 3).map((mit: string, i: number) => {
+                    const cleanMit = mit.split(".")[0];
+                    return (
+                      <li key={i} className="line-clamp-2">
+                        {cleanMit}
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+              <div className="mt-4 pt-2 border-t border-cyber-border/20 text-[9px] font-mono text-slate-500">
+                PRIORITIZED CONTROLS
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Action Controls - hidden on print */}
         <div className="glassmorphism-card rounded-xl p-4 border border-cyber-border mb-8 flex flex-wrap items-center justify-between gap-4 print:hidden">
-          <div className="flex items-center gap-3 font-mono text-[10px]">
+          <div className="flex flex-wrap items-center gap-3 font-mono text-[10px] items-center">
             <span className="text-slate-400">TARGET REF:</span>
             <span className="text-white font-bold">{reportData.id}</span>
             <span className="text-slate-600">|</span>
@@ -421,13 +644,22 @@ VERIFICATION TELEMETRY: COMPLETED // DEFENSE BLOCK STATUS: ${reportData.status.t
             <span className="text-white font-bold uppercase">{reportData.actorName}</span>
             <span className="text-slate-600">|</span>
             <span className="text-slate-400">OUTCOME:</span>
-            <span className={`px-1.5 py-0.5 rounded border text-[8px] font-bold uppercase ${
-              reportData.status === "Blocked"
+            <span className={`px-1.5 py-0.5 rounded border text-[8px] font-bold uppercase ${reportData.status === "Blocked"
                 ? "border-cyber-green/30 bg-cyber-green/10 text-cyber-green"
                 : "border-cyber-red/30 bg-cyber-red/10 text-cyber-red"
-            }`}>
+              }`}>
               {reportData.status}
             </span>
+            <span className="text-slate-600">|</span>
+            {isLiveAI ? (
+              <span className="px-1.5 py-0.5 rounded border border-cyber-cyan/30 bg-cyber-cyan/10 text-cyber-cyan text-[8px] font-bold uppercase tracking-wider animate-pulse shadow-[0_0_8px_rgba(6,182,212,0.2)]">
+                Gemini Live Intelligence
+              </span>
+            ) : (
+              <span className="px-1.5 py-0.5 rounded border border-amber-500/30 bg-amber-500/10 text-amber-500 text-[8px] font-bold uppercase tracking-wider">
+                Local Synthesis Fallback
+              </span>
+            )}
           </div>
 
           <div className="flex items-center gap-3 font-mono">
@@ -463,34 +695,33 @@ VERIFICATION TELEMETRY: COMPLETED // DEFENSE BLOCK STATUS: ${reportData.status.t
 
         {/* Report Workspace Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          
+
           {/* Sidebar Menu - hidden on print */}
           <div className="lg:col-span-3 space-y-3 font-mono print:hidden">
             <span className="text-[9px] text-slate-500 uppercase tracking-widest block font-bold mb-4">
               [ REPORT SECTIONS ]
             </span>
             {[
-              { id: "exec-summary", label: "Executive Summary", icon: FileText },
-              { id: "threat-actor", label: "Threat Actor Profile", icon: ShieldAlert },
-              { id: "mitre-mapping", label: "MITRE ATT&CK Mapping", icon: Layers },
-              { id: "business-impact", label: "Business Impact", icon: AlertTriangle },
-              { id: "recommended-defenses", label: "Recommended Defenses", icon: Shield },
-              { id: "risk-reduction", label: "Risk Reduction Projections", icon: TrendingUp }
+              { id: "exec-summary", label: "Quick Summary", icon: FileText },
+              { id: "threat-actor", label: "Attacker Profile", icon: ShieldAlert },
+              { id: "mitre-mapping", label: "Attack Techniques Used (MITRE ATT&CK)", icon: Layers },
+              { id: "business-impact", label: "Potential Damage Estimate", icon: AlertTriangle },
+              { id: "recommended-defenses", label: "Recommended Security Improvements", icon: Shield },
+              { id: "risk-reduction", label: "Risk Reduction Estimate", icon: TrendingUp }
             ].map(sec => {
               const Icon = sec.icon;
               const isActive = activeMenuSection === sec.id;
               return (
                 <button
                   key={sec.id}
-                  onClick={() => {
+                  onClick={(e) => {
                     setActiveMenuSection(sec.id);
-                    document.getElementById(sec.id)?.scrollIntoView({ behavior: "smooth", block: "center" });
+                    e.currentTarget.blur();
                   }}
-                  className={`w-full flex items-center justify-between p-3 rounded border text-left text-[10px] tracking-wider uppercase transition-all cursor-pointer ${
-                    isActive
+                  className={`w-full flex items-center justify-between p-3 rounded border text-left text-[10px] tracking-wider uppercase transition-all cursor-pointer ${isActive
                       ? "border-cyber-cyan/50 bg-cyber-cyan/10 text-cyber-cyan font-bold"
                       : "border-cyber-border bg-black/20 text-slate-400 hover:text-white hover:bg-slate-900/30"
-                  }`}
+                    }`}
                 >
                   <span className="flex items-center gap-2">
                     <Icon className="w-3.5 h-3.5" />
@@ -504,9 +735,9 @@ VERIFICATION TELEMETRY: COMPLETED // DEFENSE BLOCK STATUS: ${reportData.status.t
 
           {/* Main Report Document Sheet (9 cols) */}
           <div className="lg:col-span-9 space-y-8 print:col-span-12 print:space-y-6">
-            
+
             {/* 1. Executive Summary */}
-            <motion.section 
+            <motion.section
               id="exec-summary"
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
@@ -516,16 +747,16 @@ VERIFICATION TELEMETRY: COMPLETED // DEFENSE BLOCK STATUS: ${reportData.status.t
               <div className="flex items-center gap-2 border-b border-cyber-border/40 pb-3 mb-4 font-mono">
                 <FileText className="w-4 h-4 text-cyber-cyan print:text-black" />
                 <h3 className="text-white font-bold text-xs uppercase tracking-widest print:text-black">
-                  [1.0] EXECUTIVE SUMMARY
+                  [1.0] QUICK SUMMARY
                 </h3>
               </div>
-              <p className="text-slate-300 text-xs leading-relaxed font-mono print:text-black print:text-[10px]">
+              <p className="text-slate-300 text-xs leading-relaxed font-mono print:text-black print:text-[10px] whitespace-pre-wrap">
                 {reportData.executiveSummary}
               </p>
             </motion.section>
 
             {/* 2. Threat Actor Profile */}
-            <motion.section 
+            <motion.section
               id="threat-actor"
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
@@ -536,16 +767,16 @@ VERIFICATION TELEMETRY: COMPLETED // DEFENSE BLOCK STATUS: ${reportData.status.t
               <div className="flex items-center gap-2 border-b border-cyber-border/40 pb-3 mb-4 font-mono">
                 <ShieldAlert className="w-4 h-4 text-cyber-cyan print:text-black" />
                 <h3 className="text-white font-bold text-xs uppercase tracking-widest print:text-black">
-                  [2.0] THREAT ADVERSARY INTEL: {reportData.actorName}
+                  [2.0] ATTACKER PROFILE: {reportData.actorName}
                 </h3>
               </div>
-              <p className="text-slate-300 text-xs leading-relaxed font-mono print:text-black print:text-[10px]">
+              <p className="text-slate-300 text-xs leading-relaxed font-mono print:text-black print:text-[10px] whitespace-pre-wrap">
                 {reportData.actorProfile}
               </p>
             </motion.section>
 
             {/* 3. MITRE ATT&CK Mapping */}
-            <motion.section 
+            <motion.section
               id="mitre-mapping"
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
@@ -556,7 +787,7 @@ VERIFICATION TELEMETRY: COMPLETED // DEFENSE BLOCK STATUS: ${reportData.status.t
               <div className="flex items-center gap-2 border-b border-cyber-border/40 pb-3 mb-4 font-mono">
                 <Layers className="w-4 h-4 text-cyber-cyan print:text-black" />
                 <h3 className="text-white font-bold text-xs uppercase tracking-widest print:text-black">
-                  [3.0] MITRE ATT&CK TACTICS & TECHNIQUES MAPPING
+                  [3.0] ATTACK TECHNIQUES USED (MITRE ATT&CK)
                 </h3>
               </div>
               <p className="text-slate-400 text-[10px] font-mono mb-4 print:hidden">
@@ -574,19 +805,21 @@ VERIFICATION TELEMETRY: COMPLETED // DEFENSE BLOCK STATUS: ${reportData.status.t
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-cyber-border/20 print:divide-black/20">
-                    {reportData.stages.map((stage, idx) => {
-                      const mapping = getMitreAttackMapping(reportData.vectorId, idx);
+                    {reportData.stages.map((stage: CampaignStage, idx: number) => {
+                      const customMapping = reportData.mitreMapping?.find((m: { stageIndex: number; code: string; name: string }) => m.stageIndex === idx);
+                      const mapping = customMapping
+                        ? { code: customMapping.code, name: customMapping.name }
+                        : getMitreAttackMapping(reportData.vectorId, idx);
                       return (
                         <tr key={idx} className="hover:bg-slate-900/10 transition-colors">
                           <td className="py-2 text-white font-bold uppercase print:text-black">{stage.title}</td>
                           <td className="py-2 text-cyber-cyan font-bold print:text-black">{mapping.code}</td>
                           <td className="py-2 text-slate-400 print:text-black">{mapping.name}</td>
                           <td className="py-2 text-right">
-                            <span className={`px-1 py-0.5 rounded border text-[7px] font-bold uppercase inline-block ${
-                              stage.status === "blocked" 
+                            <span className={`px-1 py-0.5 rounded border text-[7px] font-bold uppercase inline-block ${stage.status === "blocked"
                                 ? "border-cyber-green/30 bg-cyber-green/5 text-cyber-green print:border-black print:text-black"
                                 : "border-cyber-red/30 bg-cyber-red/5 text-cyber-red print:border-black print:text-black"
-                            }`}>
+                              }`}>
                               {stage.status.toUpperCase()}
                             </span>
                           </td>
@@ -599,7 +832,7 @@ VERIFICATION TELEMETRY: COMPLETED // DEFENSE BLOCK STATUS: ${reportData.status.t
             </motion.section>
 
             {/* 4. Business Impact Assessment */}
-            <motion.section 
+            <motion.section
               id="business-impact"
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
@@ -610,7 +843,7 @@ VERIFICATION TELEMETRY: COMPLETED // DEFENSE BLOCK STATUS: ${reportData.status.t
               <div className="flex items-center gap-2 border-b border-cyber-border/40 pb-3 mb-4 font-mono">
                 <AlertTriangle className="w-4 h-4 text-cyber-cyan print:text-black" />
                 <h3 className="text-white font-bold text-xs uppercase tracking-widest print:text-black">
-                  [4.0] BUSINESS IMPACT ASSESSMENT
+                  [4.0] POTENTIAL DAMAGE ESTIMATE
                 </h3>
               </div>
 
@@ -618,11 +851,13 @@ VERIFICATION TELEMETRY: COMPLETED // DEFENSE BLOCK STATUS: ${reportData.status.t
                 <div className="bg-black/35 p-4 rounded border border-cyber-border text-left print:bg-white print:border-black print:p-2">
                   <span className="text-slate-500 text-[8px] uppercase tracking-wider block print:text-black">FINANCIAL LIABILITY</span>
                   <div className="text-cyber-red text-base font-extrabold mt-1 uppercase print:text-black print:text-xs">
-                    {reportData.financialLoss.split(" ")[0]}
+                    {reportData.financialLoss.includes("(") ? reportData.financialLoss.split(" ")[0] : reportData.financialLoss}
                   </div>
-                  <p className="text-slate-400 text-[8px] mt-2 leading-relaxed print:text-black">
-                    {reportData.financialLoss.substring(reportData.financialLoss.indexOf("("))}
-                  </p>
+                  {reportData.financialLoss.includes("(") && (
+                    <p className="text-slate-400 text-[8px] mt-2 leading-relaxed print:text-black">
+                      {reportData.financialLoss.substring(reportData.financialLoss.indexOf("("))}
+                    </p>
+                  )}
                 </div>
 
                 <div className="bg-black/35 p-4 rounded border border-cyber-border text-left print:bg-white print:border-black print:p-2">
@@ -637,18 +872,20 @@ VERIFICATION TELEMETRY: COMPLETED // DEFENSE BLOCK STATUS: ${reportData.status.t
 
                 <div className="bg-black/35 p-4 rounded border border-cyber-border text-left print:bg-white print:border-black print:p-2">
                   <span className="text-slate-500 text-[8px] uppercase tracking-wider block print:text-black">INFRASTRUCTURE IMPACT</span>
-                  <div className="text-white text-xs font-bold mt-1 uppercase print:text-black">
-                    {reportData.operationalImpact.split(".")[0]}
+                  <div className="text-white text-xs font-bold mt-1 uppercase print:text-black truncate">
+                    {reportData.operationalImpact.includes(".") ? reportData.operationalImpact.split(".")[0] : reportData.operationalImpact}
                   </div>
-                  <p className="text-slate-400 text-[8px] mt-2 leading-relaxed print:text-black">
-                    {reportData.operationalImpact.split(".").slice(1).join(".")}
-                  </p>
+                  {reportData.operationalImpact.includes(".") && (
+                    <p className="text-slate-400 text-[8px] mt-2 leading-relaxed print:text-black line-clamp-3">
+                      {reportData.operationalImpact.split(".").slice(1).join(".")}
+                    </p>
+                  )}
                 </div>
               </div>
             </motion.section>
 
             {/* 5. Recommended Defenses */}
-            <motion.section 
+            <motion.section
               id="recommended-defenses"
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
@@ -659,12 +896,12 @@ VERIFICATION TELEMETRY: COMPLETED // DEFENSE BLOCK STATUS: ${reportData.status.t
               <div className="flex items-center gap-2 border-b border-cyber-border/40 pb-3 mb-4 font-mono">
                 <Shield className="w-4 h-4 text-cyber-cyan print:text-black" />
                 <h3 className="text-white font-bold text-xs uppercase tracking-widest print:text-black">
-                  [5.0] RECOMMENDED CYBER REMEDIATION PLAYBOOK
+                  [5.0] RECOMMENDED SECURITY IMPROVEMENTS
                 </h3>
               </div>
 
               <div className="space-y-4 font-mono text-[10px] print:text-[9px]">
-                {reportData.mitigations.map((mit, i) => (
+                {reportData.mitigations.map((mit: string, i: number) => (
                   <div key={i} className="flex gap-3 bg-black/20 p-3 rounded border border-cyber-border print:bg-white print:border-black print:p-2">
                     <div className="w-5 h-5 rounded-full bg-cyber-cyan/15 border border-cyber-cyan/40 text-cyber-cyan flex items-center justify-center font-bold text-[9px] shrink-0 print:border-black print:text-black print:bg-slate-200">
                       {i + 1}
@@ -679,7 +916,7 @@ VERIFICATION TELEMETRY: COMPLETED // DEFENSE BLOCK STATUS: ${reportData.status.t
             </motion.section>
 
             {/* 6. Risk Reduction Projections */}
-            <motion.section 
+            <motion.section
               id="risk-reduction"
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
@@ -690,7 +927,7 @@ VERIFICATION TELEMETRY: COMPLETED // DEFENSE BLOCK STATUS: ${reportData.status.t
               <div className="flex items-center gap-2 border-b border-cyber-border/40 pb-3 mb-4 font-mono">
                 <TrendingUp className="w-4 h-4 text-cyber-cyan print:text-black" />
                 <h3 className="text-white font-bold text-xs uppercase tracking-widest print:text-black">
-                  [6.0] QUANTITATIVE RISK REDUCTION ESTIMATE
+                  [6.0] RISK REDUCTION ESTIMATE
                 </h3>
               </div>
 
@@ -699,7 +936,7 @@ VERIFICATION TELEMETRY: COMPLETED // DEFENSE BLOCK STATUS: ${reportData.status.t
                   <p className="text-slate-400 leading-relaxed print:text-black">
                     Comparison profiling threat compromise ratios. Implementing playbooks reduces compromise probabilities to a negligible index.
                   </p>
-                  
+
                   <div className="space-y-2">
                     <div className="flex justify-between font-bold text-slate-400 print:text-black">
                       <span>PRE-MITIGATION COMPROMISE PROBABILITY:</span>
@@ -723,7 +960,7 @@ VERIFICATION TELEMETRY: COMPLETED // DEFENSE BLOCK STATUS: ${reportData.status.t
 
                 <div className="flex flex-col items-center justify-center p-4 border border-cyber-border bg-black/40 rounded print:border-black print:bg-white print:p-2">
                   <span className="text-[8px] font-mono text-slate-500 uppercase tracking-widest print:text-black">CALCULATED RISK MITIGATION INDEX</span>
-                  <motion.div 
+                  <motion.div
                     initial={{ scale: 0.7, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
                     transition={{ delay: 0.8 }}

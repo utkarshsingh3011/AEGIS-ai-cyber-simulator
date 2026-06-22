@@ -1,9 +1,9 @@
 "use client";
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
-import { saveCampaignToHistory } from "../../components/campaignStore";
+import { saveCampaignToHistory, getFriendlySimulationName, getActorName } from "../../components/campaignStore";
 import { 
   Play, Pause, RotateCcw, ArrowLeft, Terminal, 
   Activity, ShieldCheck, Brain
@@ -40,44 +40,44 @@ const FALLBACK_CAMPAIGN: CampaignConfig = {
   primaryTarget: "Swift-Transfer-Core",
   stages: [
     {
-      title: "Reconnaissance & Port Scan",
-      description: "Attacker Lazarus Group initiated active reconnaissance scans mapping the target subnets for Banking.",
-      log: "[RECON] Mapping subnets on segment 10.0.4.x. Found open ports: 443, 8080. EDR status: BLOCKED",
+      title: "Scanning the Network",
+      description: "Attacker scanned the network to find active computers and open ports.",
+      log: "[RECON] Scan complete. Found open ports: 443, 8080. EDR status: BLOCKED",
       status: "blocked",
       severity: "low",
     },
     {
-      title: "Initial Access Foothold",
-      description: "Foothold vector established using Supply Chain (T1195.002) to bypass gateway filtering.",
-      log: "[INGRESS] Exploit payload dispatched. Channel established with target client. EDR status: BLOCKED",
+      title: "Attacker Gained Access",
+      description: "Attacker established a foothold in the network, bypassing outer defenses.",
+      log: "[INGRESS] Entry payload executed. Connection established with target device. EDR status: BLOCKED",
       status: "blocked",
       severity: "medium",
     },
     {
-      title: "Credential Swipe",
-      description: "Searching local memory dumps and active directory tables for active session tokens and admin keys.",
-      log: "[CREDENTIALS] LSASS memory dump initiated / credential extraction requested. EDR status: EVADED",
+      title: "Passwords Were Stolen",
+      description: "Attacker searched computer memory and tables to find login passwords and session tokens.",
+      log: "[CREDENTIALS] Stole administrative credentials and login keys from memory. EDR status: EVADED",
       status: "evaded",
       severity: "medium",
     },
     {
-      title: "Lateral Subnet Propagation",
-      description: "Pivoting from compromised host endpoints to jump servers. Internal target segment reached: Swift-Transfer-Core.",
-      log: "[LATERAL] Remote session hijacked to cross network subnets. Target node reached: Swift-Transfer-Core. EDR status: BLOCKED",
+      title: "Moved to Another System",
+      description: "Attacker moved from the first compromised computer to a server deeper in the network.",
+      log: "[LATERAL] Moved to server node segment containing Swift-Transfer-Core. EDR status: BLOCKED",
       status: "blocked",
       severity: "high",
     },
     {
-      title: "Privilege Domain Escalation",
-      description: "Attempting admin privilege elevation via token impersonation on Active Directory controller nodes.",
-      log: "[ESCALATION] Token impersonation executed. Root credentials retrieved. EDR status: EVADED",
+      title: "Gained Admin Access",
+      description: "Attacker elevated their access level to become a network administrator.",
+      log: "[ESCALATION] Root credentials retrieved. Gained administrator rights. EDR status: EVADED",
       status: "evaded",
       severity: "high",
     },
     {
-      title: "Data Exfiltration & Impact",
-      description: "Executing final payload actions on database target Swift-Transfer-Core. Archiving core customer tables.",
-      log: "[EXFILTRATION] Compressing database files. Transmitting out of band over port 443. EDR status: EVADED",
+      title: "Data Was Stolen and Locked",
+      description: "Attacker copied sensitive files out of the network and started encrypting systems.",
+      log: "[EXFILTRATION] Copied customer database tables and encrypted database files. EDR status: EVADED",
       status: "evaded",
       severity: "critical",
     },
@@ -90,7 +90,9 @@ export default function AttackViewerPage() {
   const [currentStageIdx, setCurrentStageIdx] = useState(0);
   const [progress, setProgress] = useState(0);
   const [terminalLogs, setTerminalLogs] = useState<string[]>([]);
-  const terminalEndRef = useRef<HTMLDivElement>(null);
+  const terminalContainerRef = useRef<HTMLDivElement>(null);
+  const isNearBottomRef = useRef<boolean>(true);
+  const [showGuide, setShowGuide] = useState(true);
 
   // 1. Helper to dynamically stream sub-logs matching the CampaignConfig details
   // Defined with useCallback and placed above useEffect to prevent hoisting errors
@@ -101,34 +103,34 @@ export default function AttackViewerPage() {
 
     switch (stageIdx) {
       case 0: // Recon
-        if (subIndex === 0) newLog = `[RECON] Mapping subnets on segment ${campaign.industry} networks...`;
-        if (subIndex === 1) newLog = `[RECON] Running port scans on boundary firewalls...`;
+        if (subIndex === 0) newLog = `[RECON] Scanning network ports on segment ${campaign.industry} networks...`;
+        if (subIndex === 1) newLog = `[RECON] Looking for active servers and services...`;
         if (subIndex === 2) newLog = `[RECON] Found open server bindings. Status: ${stage.status.toUpperCase()}`;
         break;
       case 1: // Initial Access
-        if (subIndex === 0) newLog = `[INGRESS] Constructing exploit payload wrapper for vector: ${campaign.attackType}...`;
-        if (subIndex === 1) newLog = `[INGRESS] Payload execution requested on host client...`;
+        if (subIndex === 0) newLog = `[INGRESS] Preparing delivery method for attack scenario: ${campaign.attackType}...`;
+        if (subIndex === 1) newLog = `[INGRESS] Executing entry script on target device...`;
         if (subIndex === 2) newLog = `[INGRESS] Access channel establishing. Gateway: ${stage.status.toUpperCase()}`;
         break;
       case 2: // Credential Theft
-        if (subIndex === 0) newLog = `[CREDENTIALS] Querying memory maps for authentication hashes...`;
-        if (subIndex === 1) newLog = `[CREDENTIALS] Accessing Active Directory domain databases...`;
-        if (subIndex === 2) newLog = `[CREDENTIALS] Local session key acquisition: ${stage.status.toUpperCase()}`;
+        if (subIndex === 0) newLog = `[CREDENTIALS] Searching system memory for login credentials...`;
+        if (subIndex === 1) newLog = `[CREDENTIALS] Querying user account lists...`;
+        if (subIndex === 2) newLog = `[CREDENTIALS] Session key acquisition: ${stage.status.toUpperCase()}`;
         break;
       case 3: // Lateral Movement
-        if (subIndex === 0) newLog = `[LATERAL] Moving from host endpoints to administrative jump routes...`;
-        if (subIndex === 1) newLog = `[LATERAL] Accessing target segment for core node ${campaign.primaryTarget}...`;
-        if (subIndex === 2) newLog = `[LATERAL] Remote segment shell access: ${stage.status.toUpperCase()}`;
+        if (subIndex === 0) newLog = `[LATERAL] Moving from initial computer to intermediate servers...`;
+        if (subIndex === 1) newLog = `[LATERAL] Accessing network segment containing target server: ${campaign.primaryTarget}...`;
+        if (subIndex === 2) newLog = `[LATERAL] Remote server access: ${stage.status.toUpperCase()}`;
         break;
       case 4: // Privilege Escalation
-        if (subIndex === 0) newLog = `[ESCALATION] Attempting token hijack privileges on database segments...`;
-        if (subIndex === 1) newLog = `[ESCALATION] Bypassing localized system protection rules...`;
-        if (subIndex === 2) newLog = `[ESCALATION] Root administrative authorization: ${stage.status.toUpperCase()}`;
+        if (subIndex === 0) newLog = `[ESCALATION] Attempting to elevate permissions to system administrator...`;
+        if (subIndex === 1) newLog = `[ESCALATION] Bypassing local user account control rules...`;
+        if (subIndex === 2) newLog = `[ESCALATION] Administrator rights: ${stage.status.toUpperCase()}`;
         break;
       case 5: // Exfiltration
-        if (subIndex === 0) newLog = `[EXFILTRATION] Compressing database schema tables...`;
-        if (subIndex === 1) newLog = `[EXFILTRATION] Transmitting packets to C2 external node...`;
-        if (subIndex === 2) newLog = `[EXFILTRATION] Data transfer sequence completed. State: ${stage.status.toUpperCase()}`;
+        if (subIndex === 0) newLog = `[EXFILTRATION] Compressing sensitive files and database tables...`;
+        if (subIndex === 1) newLog = `[EXFILTRATION] Copying files out of network to external server...`;
+        if (subIndex === 2) newLog = `[EXFILTRATION] File transfer and system lock state: ${stage.status.toUpperCase()}`;
         break;
       default:
         break;
@@ -217,9 +219,20 @@ export default function AttackViewerPage() {
     return () => clearInterval(streamTimer);
   }, [campaign, isPlaying, currentStageIdx, addDynamicSubLog]);
 
+  const handleTerminalScroll = () => {
+    const container = terminalContainerRef.current;
+    if (!container) return;
+    // Check if the user is scrolled near the bottom (within a 20px threshold)
+    const isAtBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 20;
+    isNearBottomRef.current = isAtBottom;
+  };
+
   // Scroll terminal logs to bottom automatically
   useEffect(() => {
-    terminalEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    const container = terminalContainerRef.current;
+    if (container && isNearBottomRef.current) {
+      container.scrollTop = container.scrollHeight;
+    }
   }, [terminalLogs]);
 
   const resetSimulation = () => {
@@ -370,6 +383,85 @@ export default function AttackViewerPage() {
           </Link>
         </div>
 
+        {/* Top Human-Readable Explanation */}
+        <div className="mb-8 p-5 rounded bg-cyber-surface/60 border border-cyber-border/80 text-xs text-slate-300 leading-relaxed max-w-4xl relative overflow-hidden space-y-3">
+          <div className="absolute top-0 left-0 bottom-0 w-[3px] bg-cyber-cyan" />
+          <div>
+            <strong className="text-white block mb-0.5">What is this?</strong>
+            A real-time playback dashboard showing an attack scenario progression step-by-step.
+          </div>
+          <div>
+            <strong className="text-white block mb-0.5">Why does it matter?</strong>
+            It visualizes how firewalls, credential protections, and active security rules succeed or fail in blocking lateral movement.
+          </div>
+          <div>
+            <strong className="text-white block mb-0.5">What can I do here?</strong>
+            Watch the timeline playout, inspect security activity logs, and read the post-simulation debrief recommendations.
+          </div>
+        </div>
+
+        {/* Page Header */}
+        <div className="mb-8 max-w-4xl">
+          <div className="inline-flex items-center gap-2 text-cyber-cyan text-[10px] font-mono tracking-widest uppercase mb-4">
+            <Terminal className="w-3.5 h-3.5 text-cyber-cyan" />
+            Simulation Playback: attack-viewer.exe
+          </div>
+          <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight text-white uppercase">
+            {getFriendlySimulationName(campaign.attackType)}
+          </h1>
+          <p className="text-xs font-mono text-slate-500 uppercase tracking-widest mt-2">
+            Based on {getActorName(campaign.threatActor)} Techniques
+          </p>
+        </div>
+
+        {/* Toggleable "What Am I Seeing?" Guide Panel */}
+        <div className="mb-8 glassmorphism-card rounded-xl p-6 border border-cyber-border relative overflow-hidden">
+          <div className="flex justify-between items-center border-b border-cyber-border/40 pb-4 mb-4">
+            <span className="text-[10px] font-mono text-cyber-cyan uppercase tracking-widest block font-bold">
+              [GUIDE] What Am I Seeing? (Simulated Campaign Guide)
+            </span>
+            <button
+              onClick={() => setShowGuide(!showGuide)}
+              className="text-[9px] font-mono px-2 py-1 rounded border border-cyber-border hover:border-slate-600 text-slate-400 hover:text-white cursor-pointer transition-colors"
+            >
+              {showGuide ? "HIDE GUIDE" : "SHOW GUIDE"}
+            </button>
+          </div>
+
+          <AnimatePresence>
+            {showGuide && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: "auto", opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                className="grid grid-cols-1 md:grid-cols-5 gap-6 text-[11px] font-sans text-slate-400 overflow-hidden"
+              >
+                <div>
+                  <strong className="text-white font-mono block mb-1 uppercase tracking-wider text-[10px]">1. Attacker&apos;s Goal</strong>
+                  Understand how {getActorName(campaign.threatActor)} targets the {campaign.industry} sector to access the critical system: <span className="text-cyber-cyan font-mono">{campaign.primaryTarget}</span>.
+                </div>
+                <div>
+                  <strong className="text-white font-mono block mb-1 uppercase tracking-wider text-[10px]">2. Attack Steps</strong>
+                  The simulation runs in 6 steps: scanning networks, gaining entry, stealing credentials, moving deeper, gaining admin rights, and exfiltrating data.
+                </div>
+                <div>
+                  <strong className="text-white font-mono block mb-1 uppercase tracking-wider text-[10px]">3. Systems at Risk</strong>
+                  Shows the path from outer firewalls to computer endpoints, Active Directory servers, and finally the target database: <span className="text-cyber-cyan font-mono">{campaign.primaryTarget}</span>.
+                </div>
+                <div>
+                  <strong className="text-white font-mono block mb-1 uppercase tracking-wider text-[10px]">4. Potential Damage</strong>
+                  A successful attack can cause database access leaks, data lockout, and significant recovery costs.
+                </div>
+                <div>
+                  <strong className="text-white font-mono block mb-1 uppercase tracking-wider text-[10px]">5. Defense Advice</strong>
+                  Upgrade security policies to require FIDO2 multi-factor authentication, segment internal networks, and deploy active threat containment rules.
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+
         {/* Global Progress and Playback Control bar */}
         <div className="glassmorphism-card rounded-xl p-4 border border-cyber-border mb-8 flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-3">
@@ -430,6 +522,46 @@ export default function AttackViewerPage() {
           </div>
         </div>
 
+        {/* Dynamic Simulation Debrief Panel */}
+        {progress === 100 && (
+          <motion.div
+            initial={{ opacity: 0, y: -15 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="glassmorphism-card rounded-xl p-6 border border-cyber-green/45 bg-cyber-green/5 relative overflow-hidden mb-8 shadow-[0_0_20px_rgba(16,185,129,0.1)]"
+          >
+            <div className="absolute top-0 left-0 right-0 h-[2px] bg-cyber-green" />
+            <span className="text-[10px] font-mono text-cyber-green uppercase tracking-widest block font-bold mb-4 animate-pulse">
+              [DEBRIEF] Simulation Analysis
+            </span>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 font-sans text-xs leading-relaxed text-slate-300">
+              <div className="bg-black/40 p-4 rounded border border-cyber-border/40">
+                <strong className="text-white block mb-1 font-mono uppercase tracking-wider text-[10px] text-cyber-green">What Happened?</strong>
+                The adversary emulated {campaign.threatActor} tactics against the {campaign.industry} target ({campaign.primaryTarget}). 
+                Under the current &quot;{campaign.securityLevel}&quot; defense configuration: 
+                {campaign.securityLevel === "Enterprise" 
+                  ? " Every single stage was successfully blocked by active EDR playbooks. No data was accessed or exfiltrated." 
+                  : campaign.securityLevel === "High" 
+                  ? " The intrusion was detected and contained at Phase 2 (Initial Access) and Phase 4 (Lateral Propagation). The target database remains secure." 
+                  : campaign.securityLevel === "Medium" 
+                  ? " Defenses flagged the initial scan and credential swipe, but failed to block the lateral propagation and final exfiltration, resulting in a database breach." 
+                  : " All security layers failed to detect or block the intrusion. The adversary successfully established a foothold, harvested admin credentials, moved laterally, and exfiltrated core database tables."}
+              </div>
+              <div className="bg-black/40 p-4 rounded border border-cyber-border/40">
+                <strong className="text-white block mb-1 font-mono uppercase tracking-wider text-[10px] text-cyber-green">How Could This Be Prevented?</strong>
+                {campaign.securityLevel === "Enterprise" 
+                  ? "Maintain current optimal policies and perform regular red-team compliance audits." 
+                  : campaign.securityLevel === "High" 
+                  ? "Upgrade remaining warning stages (like privilege escalation detection) to active containment rules." 
+                  : "Upgrade the defense posture to High or Enterprise. Implement FIDO2 multi-factor authentication, network microsegmentation to block lateral subnets, and strict host credential guard settings."}
+              </div>
+              <div className="bg-black/40 p-4 rounded border border-cyber-border/40">
+                <strong className="text-white block mb-1 font-mono uppercase tracking-wider text-[10px] text-cyber-green">What Did We Learn?</strong>
+                This simulation demonstrates that signature-based or legacy security policies (like simple firewalls and local antiviruses) are insufficient against sophisticated threat actors. A Zero-Trust architecture with active EDR rules and automated response playbooks is required to contain lateral movement and secure critical database targets.
+              </div>
+            </div>
+          </motion.div>
+        )}
+
         {/* Layout Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           
@@ -439,24 +571,24 @@ export default function AttackViewerPage() {
             {/* 1. Attack Overview Panel */}
             <div className="glassmorphism-card rounded-xl p-6 border border-cyber-border">
               <span className="text-[9px] font-mono text-slate-500 uppercase tracking-widest block font-bold mb-4">
-                [01] CAMPAIGN CONFIGURATION OVERVIEW
+                [01] ATTACK SCENARIO SETUP OVERVIEW
               </span>
               
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 font-mono text-[10px]">
                 <div className="bg-black/40 p-3 rounded border border-cyber-border">
-                  <div className="text-slate-500 uppercase">Industry Target</div>
+                  <div className="text-slate-500 uppercase">Target Environment</div>
                   <div className="text-white font-bold mt-1 uppercase">{campaign.industry}</div>
                 </div>
                 <div className="bg-black/40 p-3 rounded border border-cyber-border">
-                  <div className="text-slate-500 uppercase">Threat Actor</div>
-                  <div className="text-white font-bold mt-1 uppercase">{campaign.threatActor}</div>
+                  <div className="text-slate-500 uppercase">Attacker Profile</div>
+                  <div className="text-white font-bold mt-1 uppercase">{getActorName(campaign.threatActor)}</div>
                 </div>
                 <div className="bg-black/40 p-3 rounded border border-cyber-border">
-                  <div className="text-slate-500 uppercase">Attack Vector</div>
+                  <div className="text-slate-500 uppercase">Attack Scenario</div>
                   <div className="text-white font-bold mt-1 uppercase">{campaign.attackType}</div>
                 </div>
                 <div className="bg-black/40 p-3 rounded border border-cyber-border">
-                  <div className="text-slate-500 uppercase">Defense Level</div>
+                  <div className="text-slate-500 uppercase">Security Strength</div>
                   <div className="text-white font-bold mt-1 uppercase">{campaign.securityLevel}</div>
                 </div>
               </div>
@@ -466,7 +598,7 @@ export default function AttackViewerPage() {
             <div className="glassmorphism-card rounded-xl p-6 border border-cyber-border">
               <div className="flex justify-between items-center border-b border-cyber-border/40 pb-4 mb-6">
                 <span className="text-[9px] font-mono text-slate-500 uppercase tracking-widest block font-bold">
-                  [02] CYBER ATTACK MOVIE TIMELINE
+                  [02] SIMULATION PLAYBACK TIMELINE
                 </span>
                 <span className="text-[9px] font-mono text-cyber-cyan">ACTIVE PHASE: 0{currentStageIdx + 1}/06</span>
               </div>
@@ -572,7 +704,7 @@ export default function AttackViewerPage() {
               <div className="absolute top-0 right-0 w-[40%] h-[40%] bg-cyber-red/5 rounded-full blur-[60px] pointer-events-none" />
               
               <span className="text-[9px] font-mono text-slate-500 uppercase tracking-widest block font-bold mb-4">
-                [04] TACTICAL COMPROMISE TELEMETRY
+                [04] SIMULATED COMPROMISE RISK METRICS
               </span>
 
               {/* Progress gauge dial */}
@@ -635,16 +767,20 @@ export default function AttackViewerPage() {
 
             {/* 2. Live Terminal Log Panel (Streams logs) */}
             <div className="glassmorphism-card rounded-xl border border-cyber-border overflow-hidden glow-blue">
-              <div className="bg-cyber-surface px-4 py-2 border-b border-cyber-border flex items-center justify-between text-[10px] font-mono text-slate-500">
+              <div className="bg-cyber-surface px-4 py-2 border-b border-cyber-border flex items-center justify-between text-[10px] font-mono text-slate-400">
                 <span className="flex items-center gap-1.5 uppercase font-bold">
                   <Terminal className="w-3.5 h-3.5 text-cyber-cyan" />
-                  live-attack-propagation-feed.log
+                  live-security-activity-feed.log
                 </span>
                 <span className="text-cyber-cyan animate-pulse">STREAM ACTIVE</span>
               </div>
 
               {/* Logs Screen */}
-              <div className="bg-black/90 p-4 font-mono text-[10px] text-slate-400 h-[260px] overflow-y-auto space-y-1.5">
+              <div 
+                ref={terminalContainerRef}
+                onScroll={handleTerminalScroll}
+                className="bg-black/90 p-4 font-mono text-[10px] text-slate-400 h-[260px] overflow-y-auto space-y-1.5"
+              >
                 {terminalLogs.length === 0 ? (
                   <div className="h-full flex items-center justify-center text-slate-600 text-center uppercase">
                     Initializing logs stream player...
@@ -665,14 +801,13 @@ export default function AttackViewerPage() {
                     );
                   })
                 )}
-                <div ref={terminalEndRef} />
               </div>
             </div>
 
             {/* 3. MITRE ATT&CK Mapping Matrix */}
             <div className="glassmorphism-card rounded-xl p-6 border border-cyber-border">
               <span className="text-[9px] font-mono text-slate-500 uppercase tracking-widest block font-bold mb-4">
-                [05] MITRE ATT&CK MAPPED ACTIONS
+                [05] ATTACK TECHNIQUES USED (MITRE ATT&CK)
               </span>
               
               <div className="space-y-2.5 font-mono text-[10px]">

@@ -31,34 +31,34 @@ interface CampaignConfig {
 }
 
 const INDUSTRIES = [
-  { id: "Healthcare", name: "Healthcare", desc: "Patient EMR databases & telemedicine portals", target: "EMR-Patient-DB" },
-  { id: "Banking", name: "Banking", desc: "SWIFT gateways & core ledger transactions", target: "Swift-Transfer-Core" },
-  { id: "Government", name: "Government", desc: "Secure directories & federal backup servers", target: "Fed-Registry-SRV" },
-  { id: "University", name: "University", desc: "Registrar student logs & research NAS", target: "Research-NAS-Share" },
-  { id: "Startup", name: "Startup", desc: "Production API keys & Kubernetes clusters", target: "Kube-Master-Prod" },
+  { id: "Healthcare", name: "Healthcare", desc: "Patient medical record databases and scheduling portals", target: "EMR-Patient-DB" },
+  { id: "Banking", name: "Banking", desc: "Core money transfer networks and customer transaction ledgers", target: "Swift-Transfer-Core" },
+  { id: "Government", name: "Government", desc: "Secure citizen registries and federal backup servers", target: "Fed-Registry-SRV" },
+  { id: "University", name: "University", desc: "Registrar student logs and active research databases", target: "Research-NAS-Share" },
+  { id: "Startup", name: "Startup", desc: "Production API access keys and Kubernetes server clusters", target: "Kube-Master-Prod" },
 ];
 
 const ACTORS = [
-  { id: "APT29", name: "APT29 (CozyBear)", desc: "Stealthy state-sponsored group focusing on intelligence collection", focus: "Evasion" },
-  { id: "Lazarus", name: "Lazarus Group", desc: "Aggressive campaigns targeting financial & crypto assets", focus: "Financial Wiper" },
-  { id: "LockBit", name: "LockBit 3.0", desc: "Ransomware-as-a-Service specializing in double-extortion payloads", focus: "Encryption" },
-  { id: "FIN7", name: "FIN7", desc: "Highly organized malware group targeting point-of-sale terminals", focus: "Credential Theft" },
-  { id: "Anonymous", name: "Anonymous", desc: "Decentralized hacktivist collective targeting corporate public interfaces", focus: "DDoS/Defacement" },
+  { id: "APT29", name: "Stealthy Intel Attacker", desc: "Based on APT29 (CozyBear) techniques. A quiet group focused on long-term data gathering.", focus: "Evasion" },
+  { id: "Lazarus", name: "Financial Crypto Attacker", desc: "Based on Lazarus Group techniques. Aggressively targets financial and cryptocurrency assets.", focus: "Financial Theft" },
+  { id: "LockBit", name: "Ransomware Encryptor", desc: "Based on LockBit 3.0 techniques. Specializes in locking computer files for ransom.", focus: "File Locking" },
+  { id: "FIN7", name: "Credit Card & Data Thief", desc: "Based on FIN7 techniques. Targets business transaction systems and user accounts.", focus: "Data Theft" },
+  { id: "Anonymous", name: "Digital Activist", desc: "Based on Anonymous techniques. A decentralized group focusing on service outages.", focus: "Service Disruption" },
 ];
 
 const ATTACK_TYPES = [
-  { id: "Phishing", name: "Spearphishing Link", desc: "Targeted spearphishing emails carrying weaponized payload executables", tech: "T1566.002" },
-  { id: "Ransomware", name: "Data Encrypted", desc: "Locking systems down using custom file entropy wipers", tech: "T1486" },
-  { id: "DDoS", name: "Volumetric Exhaustion", desc: "Exhausting router buffers via UDP/TCP packet floods", tech: "T1498" },
-  { id: "Supply Chain", name: "Dependency Poisoning", desc: "Injecting malicious scripts into public software builds", tech: "T1195.002" },
-  { id: "SQL Injection", name: "Blind SQL Injection", desc: "Bypassing firewalls to extract databases via boolean queries", tech: "T1190" },
+  { id: "Phishing", name: "Phishing (Email Link)", desc: "Deceptive email sending a malicious link to steal credentials (MITRE T1566.002)", tech: "T1566.002" },
+  { id: "Ransomware", name: "Ransomware (File Encryption)", desc: "Malware campaign locking files with strong encryption (MITRE T1486)", tech: "T1486" },
+  { id: "DDoS", name: "Service Flood (DDoS Traffic Flood)", desc: "Traffic surge that takes servers and online services offline (MITRE T1498)", tech: "T1498" },
+  { id: "Supply Chain", name: "Software Ingestion Poisoning", desc: "Injecting malicious code into trusted third-party software updates (MITRE T1195.002)", tech: "T1195.002" },
+  { id: "SQL Injection", name: "Database Command Injection (SQL Injection)", desc: "Bypassing server security using database queries in website forms (MITRE T1190)", tech: "T1190" },
 ];
 
 const SECURITY_LEVELS = [
-  { id: "Low", name: "Low (Legacy)", desc: "Standard firewalls, local antivirus, static credentials", detection: "10% Detection" },
-  { id: "Medium", name: "Medium (Signature)", desc: "Segmented networks, EDR signature checks, IAM policies", detection: "45% Detection" },
-  { id: "High", name: "High (Zero Trust)", desc: "MFA enforcement, heuristic threat hunters, anomaly logs", detection: "78% Detection" },
-  { id: "Enterprise", name: "Enterprise SOC", desc: "Fully automated SOAR playbooks, hardware keys, 24/7 analysis", detection: "95% Detection" },
+  { id: "Low", name: "Low Security", desc: "Basic firewalls and simple antivirus software only", detection: "10% Block Chance" },
+  { id: "Medium", name: "Medium Security", desc: "Segmented networks, antiviruses with automatic alerts, and user controls", detection: "45% Block Chance" },
+  { id: "High", name: "High Security (Zero Trust)", desc: "Multi-factor authentication (MFA), continuous activity monitoring", detection: "78% Block Chance" },
+  { id: "Enterprise", name: "Enterprise SOC (Optimal)", desc: "Automated response playbooks, hardware security keys, and 24/7 security team", detection: "95% Block Chance" },
 ];
 
 // Helper to dynamically build campaign data configs based on parameters
@@ -191,15 +191,15 @@ export default function SimulatePage() {
     }
 
     const compileLogs = [
-      `[SYS] Bootstrapping Cyber Attack Simulation Studio v2.0...`,
-      `[SYS] Parameter config loaded: [Industry: ${industry} | Actor: ${actor}]`,
-      `[SYS] Parameter config loaded: [Attack Type: ${attack} | Security Level: ${security}]`,
-      `[SCENARIO] Synthesizing custom threat campaign profile...`,
-      `[SCENARIO] Mapping chosen payload parameters to MITRE ATT&CK database...`,
-      `[TWIN] Connecting to virtual digital twin infrastructure topology...`,
-      `[TWIN] Provisioning target server nodes: ${config.primaryTarget}...`,
-      `[COMPILE] Injecting custom compiler flags for EDR threat model bypass...`,
-      `[COMPILE] Attack campaign profile compiled successfully. Structured config payload ready.`
+      `[SYS] Launching Simulation Builder...`,
+      `[SYS] Configurations loaded: [Target Environment: ${industry} | Attacker Profile: ${actor}]`,
+      `[SYS] Configurations loaded: [Attack Scenario: ${attack} | Security Strength: ${security}]`,
+      `[SCENARIO] Creating customized attack simulation...`,
+      `[SCENARIO] Linking attack techniques to MITRE ATT&CK definitions...`,
+      `[MODEL] Loading virtual network model topology...`,
+      `[MODEL] Preparing target nodes: ${config.primaryTarget}...`,
+      `[COMPILE] Applying security rule simulation parameters...`,
+      `[COMPILE] Attack simulation compiled successfully. Ready to run.`
     ];
 
     compileLogs.forEach((log, index) => {
@@ -245,20 +245,37 @@ export default function SimulatePage() {
           className="inline-flex items-center gap-2 text-[10px] font-mono tracking-widest text-slate-400 hover:text-white uppercase mb-8 transition-colors group"
         >
           <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform" />
-          Return to Command Base
+          Return to Home Page
         </Link>
+
+        {/* Top Human-Readable Explanation */}
+        <div className="mb-8 p-5 rounded bg-cyber-surface/60 border border-cyber-border/80 text-xs text-slate-300 leading-relaxed max-w-4xl relative overflow-hidden space-y-3">
+          <div className="absolute top-0 left-0 bottom-0 w-[3px] bg-cyber-cyan" />
+          <div>
+            <strong className="text-white block mb-0.5">What is this?</strong>
+            An interactive setup builder where you can customize and run simulated security attacks to understand network defenses.
+          </div>
+          <div>
+            <strong className="text-white block mb-0.5">Why does it matter?</strong>
+            It allows you to understand how different security configurations react to specific digital threats in a safe, visual playground.
+          </div>
+          <div>
+            <strong className="text-white block mb-0.5">What can I do here?</strong>
+            Select a target environment, choose an attacker profile, configure an attack scenario, select a security strength, and start the simulation to see the results.
+          </div>
+        </div>
 
         {/* Header */}
         <div className="mb-12 max-w-4xl">
           <div className="inline-flex items-center gap-2 text-cyber-cyan text-[10px] font-mono tracking-widest uppercase mb-4">
             <Terminal className="w-3.5 h-3.5 text-cyber-cyan" />
-            Remediation Module: simulation-studio.exe
+            Simulation Builder: simulation-builder.exe
           </div>
           <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight text-white">
-            Cyber Attack Simulation Studio
+            Attack Simulation Builder
           </h1>
           <p className="mt-4 text-slate-400 text-sm md:text-base leading-relaxed">
-            Configure custom intrusion campaigns below. Tune threat actors, exploit paths, and security detection levels to verify the resilience of your digital twin assets.
+            Configure attacker profiles, attack scenarios, and security strengths to see how defenses respond in a safe, simulated environment.
           </p>
         </div>
 
@@ -281,7 +298,7 @@ export default function SimulatePage() {
                   {/* 1. Industry Segment */}
                   <div className="space-y-4">
                     <span className="text-[10px] font-mono text-slate-500 uppercase tracking-widest block font-bold">
-                      [01] SELECT TARGET INDUSTRY SEGMENT
+                      [01] SELECT TARGET ENVIRONMENT
                     </span>
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                       {INDUSTRIES.map((ind) => (
@@ -306,10 +323,10 @@ export default function SimulatePage() {
                     </div>
                   </div>
 
-                  {/* 2. Threat Actor Profile */}
+                  {/* 2. Attacker Profile */}
                   <div className="space-y-4">
                     <span className="text-[10px] font-mono text-slate-500 uppercase tracking-widest block font-bold">
-                      [02] SELECT THREAT ACTOR PROFILE
+                      [02] SELECT ATTACKER PROFILE
                     </span>
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                       {ACTORS.map((act) => (
@@ -334,10 +351,10 @@ export default function SimulatePage() {
                     </div>
                   </div>
 
-                  {/* 3. Attack Exploitation Type */}
+                  {/* 3. Attack Type */}
                   <div className="space-y-4">
                     <span className="text-[10px] font-mono text-slate-500 uppercase tracking-widest block font-bold">
-                      [03] SELECT ATTACK EXPLOIT TYPE
+                      [03] SELECT ATTACK SCENARIO
                     </span>
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                       {ATTACK_TYPES.map((type) => (
@@ -362,10 +379,10 @@ export default function SimulatePage() {
                     </div>
                   </div>
 
-                  {/* 4. Security Mitigations Level */}
+                  {/* 4. Security Level */}
                   <div className="space-y-4">
                     <span className="text-[10px] font-mono text-slate-500 uppercase tracking-widest block font-bold">
-                      [04] SELECT SECURITY MITIGATION LEVEL
+                      [04] SELECT SECURITY STRENGTH
                     </span>
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
                       {SECURITY_LEVELS.map((lvl) => (
@@ -445,9 +462,9 @@ export default function SimulatePage() {
                         <div className="flex items-center gap-3">
                           <CheckCircle2 className="w-8 h-8 text-cyber-green flex-shrink-0" />
                           <div>
-                            <h4 className="text-xs font-bold text-white uppercase tracking-wider">Campaign Profile Successfully Compiled</h4>
+                            <h4 className="text-xs font-bold text-white uppercase tracking-wider">Attack Simulation Ready</h4>
                             <p className="text-[10px] text-slate-500 mt-1 font-sans">
-                              Scenario structured data generated. Dynamic parameters payload saved to system session memory.
+                              Attack simulation configurations generated and saved to system memory.
                             </p>
                           </div>
                         </div>
@@ -464,7 +481,7 @@ export default function SimulatePage() {
                             href="/attack-viewer"
                             className="px-4 py-2 rounded bg-electric-blue hover:bg-blue-600 text-[10px] font-mono text-white uppercase tracking-widest flex items-center gap-1.5 hover:shadow-[0_0_15px_rgba(37,99,235,0.4)] transition-all duration-300"
                           >
-                            Launch Attack Viewer
+                            Start Simulation
                             <ArrowRight className="w-3.5 h-3.5" />
                           </Link>
                         </div>
@@ -490,7 +507,7 @@ export default function SimulatePage() {
 
               <div className="border-b border-cyber-border/40 pb-4 mb-6">
                 <span className="text-[10px] font-mono text-slate-500 uppercase tracking-widest block font-bold">
-                  SIMULATION PROFILE SUMMARY
+                  SIMULATION SUMMARY
                 </span>
                 <span className="text-[8px] font-mono text-slate-600 uppercase mt-0.5 block">
                   ACTIVE SPECIFICATION STATE
@@ -505,7 +522,7 @@ export default function SimulatePage() {
                     <Database className="w-3.5 h-3.5" />
                   </div>
                   <div>
-                    <div className="text-slate-500 text-[9px] uppercase">Industry Target</div>
+                    <div className="text-slate-500 text-[9px] uppercase">Target Environment</div>
                     <div className="text-white font-bold uppercase mt-0.5">{industry}</div>
                     <div className="text-cyber-cyan text-[8px] mt-0.5">Primary node: {INDUSTRIES.find(i => i.id === industry)?.target}</div>
                   </div>
@@ -516,7 +533,7 @@ export default function SimulatePage() {
                     <Bot className="w-3.5 h-3.5" />
                   </div>
                   <div>
-                    <div className="text-slate-500 text-[9px] uppercase">Threat Actor</div>
+                    <div className="text-slate-500 text-[9px] uppercase">Attacker Profile</div>
                     <div className="text-white font-bold uppercase mt-0.5">{actor}</div>
                     <div className="text-cyber-cyan text-[8px] mt-0.5">Focus: {ACTORS.find(a => a.id === actor)?.focus}</div>
                   </div>
@@ -527,7 +544,7 @@ export default function SimulatePage() {
                     <Network className="w-3.5 h-3.5" />
                   </div>
                   <div>
-                    <div className="text-slate-500 text-[9px] uppercase">Exploitation Vector</div>
+                    <div className="text-slate-500 text-[9px] uppercase">Attack Scenario</div>
                     <div className="text-white font-bold uppercase mt-0.5">{attack}</div>
                     <div className="text-cyber-cyan text-[8px] mt-0.5">MITRE Technique: {ATTACK_TYPES.find(t => t.id === attack)?.tech}</div>
                   </div>
@@ -538,9 +555,9 @@ export default function SimulatePage() {
                     <Layers className="w-3.5 h-3.5" />
                   </div>
                   <div>
-                    <div className="text-slate-500 text-[9px] uppercase">Defensive Hardening</div>
+                    <div className="text-slate-500 text-[9px] uppercase">Security Strength</div>
                     <div className="text-white font-bold uppercase mt-0.5">{security}</div>
-                    <div className="text-cyber-cyan text-[8px] mt-0.5">EDR Ratio: {SECURITY_LEVELS.find(l => l.id === security)?.detection}</div>
+                    <div className="text-cyber-cyan text-[8px] mt-0.5">Block Rate: {SECURITY_LEVELS.find(l => l.id === security)?.detection}</div>
                   </div>
                 </div>
 
@@ -553,10 +570,10 @@ export default function SimulatePage() {
                     className="w-full py-3.5 rounded bg-electric-blue hover:bg-blue-600 text-white font-bold font-mono text-xs uppercase tracking-widest flex items-center justify-center gap-2 hover:shadow-[0_0_15px_rgba(37,99,235,0.4)] transition-all duration-300 cursor-pointer"
                   >
                     <Play className="w-3.5 h-3.5 fill-current" />
-                    Generate Simulation
+                    Start Simulation
                   </button>
                   <p className="text-[8px] text-center text-slate-500 font-mono uppercase tracking-wider mt-3 leading-relaxed">
-                    Triggering compiles threat parameters into a structured CampaignConfig payload package.
+                    Prepares the simulation based on your selection.
                   </p>
                 </div>
               )}

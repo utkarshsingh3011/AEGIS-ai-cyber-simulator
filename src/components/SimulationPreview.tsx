@@ -17,66 +17,66 @@ interface TimelineEvent {
 const TIMELINE_EVENTS: TimelineEvent[] = [
   {
     time: "T+00:00:00",
-    phase: "Initial Access",
-    name: "Phishing Attachment Delivered",
-    technique: "T1566.001",
+    phase: "Initial Entry",
+    name: "Phishing Link Clicked",
+    technique: "T1566.002",
     severity: "low",
     status: "alerted",
-    desc: "Weaponized Excel attachment executed on marketing endpoint (HOST-102).",
+    desc: "A simulated phishing email link was clicked on a user's computer (HOST-102).",
   },
   {
     time: "T+00:02:14",
-    phase: "Execution",
-    name: "Malicious PowerShell Process",
+    phase: "Running Code",
+    name: "Unauthorized Script Executed",
     technique: "T1059.001",
     severity: "medium",
     status: "evaded",
-    desc: "Bypassed local PowerShell restriction rules. Establishing encrypted reverse shell (C2).",
+    desc: "A script bypassed local restrictions and established a connection to an external control server.",
   },
   {
     time: "T+00:05:40",
-    phase: "Credential Access",
-    name: "LSASS Memory Dump Attempt",
+    phase: "Stealing Passwords",
+    name: "Password Stealing Attempt",
     technique: "T1003.001",
     severity: "high",
     status: "blocked",
-    desc: "Attempted LSASS memory dump blocked by active host containment rules.",
+    desc: "An attempt to steal passwords from system memory was successfully blocked.",
   },
   {
     time: "T+00:08:12",
-    phase: "Discovery",
-    name: "Active Directory Reconnaissance",
+    phase: "Finding Systems",
+    name: "Network Scanning",
     technique: "T1087.002",
     severity: "medium",
     status: "evaded",
-    desc: "Enumerated domain administrators and domain controllers using built-in LDAP queries.",
+    desc: "The attacker scanned the network to locate administrator accounts and server nodes.",
   },
   {
     time: "T+00:12:35",
-    phase: "Lateral Movement",
-    name: "Kerberoasting Vector Executed",
+    phase: "Moving in Network",
+    name: "Server Access Requested",
     technique: "T1558.003",
     severity: "high",
     status: "evaded",
-    desc: "Requested Service Principal Name (SPN) tickets. Domain controller hash extracted for cracking.",
+    desc: "The attacker requested access tickets to crack administrative passwords.",
   },
   {
     time: "T+00:18:50",
-    phase: "Privilege Escalation",
-    name: "Domain Controller Compromise",
+    phase: "Gaining Admin Access",
+    name: "Admin Account Compromised",
     technique: "T1078.002",
     severity: "critical",
     status: "evaded",
-    desc: "Unauthorized domain administrator logon authenticated on Active Directory root node (AD-SRV-01).",
+    desc: "An unauthorized login occurred on the main network controller server (AD-SRV-01).",
   },
   {
     time: "T+00:22:15",
-    phase: "Impact",
-    name: "Database Encryptor Payload",
+    phase: "Taking Data & Lockout",
+    name: "Data Encryption Started",
     technique: "T1486",
     severity: "critical",
     status: "evaded",
-    desc: "Data encryption sequence initiated on core finance database assets (DB-FIN-SQL).",
+    desc: "File encryption started on the main database (DB-FIN-SQL).",
   },
 ];
 
@@ -151,13 +151,13 @@ export default function SimulationPreview() {
         <div className="max-w-3xl mb-16">
           <div className="inline-flex items-center gap-2 text-electric-blue text-[10px] font-mono tracking-widest uppercase mb-4">
             <Network className="w-3.5 h-3.5 text-electric-blue" />
-            Platform Simulation Studio
+            Simulation Builder
           </div>
           <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight text-white">
-            Simulation Interactive Playback
+            Interactive Attack Simulation
           </h2>
           <p className="mt-4 text-slate-400 text-sm md:text-base leading-relaxed">
-            Analyze attack propagation timelines through simulated environments. Understand propagation speed and test mitigation rules on active threat models.
+            Watch how simulated attacks spread step-by-step and see how security rules can block them.
           </p>
         </div>
 
@@ -216,8 +216,8 @@ export default function SimulationPreview() {
                 {eventLog.length === 0 ? (
                   <div className="h-full flex flex-col items-center justify-center text-center py-20 font-mono">
                     <ShieldCheck className="w-10 h-10 text-slate-600 mb-3 animate-pulse" />
-                    <span className="text-xs text-slate-500">CLICK PLAY TO INITIATE MOCK ATTACK TIMELINE</span>
-                    <span className="text-[10px] text-slate-600 mt-1">EMULATE INTRUSION CAMPAIGN COZYBEAR</span>
+                    <span className="text-xs text-slate-500">CLICK PLAY TO START INTERACTIVE SIMULATION</span>
+                    <span className="text-[10px] text-slate-600 mt-1">EMULATE PHISHING ATTACK SCENARIO</span>
                   </div>
                 ) : (
                   eventLog.map((event, index) => {
@@ -305,7 +305,7 @@ export default function SimulationPreview() {
               <div className="flex justify-between items-center border-b border-cyber-border/40 pb-3 mb-4">
                 <span className="text-[10px] font-mono text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
                   <ShieldAlert className="w-3.5 h-3.5 text-cyber-red" />
-                  Predictive Threat Assessment
+                  Attack Progress Risk Score
                 </span>
               </div>
 
@@ -343,7 +343,7 @@ export default function SimulationPreview() {
                       {currentRiskScore}%
                     </span>
                     <span className="text-[8px] font-mono text-slate-500 uppercase tracking-wider mt-1">
-                      Threat Factor
+                      Risk Score
                     </span>
                   </div>
                 </div>
@@ -356,7 +356,7 @@ export default function SimulationPreview() {
                       ? "text-amber-500 border-amber-500/30 bg-amber-500/5" 
                       : "text-cyber-cyan border-cyber-cyan/30 bg-cyber-cyan/5"
                   }`}>
-                    {currentRiskScore > 75 ? "CRITICAL BREACH WARNING" : currentRiskScore > 40 ? "COMPROMISE IN PROGRESS" : "SECURE RUNTIME"}
+                    {currentRiskScore > 75 ? "HIGH RISK DETECTED" : currentRiskScore > 40 ? "ATTACK RUNNING" : "SECURE"}
                   </span>
                 </div>
               </div>
@@ -383,7 +383,7 @@ export default function SimulationPreview() {
               <div className="flex justify-between items-center border-b border-cyber-border/40 pb-3 mb-4">
                 <span className="text-[10px] font-mono text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
                   <HardDrive className="w-3.5 h-3.5 text-cyber-cyan" />
-                  Target Asset Vulnerability
+                  System Vulnerability Chance
                 </span>
               </div>
 
@@ -419,7 +419,7 @@ export default function SimulationPreview() {
 
               <div className="mt-4 p-2.5 bg-cyber-surface/50 border border-cyber-border rounded font-mono text-[8px] text-slate-500 flex items-center gap-2">
                 <Flame className="w-3.5 h-3.5 text-cyber-red animate-pulse" />
-                <span>Simulation identifies 2 mitigation gaps mapping to MITRE.</span>
+                <span>Simulation identifies 2 security areas to improve.</span>
               </div>
             </div>
 

@@ -48,7 +48,7 @@ export default function Header() {
     >
       <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
         {/* Logo and Brand */}
-        <div className="flex items-center gap-3 group cursor-pointer">
+        <Link href="/" className="flex items-center gap-3 group cursor-pointer">
           <div className="relative flex items-center justify-center w-9 h-9 rounded-lg bg-cyber-surface border border-cyber-border-active/40 overflow-hidden">
             <Shield className="w-5 h-5 text-cyber-cyan transition-transform duration-500 group-hover:scale-110" />
             <motion.div
@@ -65,32 +65,31 @@ export default function Header() {
               </span>
             </span>
             <span className="text-[9px] font-mono tracking-widest text-slate-500 uppercase">
-              Tactical Defense Platform
+              Attack Simulation & Defense Platform
             </span>
           </div>
-        </div>
+        </Link>
 
-        {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-8">
           <a
             href="#threats"
             className="text-xs font-mono text-slate-400 hover:text-white transition-colors tracking-widest uppercase relative py-1 group"
           >
-            Threat Vectors
+            Attack Simulations
             <span className="absolute bottom-0 left-0 w-0 h-[1px] bg-cyber-cyan transition-all duration-300 group-hover:w-full" />
           </a>
           <a
             href="#workflow"
             className="text-xs font-mono text-slate-400 hover:text-white transition-colors tracking-widest uppercase relative py-1 group"
           >
-            Protocol Core
+            Security Insights
             <span className="absolute bottom-0 left-0 w-0 h-[1px] bg-cyber-cyan transition-all duration-300 group-hover:w-full" />
           </a>
           <a
             href="#preview"
             className="text-xs font-mono text-slate-400 hover:text-white transition-colors tracking-widest uppercase relative py-1 group"
           >
-            Attack Studio
+            Simulation Builder
             <span className="absolute bottom-0 left-0 w-0 h-[1px] bg-cyber-cyan transition-all duration-300 group-hover:w-full" />
           </a>
           <a
@@ -100,6 +99,13 @@ export default function Header() {
             Modules
             <span className="absolute bottom-0 left-0 w-0 h-[1px] bg-cyber-cyan transition-all duration-300 group-hover:w-full" />
           </a>
+          <Link
+            href="/about"
+            className="text-xs font-mono text-slate-400 hover:text-white transition-colors tracking-widest uppercase relative py-1 group"
+          >
+            About
+            <span className="absolute bottom-0 left-0 w-0 h-[1px] bg-cyber-cyan transition-all duration-300 group-hover:w-full" />
+          </Link>
         </nav>
 
         {/* Right side controls */}
@@ -126,7 +132,7 @@ export default function Header() {
               className="relative px-4 py-2 flex items-center gap-2 rounded bg-electric-blue/15 border border-electric-blue/50 text-xs font-mono tracking-widest text-white uppercase overflow-hidden hover:bg-electric-blue/25 hover:border-electric-blue/80 hover:shadow-[0_0_15px_rgba(37,99,235,0.4)] transition-all duration-300"
             >
               <Terminal className="w-3.5 h-3.5 text-cyber-cyan" />
-              Launch Console
+              Start Simulation
               <ArrowUpRight className="w-3 h-3 text-slate-400" />
               {/* Corner decorations */}
               <span className="absolute top-0 left-0 w-1 h-1 border-t border-l border-cyber-cyan" />

@@ -7,33 +7,33 @@ import { Globe, ShieldAlert, Database, ServerCrash, ChevronRight, Activity } fro
 const STAGES = [
   {
     id: 1,
-    title: "Initial Compromise",
-    desc: "Attackers establish a foothold using targeted vectors. Commonly initiated via weaponized email packages, watering holes, or supply chain poisoning.",
-    tech: "MITRE ATT&CK T1566 | Phishing",
+    title: "Initial Entry",
+    desc: "This shows how attackers get their first foothold, like through a phishing email or a weak password. Why it matters: Preventing initial entry is the first line of defense. What you'll learn: How to identify entry points and block unauthorized access.",
+    tech: "Initial Access (MITRE ATT&CK T1566)",
     icon: Globe,
     color: "from-blue-500 to-cyan-500",
   },
   {
     id: 2,
-    title: "Perimeter Bypass",
-    desc: "Bypassing boundary defense checks, firewalls, and network address translations by piggybacking on authorized session tokens or credentials.",
-    tech: "MITRE ATT&CK T1078 | Valid Accounts",
+    title: "Bypassing Security",
+    desc: "This demonstrates how attackers bypass firewalls and security checks by mimicking real users or exploiting system weaknesses. Why it matters: Strong defenses must detect attackers even if they sneak past the outer perimeter. What you'll learn: How firewalls work and where security rules might fail.",
+    tech: "Defense Evasion (MITRE ATT&CK T1078)",
     icon: ShieldAlert,
     color: "from-cyan-500 to-yellow-500",
   },
   {
     id: 3,
-    title: "Lateral Movement",
-    desc: "The payload propagates across local subnets, compromising domain systems, local endpoints, and looking for sensitive directory services.",
-    tech: "MITRE ATT&CK T1021 | Remote Services",
+    title: "Spreading Through the Network",
+    desc: "This shows the attacker moving from one computer to another, searching for valuable databases or admin credentials. Why it matters: If the initial entry point is compromised, you must contain the threat so it cannot spread. What you'll learn: How network segmentation keeps systems isolated and safe.",
+    tech: "Lateral Movement (MITRE ATT&CK T1021)",
     icon: Database,
     color: "from-yellow-500 to-rose-500",
   },
   {
     id: 4,
-    title: "Exfiltration & Impact",
-    desc: "Critical database structures are reached, archive compression begins, and data is transmitted out of band, triggering payload locking phases.",
-    tech: "MITRE ATT&CK T1048 | Exfiltration Over Port",
+    title: "Taking Data & Lockout",
+    desc: "This illustrates the final stage where attackers steal sensitive files or lock them up with ransomware. Why it matters: This is where direct damage occurs, resulting in stolen data or system downtime. What you'll learn: How to detect abnormal data transfers and recover systems using backups.",
+    tech: "Exfiltration & Impact (MITRE ATT&CK T1048)",
     icon: ServerCrash,
     color: "from-rose-500 to-red-600",
   },
@@ -79,13 +79,13 @@ export default function ThreatEmergence() {
         <div className="max-w-3xl mb-20">
           <div className="inline-flex items-center gap-2 text-cyber-red text-[10px] font-mono tracking-widest uppercase mb-4">
             <Activity className="w-3.5 h-3.5 animate-pulse" />
-            Threat Evolution Chain
+            Understanding the Attack Path
           </div>
           <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight text-white">
-            How Cyber Attacks Emerge In The Real World
+            How Cyber Attacks Work
           </h2>
           <p className="mt-4 text-slate-400 text-sm md:text-base leading-relaxed">
-            Modern campaigns do not strike instantly. Scroll down to see the threat propagation path unfold dynamically through progressive security boundaries.
+            Cyber attacks happen in stages rather than all at once. Scroll down to see an attack unfold step-by-step through a virtual network, and learn how to stop it.
           </p>
         </div>
 
@@ -277,13 +277,13 @@ export default function ThreatEmergence() {
               <div className="bg-black/60 border border-cyber-border/40 p-3 rounded font-mono text-[9px] text-slate-400 mt-4 flex items-center justify-between">
                 <div>
                   <span className="text-cyber-cyan mr-1.5">[MONITOR]</span>
-                  {activeStage === 1 && "Ingress points scanned. Weaponized email headers matching payload signature."}
-                  {activeStage === 2 && "Firewall bypassed via administrative token theft. Active session leveraged."}
-                  {activeStage === 3 && "WMI execution detected on remote nodes. Active Directory query complete."}
-                  {activeStage === 4 && "System lockout payload initialized. File entropy threshold exceeded."}
+                  {activeStage === 1 && "Phishing email clicked. Attacker gains access to a single user device."}
+                  {activeStage === 2 && "Firewall bypassed. Attacker mimics an employee log-in to access the network."}
+                  {activeStage === 3 && "Attacker moves from the user device to the main server to look for data."}
+                  {activeStage === 4 && "Attacker steals database files and locks the server with ransomware."}
                 </div>
                 <div className={`font-semibold ${activeStage === 4 ? "text-cyber-red" : "text-cyber-cyan"}`}>
-                  {activeStage === 4 ? "BREACHED" : "INTEGRATED"}
+                  {activeStage === 4 ? "COMPROMISED" : "MONITORING"}
                 </div>
               </div>
             </div>
