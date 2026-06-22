@@ -149,9 +149,9 @@ export default function Home() {
       <footer className="relative bg-black border-t border-cyber-border/40 py-12 z-10 overflow-hidden">
         {/* Decorative Grid Line */}
         <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-cyber-cyan/20 to-transparent" />
-        
+
         <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-12 gap-8 items-center text-slate-500 font-mono text-[10px] tracking-wider">
-          
+
           {/* Brand copyright */}
           <div className="md:col-span-4 flex flex-col gap-1 text-left">
             <span className="text-white font-bold tracking-[0.2em] uppercase">AEGIS PLATFORM</span>
@@ -175,7 +175,7 @@ export default function Home() {
             <Link href="/about" className="hover:text-cyber-cyan transition-colors">About</Link>
             <a href="https://github.com/utkarshsingh3011/AEGIS-ai-cyber-simulator" target="_blank" rel="noopener noreferrer" className="hover:text-cyber-cyan transition-colors">GitHub Repository</a>
             <Link href="/about#tech-stack" className="hover:text-cyber-cyan transition-colors">Technology Stack</Link>
-            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="hover:text-cyber-cyan transition-colors">LinkedIn</a>
+            <a href="https://www.linkedin.com/in/utkarshsingh3011" target="_blank" rel="noopener noreferrer" className="hover:text-cyber-cyan transition-colors">LinkedIn</a>
           </div>
 
         </div>
