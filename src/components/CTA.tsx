@@ -21,7 +21,7 @@ export default function CTA() {
     }, 800);
 
     setTimeout(() => {
-      setConsoleMsg("Sending access information to your email...");
+      setConsoleMsg("Sandbox environment ready. Initialising access...");
     }, 1600);
 
     setTimeout(() => {
@@ -127,9 +127,9 @@ export default function CTA() {
                     <CheckCircle2 className="w-10 h-10 text-cyber-green" />
                   </div>
                   <div>
-                    <h3 className="text-xs font-bold text-white uppercase tracking-wider">ACCESS KEY SENT</h3>
+                    <h3 className="text-xs font-bold text-white uppercase tracking-wider">Demo Access Granted</h3>
                     <p className="text-[10px] text-slate-400 mt-2 max-w-xs mx-auto leading-relaxed">
-                      Access keys sent. Check <span className="text-cyber-cyan">{email}</span> for your login instructions.
+                      This is a demonstration environment for the AEGIS cybersecurity simulation platform. No email is sent. You may continue exploring the simulation features.
                     </p>
                   </div>
                 </motion.div>
