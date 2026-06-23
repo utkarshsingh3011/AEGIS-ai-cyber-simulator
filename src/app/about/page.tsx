@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 import Header from "../../components/Header";
+import Footer from "@/components/Footer";
 
 function LiveClock() {
   const [time, setTime] = useState("");
@@ -246,42 +247,7 @@ export default function AboutPage() {
       </main>
 
       {/* Futuristic Command Center Footer */}
-      <footer className="relative bg-black border-t border-cyber-border/40 py-12 z-10 overflow-hidden">
-        {/* Decorative Grid Line */}
-        <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-cyber-cyan/20 to-transparent" />
-
-        <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-12 gap-8 items-center text-slate-500 font-mono text-[10px] tracking-wider">
-
-          {/* Brand copyright */}
-          <div className="md:col-span-4 flex flex-col gap-1 text-left">
-            <span className="text-white font-bold tracking-[0.2em] uppercase">SENTINEL PLATFORM</span>
-            <span>© {new Date().getFullYear()} SENTINEL Cyber Inc. All rights reserved.</span>
-            <span className="text-slate-600 uppercase text-[8px] mt-1">
-              SECURE DEPLOYMENT NODE: REG-49.882.A
-            </span>
-          </div>
-
-          {/* Platform status indicator */}
-          <div className="md:col-span-4 flex justify-start md:justify-center items-center gap-2">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyber-green opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-cyber-green"></span>
-            </span>
-            <span className="text-slate-400 uppercase flex items-center gap-1.5">
-              SYS: OPERATIONAL | <LiveClock />
-            </span>
-          </div>
-
-          {/* Minimal links */}
-          <div className="md:col-span-4 flex justify-start md:justify-end gap-6 text-[9px] uppercase">
-            <Link href="/about" className="hover:text-cyber-cyan transition-colors">About</Link>
-            <a href="https://github.com/utkarshsingh3011/SENTINEL-ai-cyber-simulator" target="_blank" rel="noopener noreferrer" className="hover:text-cyber-cyan transition-colors">GitHub Repository</a>
-            <Link href="/about#tech-stack" className="hover:text-cyber-cyan transition-colors">Technology Stack</Link>
-            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="hover:text-cyber-cyan transition-colors">LinkedIn</a>
-          </div>
-
-        </div>
-      </footer>
+      <Footer />
 
     </div>
   );
