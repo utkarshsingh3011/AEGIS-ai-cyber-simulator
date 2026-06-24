@@ -416,6 +416,219 @@ const getStorySteps = (attackType: string, status: "Blocked" | "Successful", sta
   return steps;
 };
 
+const getAttackJourneyFlow = (attackType: string) => {
+  const journeys: Record<string, string[]> = {
+    Phishing: [
+      "Fake Email Delivered",
+      "Victim Clicked Link",
+      "Password Stolen",
+      "Attacker Entered System",
+      "Sensitive Records Accessed"
+    ],
+    Ransomware: [
+      "Malicious File Downloaded",
+      "Victim Opened Attachment",
+      "Ransomware Run on Machine",
+      "Files Locked and Encrypted",
+      "Payment Demand Displayed"
+    ],
+    DDoS: [
+      "Malicious Traffic Flooded Gateway",
+      "Gateway Ports Overloaded",
+      "Server Resource Limits Exhausted",
+      "Public Web Portal Crashed",
+      "Services Unreachable for Users"
+    ],
+    "SQL Injection": [
+      "Malicious Input Sent to Web Form",
+      "Database Command Query Executed",
+      "Access Authentication Bypassed",
+      "Attacker Gained Database Entry",
+      "Sensitive Customer Lists Stolen"
+    ],
+    "Supply Chain": [
+      "Malicious Package Pushed to Public Library",
+      "Developer Build System Imported Package",
+      "Malicious Code Run During Software Build",
+      "Hidden Back Door Opened on Build Server",
+      "Attacker Accessed Internal Infrastructure"
+    ]
+  };
+
+  return journeys[attackType] || [
+    "Attack Initiated",
+    "Outer Defenses Probed",
+    "System Vulnerability Exploited",
+    "Internal Pivot Attempted",
+    "Data Assets Target Reached"
+  ];
+};
+
+const getImpactDetails = (attackType: string, industry: string, isBlocked: boolean) => {
+  const defaultSystems = ["Internal workstations", "Directory servers", "Backup servers"];
+  const defaultConsequences = ["Operational delays", "Exposure of internal files", "Service downtime"];
+  const defaultRecovery = isBlocked 
+    ? "Under 1 hour to inspect logs, run scans, and confirm containment."
+    : "Several hours to multiple days depending on backups and incident response readiness.";
+  const defaultImprovements = ["Multi-factor authentication", "Email filtering", "Network separation", "Endpoint protection"];
+
+  const mapping: Record<string, Record<string, { systems: string[]; consequences: string[]; recovery: string; improvements: string[] }>> = {
+    Banking: {
+      Phishing: {
+        systems: ["Employee email accounts", "SWIFT transfer terminals", "Identity directories"],
+        consequences: ["Unauthorized fund transfers", "Exposed customer banking records", "Temporary compliance halts"],
+        recovery: isBlocked 
+          ? "Under 1 hour to lock the targeted email accounts and reset credentials." 
+          : "24 to 72 hours to audit transaction logs and verify SWIFT network compliance.",
+        improvements: ["Hardware-based MFA security keys", "Email DMARC/SPF ingress rules", "Endpoint memory scanning blocks"]
+      },
+      Ransomware: {
+        systems: ["Transaction ledgers", "Core account databases", "Backup storage drives"],
+        consequences: ["Interrupted customer transactions", "Locked branch operations", "Regulatory non-compliance fines"],
+        recovery: isBlocked 
+          ? "Under 2 hours to confirm malware containment and run full network scans." 
+          : "3 to 5 days to restore banking nodes from secure offline backup snapshots.",
+        improvements: ["Immutable cloud backups", "Endpoint containment playbooks", "Workstation volume write blocks"]
+      },
+      DDoS: {
+        systems: ["Online banking web portals", "Mobile application API servers", "Internet gateway router ports"],
+        consequences: ["Customers unable to log in", "Interrupted online transfers", "Customer support desk overload"],
+        recovery: isBlocked 
+          ? "Under 30 minutes for traffic scrubbers to absorb and filter the surge." 
+          : "6 to 12 hours of service degradation while filtering attacker IP networks.",
+        improvements: ["Volumetric DDoS traffic scrubbers", "SYN-cookie rate limits", "Distributed CDN caching"]
+      },
+      "SQL Injection": {
+        systems: ["Customer accounting schemas", "Loan approval databases", "Public contact forms"],
+        consequences: ["Theft of client account credentials", "Exposed balance databases", "Application code exploitation"],
+        recovery: isBlocked 
+          ? "Under 1 hour to patch public query fields and verify database security logs." 
+          : "12 to 36 hours to review database leaks, patch SQL code, and rotate passwords.",
+        improvements: ["Parameterized database queries", "Web Application Firewalls (WAF)", "Least privilege database accounts"]
+      },
+      "Supply Chain": {
+        systems: ["Core banking software build servers", "Internal software dependency libraries", "Developer computers"],
+        consequences: ["Infected banking software updates", "Undetected system backdoor access", "Compromised developer credentials"],
+        recovery: isBlocked 
+          ? "Under 2 hours to isolate build containers and inspect dependency files." 
+          : "Several days to weeks to audit software code packages and rebuild environments.",
+        improvements: ["Cryptographic dependency checksums", "Isolated CI/CD builders", "Mirrored local package repositories"]
+      }
+    },
+    Healthcare: {
+      Phishing: {
+        systems: ["Staff email systems", "Patient scheduling records", "Employee directories"],
+        consequences: ["Interrupted doctor schedules", "Exposed patient contact details", "Stolen staff credentials"],
+        recovery: isBlocked 
+          ? "Under 1 hour to lock the compromised inbox and alert staff." 
+          : "24 to 48 hours to inspect logs and ensure no other medical files were opened.",
+        improvements: ["Multi-factor authentication (MFA)", "Phishing email filtering rules", "Endpoint credential dumping alerts"]
+      },
+      Ransomware: {
+        systems: ["Electronic Medical Records (EMR)", "Hospital scheduling databases", "Emergency dispatch nodes"],
+        consequences: ["Unable to access patient history", "Canceled surgeries and appointments", "Forced manual triage protocols"],
+        recovery: isBlocked 
+          ? "Under 2 hours to verify isolated hosts and restore normal logins." 
+          : "2 to 4 days to rebuild EMR servers and recover files from offline backup drives.",
+        improvements: ["Immutable backups", "Network microsegmentation", "Automated threat containment"]
+      },
+      DDoS: {
+        systems: ["Patient telemedicine portals", "Hospital website host servers", "Inbound internet gateways"],
+        consequences: ["Canceled online doctor visits", "Patients unable to reach online help", "Internal system connectivity delays"],
+        recovery: isBlocked 
+          ? "Under 30 minutes to apply border rate limiting and route scrubbers." 
+          : "6 to 18 hours of intermittent telemedicine access while scrubbing traffic.",
+        improvements: ["Distributed CDN edge caching", "Border firewall rate limits", "Backup internet gateway routing"]
+      },
+      "SQL Injection": {
+        systems: ["Patient diagnosis databases", "Billing records tables", "Public appointment forms"],
+        consequences: ["Exposed patient treatment history", "Stolen billing information", "Unsanitized database queries run"],
+        recovery: isBlocked 
+          ? "Under 1 hour to patch inputs and verify patient record integrity." 
+          : "12 to 24 hours to patch application code, verify leaks, and alert compliance.",
+        improvements: ["Parameterized query bind parameters", "Web Application Firewalls", "Database least privilege rights"]
+      },
+      "Supply Chain": {
+        systems: ["Medical software build pipelines", "Internal libraries", "Medical imaging update systems"],
+        consequences: ["Malicious software run on hospital networks", "Backdoors in medical updates", "Exposed system servers"],
+        recovery: isBlocked 
+          ? "Under 2 hours to isolate servers and inspect software dependency logs." 
+          : "Several days to audit all medical app packages and reinstall systems.",
+        improvements: ["Package verification controls", "Sandboxed build runners", "Mirrored internal library registries"]
+      }
+    }
+  };
+
+  const industryMap = mapping[industry] || mapping["Healthcare"];
+  return industryMap[attackType] || {
+    systems: defaultSystems,
+    consequences: defaultConsequences,
+    recovery: defaultRecovery,
+    improvements: defaultImprovements
+  };
+};
+
+const getEducationalLessons = (attackType: string, securityLevel: string) => {
+  const isLowOrMedium = securityLevel === "Low" || securityLevel === "Medium";
+  
+  const defaultLessons = {
+    keyTakeaway: "Cybersecurity is about defense in depth. One single lock is not enough to stop a determined attacker.",
+    whatBeginnersRemember: "Always double-check link origins, use strong password managers, and enable multi-factor authentication (MFA).",
+    realWorldLesson: "Many real-world breaches happen because of minor security configuration gaps that go unpatched for months.",
+    whyAttackWorked: "The security setup did not have layered boundary protections, allowing the attacker to pivot from system to system.",
+    howDefendersImprove: "Segment networks into isolated security zones, monitor system memory, and configure automatic alerts for credential theft attempts."
+  };
+
+  const lessons: Record<string, typeof defaultLessons> = {
+    Phishing: {
+      keyTakeaway: "Attackers often target humans first because people can be tricked easier than computers. Securing credentials is our strongest defense.",
+      whatBeginnersRemember: "Phishing emails look identical to real ones. Never type your login password after clicking a link in an email; always log in directly through the main website.",
+      realWorldLesson: "Even major technology organizations get breached because a single employee was tricked by a fake login form.",
+      whyAttackWorked: isLowOrMedium 
+        ? "The security setup lacked Multi-Factor Authentication (MFA) and did not scan email attachments, allowing the attacker to harvest active logins easily."
+        : "Although basic email filters were active, the user was able to bypass warn prompts and enter credentials on a spoofed external portal.",
+      howDefendersImprove: "Enforce hardware-based security keys (MFA) that cannot be phished, run automated email link scanners, and train employees."
+    },
+    Ransomware: {
+      keyTakeaway: "Ransomware attempts to cause maximum disruption by locking data assets. Protecting backups is the key to recovery.",
+      whatBeginnersRemember: "Opening one suspicious file attachment can compromise an entire business network within minutes.",
+      realWorldLesson: "Organizations have paid millions of dollars to recover files because their online backups were encrypted by the attacker too.",
+      whyAttackWorked: isLowOrMedium
+        ? "Operating system folders allowed write permissions for standard user scripts, and backup drives were connected directly to the network."
+        : "Defenses detected the ransomware payload but lacked automatic endpoint isolation, allowing the encryption tool to spread to server nodes.",
+      howDefendersImprove: "Set up immutable (non-rewritable) offline backups, restrict volume write access, and deploy endpoint tools to isolate hosts instantly."
+    },
+    DDoS: {
+      keyTakeaway: "DDoS attacks do not try to steal passwords or breach data; they simply flood the entry gates to keep real users out.",
+      whatBeginnersRemember: "If a website is running slow or not responding, it might be undergoing a traffic flood rather than being breached.",
+      realWorldLesson: "Volumetric floods are often used as a decoy to distract security teams while attackers breach systems silently elsewhere.",
+      whyAttackWorked: isLowOrMedium
+        ? "The load balancer did not limit connection rates, and there were no traffic scrubbers to inspect and filter packet loads."
+        : "The volume of traffic was too massive for the local gateway servers to absorb, leading to memory and port exhaustion.",
+      howDefendersImprove: "Use third-party traffic scrubbing networks, set rate limits on connections, and cache pages at the network edge."
+    },
+    "SQL Injection": {
+      keyTakeaway: "SQL Injection occurs when a database treats user input as executable instructions. Input must always be cleaned and separated.",
+      whatBeginnersRemember: "Web forms (like username inputs) should only accept text characters, never code statements or database operators.",
+      realWorldLesson: "SQL Injection is one of the oldest web vulnerabilities but remains common because developer code often concatenates database query strings.",
+      whyAttackWorked: isLowOrMedium
+        ? "The web application query strings directly concatenated input fields, allowing standard user inputs to bypass authentication checks."
+        : "Although a basic firewall was active, the database was accessed using a master admin account with full write permissions.",
+      howDefendersImprove: "Enforce parameterized database queries (prepared statements), deploy Web Application Firewalls (WAF), and limit database user account access."
+    },
+    "Supply Chain": {
+      keyTakeaway: "Supply chain attacks exploit trust. When we import packages, we import all of their hidden security gaps too.",
+      whatBeginnersRemember: "Always verify the creator and code checksum of packages before installing them in your programming project.",
+      realWorldLesson: "Attackers compromise open-source package repositories to inject backdoors into trusted software updates used by millions.",
+      whyAttackWorked: isLowOrMedium
+        ? "The system automatically downloaded dependency packages from public registries without verifying signature checksums."
+        : "The builder network was connected to the public internet, allowing the corrupted code package to make outbound connections.",
+      howDefendersImprove: "Validate package checksum hashes, run software build pipelines in internet-isolated sandboxes, and audit code dependencies."
+    }
+  };
+
+  return lessons[attackType] || defaultLessons;
+};
 
 interface CTIReport {
   id: string;
@@ -440,6 +653,577 @@ interface CTIReport {
   stages: CampaignStage[];
   mitreMapping?: { stageIndex: number; code: string; name: string }[];
 }
+
+const getCaseStudyTitle = (vectorId: string, status: string) => {
+  const isBlocked = status === "Blocked";
+  switch (vectorId) {
+    case "Phishing":
+      return isBlocked 
+        ? "How Active Filtering Intercepted a Targeted Phishing Attack"
+        : "How a Fake Email Led to Unauthorized Access";
+    case "Ransomware":
+      return isBlocked
+        ? "How Automated Isolation Defeated an Encryption Threat"
+        : "How Weak Security Controls Allowed an Internal Breach";
+    case "SQL Injection":
+      return isBlocked
+        ? "How Parameter Validation Protected Database Assets"
+        : "How Stolen Credentials Exposed Sensitive Records";
+    case "DDoS":
+      return isBlocked
+        ? "How Rate Limits Intercepted a Volumetric Service Flood"
+        : "How Traffic Overload Disrupted Public Service Portals";
+    case "Supply Chain":
+      return isBlocked
+        ? "How Signature Checks Intercepted a Supply Chain Intrusion"
+        : "How a Malicious Package Update Gained Silent Control";
+    default:
+      return isBlocked
+        ? "How Multi-Layered Postures Contained a Simulated Intrusion"
+        : "How Weak Defensive Controls Allowed a System Compromise";
+  }
+};
+
+const getScenarioSummary = (vectorId: string, status: string, industry: string, target: string) => {
+  const isBlocked = status === "Blocked";
+  if (vectorId === "Phishing") {
+    return isBlocked
+      ? `A simulated email scam was delivered to a user workstation in our ${industry} environment to establish initial access. While the link was clicked, the attacker's attempt to steal login credentials and pivot laterally was intercepted. Our active security posture flagged the unauthorized access request and blocked database volume modifications on ${target}. The attack was successfully contained before any sensitive information could be copied.`
+      : `During this simulation, an attacker targeted our ${industry} environment using a deceptive email scam. The email bypassed boundary checks, causing an employee to click a malicious link and unknowingly reveal their login credentials. Armed with active administrator access, the attacker moved deep into internal networks to target ${target}. Because multi-factor authentication was not enforced, the attacker successfully accessed database target directories and compromised sensitive records.`;
+  }
+  if (vectorId === "Ransomware") {
+    return isBlocked
+      ? `An attacker attempted to deploy encryption malware to compromise target arrays on ${target} in our ${industry} environment. While the initial script executed on an endpoint workstation, it was quickly flagged by system sensors. The attempt to elevate local permissions and pivot laterally was blocked by automated endpoint containment rules. As a result, critical database arrays remained fully secured and operational.`
+      : `The simulation demonstrated a file encryption attack aimed at locking target systems on ${target} in the ${industry} environment. The attacker successfully gained access to a user endpoint and executed a payload that searched memory for credentials. Lacking internal network separation, the attacker moved laterally to intermediate servers and elevated user privileges to Administrator. The attack succeeded in locking backup directories and encrypting sensitive target tables.`;
+  }
+  if (vectorId === "DDoS") {
+    return isBlocked
+      ? `A volumetric traffic overload was directed at network access ports in the ${industry} environment to disrupt operations on ${target}. Gateway scrubbing rules and rate limits identified the flooding pattern from the hostile IP source. The traffic was filtered and blocked at the border, allowing system services to remain fully responsive for users without any downtime.`
+      : `A volumetric traffic overload attack was launched to overwhelm service access points on ${target} in our ${industry} environment. Lacking scrubbing gates, the simulated flood quickly saturated public-facing interfaces. System services became completely unresponsive, preventing legitimate connections and causing severe operational halts. The simulation ended with services failing under the massive traffic load.`;
+  }
+  if (vectorId === "SQL Injection") {
+    return isBlocked
+      ? `An attacker attempted to extract private database tables from ${target} in the ${industry} environment using input field injection. Although malicious queries were sent to the database interface, parameterized inputs and query filters neutralized the command syntax. The attempt was flagged as hostile and blocked at the application layer, preventing any data exposure.`
+      : `The attacker targeted the web application database on ${target} in our ${industry} environment using unsanitized SQL commands. An exposed input field allowed the attacker to bypass access filters and read database structures. Moving through database schemas, the attacker extracted password hashes and stole administrative tables, culminating in unauthorized reading of customer database targets.`;
+  }
+  if (vectorId === "Supply Chain") {
+    return isBlocked
+      ? `An attacker attempted to compromise software dependencies on ${target} in our ${industry} environment by injecting a malicious library update. During download, the system's software signature checker noticed the invalid verification key and blocked installation. The backdoor attempt was terminated immediately, keeping internal networks secured.`
+      : `A malicious package update was injected into software libraries on ${target} in our ${industry} environment to bypass perimeter checks. The update was downloaded by internal deployment routines, establishing a backdoor. Lacking file checking rules, the update ran and allowed the attacker to elevate local privileges and access target datastores, gaining complete administrative system control.`;
+  }
+  return isBlocked
+    ? `Our active defensive posture successfully contained a simulated intrusion in the ${industry} environment targeting ${target}. The threat was detected early in the attack lifecycle and terminated before any critical assets could be accessed or stolen.`
+    : `A simulated security breach in the ${industry} environment exposed system configurations on ${target}. Because defensive rules were unconfigured or bypassed, the attacker moved successfully through the network and completed their objectives.`;
+};
+
+const getPrintTimeline = (vectorId: string, stages: CampaignStage[]) => {
+  const list = [];
+  for (let idx = 0; idx < stages.length; idx++) {
+    const stage = stages[idx];
+    const isStageBlocked = stage.status === "blocked";
+    const isPriorStageBlocked = stages.slice(0, idx).some(s => s.status === "blocked");
+    
+    let title = stage.title;
+    let whatHappened = "";
+    let whyItMatters = "";
+    let outcome = "";
+
+    if (isPriorStageBlocked) {
+      whatHappened = "This stage was not reached.";
+      whyItMatters = "The attack was already stopped in a previous step, preventing further progression.";
+      outcome = "Unreached due to containment.";
+      list.push({ title, whatHappened, whyItMatters, outcome });
+      continue;
+    }
+
+    if (idx === 0) {
+      title = "Scanning for Weak Points";
+      whatHappened = "The attacker scanned public connections to identify active interfaces and open ports.";
+      whyItMatters = "Open ports let attackers locate potential doors into the private network.";
+      outcome = isStageBlocked 
+        ? "The firewall detected the scanning pattern and blocked further requests from the attacker's IP." 
+        : "The attacker mapped the network's interfaces successfully.";
+    } else if (idx === 1) {
+      title = "Getting Into The System";
+      if (vectorId === "Phishing") {
+        whatHappened = "An employee received a deceptive email containing a malicious link.";
+        whyItMatters = "Deceptive emails are the most common entry vector to bypass network firewalls.";
+        outcome = isStageBlocked 
+          ? "Email security filters recognized the malicious link and quarantined the message." 
+          : "The employee clicked the link and opened the connection.";
+      } else if (vectorId === "Ransomware") {
+        whatHappened = "A malicious file download was triggered from a compromised website.";
+        whyItMatters = "Malware downloads run initial access scripts to establish a local foothold.";
+        outcome = isStageBlocked 
+          ? "The endpoint protection blocked the file from executing." 
+          : "The script executed, establishing a local network backdoor.";
+      } else if (vectorId === "DDoS") {
+        whatHappened = "The attacker initiated a flood of request packets towards the main gateway.";
+        whyItMatters = "Traffic floods seek to saturate system resources and prevent real connections.";
+        outcome = isStageBlocked 
+          ? "The border router dropped the scanning packets and throttled the IP block." 
+          : "Hostile requests saturated the load balancer port allocations.";
+      } else if (vectorId === "SQL Injection") {
+        whatHappened = "The attacker sent database query syntax through an unvalidated web form input field.";
+        whyItMatters = "Exposed input fields let malicious commands execute directly on database engines.";
+        outcome = isStageBlocked 
+          ? "The application filtered out special query operators, blocking command parsing." 
+          : "The application compiled the input string directly as a database request.";
+      } else { // Supply Chain
+        whatHappened = "The builder platform initiated a regular package fetch from public registries.";
+        whyItMatters = "Default trust settings allow software update managers to download unverified dependencies.";
+        outcome = isStageBlocked 
+          ? "The dependency loader rejected the package update due to an invalid cryptographic signature." 
+          : "The unverified dependency package was successfully compiled into the application environment.";
+      }
+    } else if (idx === 2) {
+      title = "Trying To Steal Passwords";
+      whatHappened = "The attacker dumped system memory to search for active logins and session keys.";
+      whyItMatters = "Stolen logins allow the attacker to impersonate legitimate administrators.";
+      outcome = isStageBlocked 
+        ? "Local protection tools intercepted memory access, blocking credential extraction." 
+        : "Administrative passwords and session hashes were extracted.";
+    } else if (idx === 3) {
+      title = "Moving Through The Network";
+      whatHappened = "The attacker used stolen credentials to connect to databases and internal servers.";
+      whyItMatters = "Critical databases are kept deep in the network, requiring pivoting from endpoints.";
+      outcome = isStageBlocked 
+        ? "Internal firewalls blocked server access requests from standard workstations." 
+        : "The attacker connected directly to the database server host.";
+    } else if (idx === 4) {
+      title = "Taking Control";
+      whatHappened = "The attacker ran local scripts to elevate permissions to system administrator.";
+      whyItMatters = "Administrator control lets the attacker disable security logs and override access rules.";
+      outcome = isStageBlocked 
+        ? "Access control rules flagged the privilege escalation and locked the account." 
+        : "The attacker took complete administrative control over the database system.";
+    } else if (idx === 5) {
+      title = "Stealing Data";
+      if (vectorId === "Ransomware") {
+        whatHappened = "The attacker deployed wiper malware to encrypt system database files.";
+        whyItMatters = "Encrypted files prevent business operations, allowing attackers to demand payment.";
+        outcome = isStageBlocked 
+          ? "System backup arrays and database volumes were locked, preventing encryption." 
+          : "Critical database directories were encrypted and locked.";
+      } else if (vectorId === "DDoS") {
+        whatHappened = "The service interface became fully saturated by persistent traffic.";
+        whyItMatters = "Prolonged downtime halts all business operations and customer access.";
+        outcome = isStageBlocked 
+          ? "Traffic scrubbing limited the impact, keeping services online." 
+          : "Core systems crashed, leading to total operational failure.";
+      } else {
+        whatHappened = "The attacker compiled database records and exfiltrated files to an external server.";
+        whyItMatters = "Exfiltrated records expose customer private details and violate regulatory laws.";
+        outcome = isStageBlocked 
+          ? "Database monitors flagged the massive export request and locked all tables." 
+          : "Customer records and private tables were copied out of the network.";
+      }
+    }
+    list.push({ title, whatHappened, whyItMatters, outcome });
+  }
+  return list;
+};
+
+const getWhySecurityStruggled = (vectorId: string, status: string, securityLevel: string) => {
+  const isBlocked = status === "Blocked";
+  if (isBlocked) {
+    return `Security succeeded during this simulation because multiple defensive layers were active. When the threat actor attempted to probe ports or run malicious payloads, the systems flagged the activity. By blocking IP ranges or preventing database writes early on, the active controls kept the intrusion contained. This shows that layered defenses can protect critical assets even when an attacker gains a temporary foothold.`;
+  }
+  if (vectorId === "Phishing") {
+    return `Security struggled because the system relied entirely on standard passwords. Once the employee was tricked into entering their login credentials on the fake website, the attacker could log in without any secondary checks. Lacking network segmentation, the workstation could connect directly to the database. Additionally, a lack of active endpoint controls let the attacker search memory for administrative keys without triggering an alarm.`;
+  }
+  if (vectorId === "Ransomware") {
+    return `Security struggled because the endpoint workstation lacked containment rules. This allowed the attacker's script to execute and download malware files. Because backup systems were kept online and connected to the same network segment, the encryption process easily reached the backup files. Additionally, a lack of local access controls allowed a standard workstation account to run administrator-level updates.`;
+  }
+  if (vectorId === "DDoS") {
+    return `Security struggled because the public web servers had no rate-limiting or scrubbing policies configured. When the automated request flood started, the network interfaces were quickly overwhelmed by the volume. Without a gateway filter to distinguish malicious requests from normal user actions, all traffic was processed, causing the systems to exhaust their resources and crash.`;
+  }
+  if (vectorId === "SQL Injection") {
+    return `Security struggled because the web application's form inputs accepted raw query commands without validation. This allowed the attacker to type database syntax directly into fields and read database tables. Additionally, the web service account had overly permissive rights, allowing it to query administrative schemas and extract password hashes.`;
+  }
+  return `Security struggled because the deployment system trusted external package updates by default. When the malicious update was pushed to the repository, it was installed automatically without any signature or checksum verification. Once installed, the update established a backdoor connection that was not flagged by outbound network monitors.`;
+};
+
+const getWhyThisMatters = (vectorId: string) => {
+  if (vectorId === "Phishing") {
+    return [
+      "Customer account passwords, emails, and login hashes could be stolen.",
+      "Operations would halt while administrators verify all active user sessions.",
+      "The organization could face regulatory penalties and lose client trust.",
+      "Recovery would involve resetting all user credentials and auditing logs."
+    ];
+  }
+  if (vectorId === "Ransomware") {
+    return [
+      "Operational databases and files could be permanently locked or deleted.",
+      "Daily services would stop entirely, halting business operations.",
+      "Attackers could extort the company for financial ransom payments.",
+      "Recovery would depend on restoring clean files from offline backup archives."
+    ];
+  }
+  if (vectorId === "DDoS") {
+    return [
+      "Public portals and service interfaces would become completely offline.",
+      "Customers would be unable to access their accounts or complete transactions.",
+      "Support lines would be overwhelmed by user complaints during the outage.",
+      "Recovery requires filtering traffic, blocks, and redirecting requests."
+    ];
+  }
+  if (vectorId === "SQL Injection") {
+    return [
+      "Sensitive database tables, including private records, could be exposed.",
+      "Attackers could modify database entries, corrupting system data.",
+      "The business could face severe regulatory fines for data privacy failures.",
+      "Recovery involves patching application code and auditing database query logs."
+    ];
+  }
+  return [
+    "Proprietary software updates could carry backdoors to compromise other systems.",
+    "Internal code repositories and network credentials could be stolen.",
+    "The organization could lose its certification and suffer severe loss of trust.",
+    "Recovery requires revoking certificates, auditing code, and rebuilding updates."
+  ];
+};
+
+const getPreventativeDefenses = (vectorId: string) => {
+  if (vectorId === "Phishing") {
+    return [
+      { rank: "Most Important", icon: "🔐", name: "Multi-Factor Authentication", desc: "Even with a stolen password, attackers cannot access accounts without the secondary verification code." },
+      { rank: "Moderately Important", icon: "✉", name: "Email Filtering", desc: "Identifies and blocks deceptive emails before they ever reach an employee's inbox." },
+      { rank: "Additional Protection", icon: "🛡", name: "Endpoint Monitoring", desc: "Tracks local computer activity to detect and block malicious credential-theft tools in memory." }
+    ];
+  }
+  if (vectorId === "Ransomware") {
+    return [
+      { rank: "Most Important", icon: "🔐", name: "Endpoint Isolation", desc: "Automated endpoint containment can immediately quarantine a workstation when encryption starts, preventing it from spreading." },
+      { rank: "Moderately Important", icon: "✉", name: "Network Segmentation", desc: "Dividing the network into isolated zones restricts the attacker from moving from workstations to servers." },
+      { rank: "Additional Protection", icon: "🛡", name: "Immutable Backups", desc: "Keeping database backup files in read-only offline folders protects recovery data from encryption." }
+    ];
+  }
+  if (vectorId === "DDoS") {
+    return [
+      { rank: "Most Important", icon: "🔐", name: "Traffic Scrubbing", desc: "Route public traffic through gateway systems that analyze signatures and drop request floods before they reach servers." },
+      { rank: "Moderately Important", icon: "✉", name: "Rate Limiting", desc: "Restricts the number of connections any single IP address can submit within a specific timeframe." },
+      { rank: "Additional Protection", icon: "🛡", name: "Load Balancing", desc: "Distributes incoming traffic across redundant server nodes so that a flood targeting one node does not crash the system." }
+    ];
+  }
+  if (vectorId === "SQL Injection") {
+    return [
+      { rank: "Most Important", icon: "🔐", name: "Parameterized Queries", desc: "Forces the database to treat inputs strictly as text rather than executable query commands." },
+      { rank: "Moderately Important", icon: "✉", name: "Input Validation", desc: "Filters web form inputs to block query characters and SQL statements at the boundary." },
+      { rank: "Additional Protection", icon: "🛡", name: "Least Privilege Access", desc: "Restricts database credentials so that the web application cannot run administrative updates or read schemas." }
+    ];
+  }
+  return [
+    { rank: "Most Important", icon: "🔐", name: "Signature Verification", desc: "Requires cryptographic signatures for package updates, blocking installation of unverified files." },
+    { rank: "Moderately Important", icon: "✉", name: "Package Auditing", desc: "Scans code libraries for known security gaps and hidden backdoor modules before deployment." },
+    { rank: "Additional Protection", icon: "🛡", name: "Network Outbound Rules", desc: "Blocks internal software update engines from establishing unauthorized external server connections." }
+  ];
+};
+
+const getCaseStudyKeyLessons = (vectorId: string) => {
+  if (vectorId === "Phishing") {
+    return [
+      "Passwords alone are no longer enough to protect accounts; secondary checks are critical.",
+      "Security is a team effort that combines human alertness with automated rules.",
+      "A single mistake can compromise a workstation and serve as a foothold for larger attacks."
+    ];
+  }
+  if (vectorId === "Ransomware") {
+    return [
+      "Network segmentation prevents local workstation threats from spreading to database servers.",
+      "Automated isolation can stop malware execution before file encryption begins.",
+      "Offline backups are the only guarantee for file recovery after an encryption attack."
+    ];
+  }
+  if (vectorId === "DDoS") {
+    return [
+      "Volumetric attacks target system availability rather than stealing private data.",
+      "Rate-limiting rules are essential to separate normal user actions from traffic floods.",
+      "Outages interrupt business operations and damage customer trust."
+    ];
+  }
+  if (vectorId === "SQL Injection") {
+    return [
+      "Unsanitized user inputs are a direct gateway for database exposure.",
+      "Parameterized queries are the most effective way to neutralize input manipulation threats.",
+      "Database permissions should restrict access only to the tables a user actually needs."
+    ];
+  }
+  return [
+    "Supply chain attacks leverage trusted software channels to bypass boundary defenses.",
+    "Cryptographic signatures are critical to verify the source of software updates.",
+    "Zero-trust principles require verifying package signatures before execution."
+  ];
+};
+
+const getFinalThoughtPrint = (vectorId: string, status: string) => {
+  const isBlocked = status === "Blocked";
+  if (isBlocked) {
+    return "Remember that cybersecurity is not about building a single perfect wall, but about layering checks so that when one layer fails, another is ready to intercept the threat. By rate-limiting requests, segmenting servers, or filtering emails, we prevent small gaps from becoming system-wide breaches. Real security means ensuring that if one door is opened, the inner chambers remain fully locked.";
+  }
+  return "Remember that a single unpatched gap or human error is often all an attacker needs to bypass perimeter firewalls. When networks lack multi-factor authentication, segmentation, or query validation, attackers can easily pivot from a user workstation to the core database. Cybersecurity requires multi-layered safeguards at every stage to ensure a single mistake cannot compromise the entire system.";
+};
+
+const PrintCaseStudy = ({ reportData }: { reportData: CTIReport }) => {
+  const title = getCaseStudyTitle(reportData.vectorId, reportData.status);
+  const summary = getScenarioSummary(reportData.vectorId, reportData.status, reportData.industryName, reportData.targetName);
+  const timeline = getPrintTimeline(reportData.vectorId, reportData.stages);
+  const whySecurityStruggled = getWhySecurityStruggled(reportData.vectorId, reportData.status, reportData.securityLevel);
+  const whyThisMatters = getWhyThisMatters(reportData.vectorId);
+  const preventions = getPreventativeDefenses(reportData.vectorId);
+  const lessons = getCaseStudyKeyLessons(reportData.vectorId);
+  const reflection = getFinalThoughtPrint(reportData.vectorId, reportData.status);
+
+  const isBlocked = reportData.status === "Blocked";
+
+  return (
+    <div className="hidden print:block text-black bg-white font-sans p-6 leading-relaxed text-sm max-w-[21cm] mx-auto">
+      {/* CSS overrides to ensure clean background color and no header/footer default elements when printing */}
+      <style dangerouslySetInnerHTML={{ __html: `
+        @media print {
+          body {
+            background-color: white !important;
+            color: black !important;
+          }
+          @page {
+            size: A4;
+            margin: 1.5cm;
+          }
+        }
+      ` }} />
+
+      {isBlocked ? (
+        /* BLOCK SIMULATION - EXACTLY 2 PAGES */
+        <>
+          {/* PAGE 1 */}
+          <div style={{ pageBreakAfter: "always" }} className="space-y-6">
+            {/* Header */}
+            <div className="border-b-2 border-black pb-4">
+              <span className="text-[10px] font-mono tracking-widest uppercase text-slate-500 font-bold block">Cybersecurity Lab Case Study</span>
+              <h1 className="text-2xl font-bold mt-1 text-black uppercase">{title}</h1>
+              <div className="grid grid-cols-2 gap-x-6 gap-y-2 mt-4 text-xs">
+                <div><strong>Environment:</strong> {reportData.industryName} Environment ({reportData.targetName})</div>
+                <div><strong>Attack Method:</strong> {reportData.vectorName} Simulation</div>
+                <div><strong>Outcome:</strong> <span className="text-green-700 font-bold">Threat Containment Successful</span></div>
+                <div><strong>Date Generated:</strong> {new Date(reportData.timestamp).toLocaleDateString()}</div>
+              </div>
+            </div>
+
+            {/* Section 1: Simulation Overview */}
+            <div className="space-y-3">
+              <h2 className="text-base font-bold uppercase border-b border-black pb-1">1. Simulation Overview</h2>
+              <div className="space-y-2 text-xs text-slate-800">
+                <p><strong>Scenario:</strong> An emulation of the threat actor <strong>{reportData.actorName}</strong> was conducted to evaluate the defense capacity of our simulated {reportData.industryName.toLowerCase()} systems.</p>
+                <p><strong>Entry Method:</strong> The attack attempted to establish an initial foothold via <strong>{reportData.vectorName.toLowerCase()}</strong> channels, targeting the critical database server <strong>{reportData.targetName}</strong>.</p>
+                <p><strong>Outcome:</strong> Defensive controls successfully intercepted the intrusion. Active rules detected the anomalous behavior and blocked the threat before any lateral spread could occur.</p>
+                <p><strong>Summary:</strong> {summary}</p>
+              </div>
+            </div>
+
+            {/* Section 2: Attack Journey */}
+            <div className="space-y-3">
+              <h2 className="text-base font-bold uppercase border-b border-black pb-1">2. Attack Journey Timeline</h2>
+              <div className="space-y-2 text-xs">
+                {timeline.map((stage, idx) => {
+                  const isUnreached = stage.whatHappened === "This stage was not reached.";
+                  const isStageBlocked = reportData.stages[idx]?.status === "blocked";
+                  return (
+                    <div key={idx} className={`p-2.5 rounded border border-slate-300 ${isUnreached ? "bg-slate-50 text-slate-400" : isStageBlocked ? "bg-green-50 border-green-300 text-slate-850" : "bg-red-50 border-red-200 text-slate-850"}`}>
+                      <div className="flex justify-between items-center font-bold font-mono text-[10px]">
+                        <span>PHASE {idx + 1}: {stage.title.toUpperCase()}</span>
+                        <span>
+                          {isUnreached ? "⚪ UNREACHED" : isStageBlocked ? "🟢 BLOCKED" : "🔴 EVADED"}
+                        </span>
+                      </div>
+                      <p className="mt-1 leading-normal text-[11px]">
+                        <strong>Activity:</strong> {stage.whatHappened}
+                      </p>
+                      {!isUnreached && (
+                        <p className="mt-0.5 leading-normal text-[11px]">
+                          <strong>Outcome:</strong> {stage.outcome}
+                        </p>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+
+          {/* PAGE 2 */}
+          <div className="space-y-6">
+            {/* Section 3: Why Security Succeeded */}
+            <div className="space-y-2">
+              <h2 className="text-base font-bold uppercase border-b border-black pb-1">3. Why Security Succeeded</h2>
+              <p className="text-xs text-slate-800 leading-relaxed font-sans">{whySecurityStruggled}</p>
+            </div>
+
+            {/* Section 4: Why This Matters */}
+            <div className="space-y-2">
+              <h2 className="text-base font-bold uppercase border-b border-black pb-1">4. Why This Matters</h2>
+              <p className="text-xs text-slate-600 mb-2">If these security defenses had not been active, the attack could have led to severe real-world consequences:</p>
+              <ul className="list-disc pl-5 text-xs text-slate-800 space-y-1.5">
+                {whyThisMatters.slice(0, 4).map((consequence, idx) => (
+                  <li key={idx}>{consequence}</li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Section 5: How It Could Be Prevented */}
+            <div className="space-y-3">
+              <h2 className="text-base font-bold uppercase border-b border-black pb-1">5. Recommended Protections</h2>
+              <div className="grid grid-cols-1 gap-2.5">
+                {preventions.map((prev, idx) => (
+                  <div key={idx} className="p-3 border border-slate-300 rounded bg-slate-50 flex items-start gap-3">
+                    <span className="text-lg leading-none pt-0.5">{prev.icon}</span>
+                    <div className="text-xs">
+                      <strong className="text-black font-mono block uppercase text-[10px]">{prev.rank}: {prev.name}</strong>
+                      <p className="text-slate-700 mt-1 leading-normal">{prev.desc}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Section 6: Key Lessons */}
+            <div className="space-y-2">
+              <h2 className="text-base font-bold uppercase border-b border-black pb-1">6. Key Lessons</h2>
+              <ul className="list-decimal pl-5 text-xs text-slate-800 space-y-1.5">
+                {lessons.slice(0, 3).map((lesson, idx) => (
+                  <li key={idx}><strong>Lesson {idx + 1}:</strong> {lesson}</li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Section 7: Student Reflection */}
+            <div className="p-4 border border-black rounded bg-slate-50 mt-4">
+              <h2 className="text-xs font-bold uppercase tracking-wider text-black font-mono mb-1">7. Student Reflection & Conclusion</h2>
+              <p className="text-xs italic text-slate-800 leading-relaxed font-sans">
+                {reflection}
+              </p>
+            </div>
+          </div>
+        </>
+      ) : (
+        /* SUCCESSFUL (COMPLEX) SIMULATION - EXACTLY 3 PAGES */
+        <>
+          {/* PAGE 1: Overview */}
+          <div style={{ pageBreakAfter: "always" }} className="space-y-6">
+            {/* Header */}
+            <div className="border-b-2 border-black pb-4">
+              <span className="text-[10px] font-mono tracking-widest uppercase text-slate-500 font-bold block">Cybersecurity Lab Case Study</span>
+              <h1 className="text-2xl font-bold mt-1 text-black uppercase">{title}</h1>
+              <div className="grid grid-cols-2 gap-x-6 gap-y-2 mt-4 text-xs">
+                <div><strong>Environment:</strong> {reportData.industryName} Environment ({reportData.targetName})</div>
+                <div><strong>Attack Method:</strong> {reportData.vectorName} Simulation</div>
+                <div><strong>Outcome:</strong> <span className="text-red-700 font-bold">Defenses Bypassed / System Compromised</span></div>
+                <div><strong>Date Generated:</strong> {new Date(reportData.timestamp).toLocaleDateString()}</div>
+              </div>
+            </div>
+
+            {/* Section 1: Simulation Overview */}
+            <div className="space-y-4">
+              <h2 className="text-base font-bold uppercase border-b border-black pb-1">1. Simulation Overview</h2>
+              <div className="space-y-3 text-xs text-slate-800 leading-relaxed">
+                <p><strong>Scenario:</strong> An attack simulation mimicking <strong>{reportData.actorName}</strong> was conducted to test the vulnerability limits of the current {reportData.industryName.toLowerCase()} setup.</p>
+                <p><strong>Entry Method:</strong> The attacker exploited weak points in the <strong>{reportData.vectorName.toLowerCase()}</strong> setup to bypass perimeter controls and connect to local endpoints.</p>
+                <p><strong>Outcome:</strong> Security controls failed to contain the intrusion. The attacker successfully escalated privileges, moved laterally through the network, and reached the target server <strong>{reportData.targetName}</strong>.</p>
+                <p><strong>Detailed Summary:</strong> {summary}</p>
+              </div>
+            </div>
+          </div>
+
+          {/* PAGE 2: Journey & Struggles */}
+          <div style={{ pageBreakAfter: "always" }} className="space-y-6">
+            {/* Section 2: Attack Journey */}
+            <div className="space-y-3">
+              <h2 className="text-base font-bold uppercase border-b border-black pb-1">2. Attack Journey Timeline</h2>
+              <div className="space-y-2.5 text-xs">
+                {timeline.map((stage, idx) => {
+                  const isUnreached = stage.whatHappened === "This stage was not reached.";
+                  const isStageBlocked = reportData.stages[idx]?.status === "blocked";
+                  return (
+                    <div key={idx} className={`p-2.5 rounded border border-slate-300 ${isUnreached ? "bg-slate-50 text-slate-400" : isStageBlocked ? "bg-green-50 border-green-300 text-slate-850" : "bg-red-50 border-red-200 text-slate-850"}`}>
+                      <div className="flex justify-between items-center font-bold font-mono text-[10px]">
+                        <span>PHASE {idx + 1}: {stage.title.toUpperCase()}</span>
+                        <span>
+                          {isUnreached ? "UNREACHED" : isStageBlocked ? "BLOCKED" : "EVADED"}
+                        </span>
+                      </div>
+                      <p className="mt-1 leading-normal text-[11px]">
+                        <strong>Activity:</strong> {stage.whatHappened}
+                      </p>
+                      {!isUnreached && (
+                        <p className="mt-0.5 leading-normal text-[11px]">
+                          <strong>Outcome:</strong> {stage.outcome}
+                        </p>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Section 3: Why Security Struggled */}
+            <div className="space-y-2 mt-4">
+              <h2 className="text-base font-bold uppercase border-b border-black pb-1">3. Why Security Struggled</h2>
+              <p className="text-xs text-slate-850 leading-relaxed font-sans">{whySecurityStruggled}</p>
+            </div>
+          </div>
+
+          {/* PAGE 3: Impact, Preventions, Takeaways, Reflection */}
+          <div className="space-y-6">
+            {/* Section 4: Why This Matters */}
+            <div className="space-y-2">
+              <h2 className="text-base font-bold uppercase border-b border-black pb-1">4. Why This Matters</h2>
+              <p className="text-xs text-slate-600 mb-2">The successful breach represents serious real-world risks that must be addressed:</p>
+              <ul className="list-disc pl-5 text-xs text-slate-800 space-y-1.5">
+                {whyThisMatters.slice(0, 4).map((consequence, idx) => (
+                  <li key={idx}>{consequence}</li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Section 5: How It Could Be Prevented */}
+            <div className="space-y-3">
+              <h2 className="text-base font-bold uppercase border-b border-black pb-1">5. Recommended Protections</h2>
+              <div className="grid grid-cols-1 gap-2.5">
+                {preventions.map((prev, idx) => (
+                  <div key={idx} className="p-3 border border-slate-300 rounded bg-slate-50 flex items-start gap-3">
+                    <span className="text-lg leading-none pt-0.5">{prev.icon}</span>
+                    <div className="text-xs">
+                      <strong className="text-black font-mono block uppercase text-[10px]">{prev.rank}: {prev.name}</strong>
+                      <p className="text-slate-700 mt-1 leading-normal">{prev.desc}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Section 6: Key Takeaways */}
+            <div className="space-y-2">
+              <h2 className="text-base font-bold uppercase border-b border-black pb-1">6. Key Lessons</h2>
+              <ul className="list-decimal pl-5 text-xs text-slate-800 space-y-1.5">
+                {lessons.slice(0, 3).map((lesson, idx) => (
+                  <li key={idx}><strong>Lesson {idx + 1}:</strong> {lesson}</li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Section 7: Student Reflection */}
+            <div className="p-4 border border-black rounded bg-slate-50 mt-4">
+              <h2 className="text-xs font-bold uppercase tracking-wider text-black font-mono mb-1">7. Student Reflection & Conclusion</h2>
+              <p className="text-xs italic text-slate-800 leading-relaxed font-sans">
+                {reflection}
+              </p>
+            </div>
+          </div>
+        </>
+      )}
+    </div>
+  );
+};
 
 function AIAnalystContent() {
   const searchParams = useSearchParams();
@@ -565,7 +1349,13 @@ function AIAnalystContent() {
     };
 
     fetchAIReport(resolvedCampaign);
-
+    if (typeof window !== "undefined") {
+      const currentMax = parseInt(sessionStorage.getItem("sentinel_max_unlocked_step") || "1", 10);
+      if (currentMax < 4) {
+        sessionStorage.setItem("sentinel_max_unlocked_step", "4");
+        window.dispatchEvent(new Event("sentinel_progress_update"));
+      }
+    }
   }, [campaignId]);
 
   // Export report to Markdown
@@ -651,7 +1441,7 @@ VERIFICATION TELEMETRY: COMPLETED // DEFENSE BLOCK STATUS: ${reportData.status.t
             </span>
           </span>
           <div className="space-y-1">
-            <div className="font-extrabold text-white uppercase tracking-[0.12em]">Threat Review Processing</div>
+            <div className="font-extrabold text-white uppercase tracking-[0.12em]">Preparing Your Review</div>
             <div className="text-[9px] text-slate-500 uppercase tracking-widest leading-relaxed">
             Consulting security mentor & compiling review...
             </div>
@@ -687,7 +1477,7 @@ VERIFICATION TELEMETRY: COMPLETED // DEFENSE BLOCK STATUS: ${reportData.status.t
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.6, ease: "easeOut" }}
-        className="max-w-7xl mx-auto px-6 relative z-10 w-full flex-grow pt-8 pb-12 print:pt-0"
+        className="max-w-7xl mx-auto px-6 relative z-10 w-full flex-grow pt-8 pb-12 print:hidden"
       >
         {/* Navigation back and telemetry info - hidden on print */}
         <div className="flex justify-between items-center mb-8 flex-wrap gap-4 print:hidden font-mono text-[10px]">
@@ -705,7 +1495,7 @@ VERIFICATION TELEMETRY: COMPLETED // DEFENSE BLOCK STATUS: ${reportData.status.t
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyber-cyan opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-cyber-cyan"></span>
               </span>
-              Security Mentor Review
+              Simulation Review
             </span>
           </div>
         </div>
@@ -717,7 +1507,7 @@ VERIFICATION TELEMETRY: COMPLETED // DEFENSE BLOCK STATUS: ${reportData.status.t
           <div className="space-y-2">
             <div className="inline-flex items-center gap-2 text-cyber-cyan text-[10px] font-mono tracking-widest uppercase font-bold">
               <Brain className="w-3.5 h-3.5 text-cyber-cyan animate-pulse" />
-              Security Mentor Review
+              Simulation Review
             </div>
             <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight text-white uppercase font-sans">
               Simulation Review
@@ -771,7 +1561,7 @@ VERIFICATION TELEMETRY: COMPLETED // DEFENSE BLOCK STATUS: ${reportData.status.t
               </span>
             ) : (
               <span className="px-1.5 py-0.5 rounded border border-amber-500/30 bg-amber-500/10 text-amber-500 text-[8px] font-bold uppercase tracking-wider">
-                Fallback Synthesis
+                Review Generated
               </span>
             )}
           </div>
@@ -803,8 +1593,7 @@ VERIFICATION TELEMETRY: COMPLETED // DEFENSE BLOCK STATUS: ${reportData.status.t
 
         {/* Unified Single-Column Flow        {/* Unified Single-Column Flow Layout */}
         <div className="space-y-10 max-w-5xl mx-auto">
-          
-          {/* 1. What Happened? */}
+                {/* 1. What Happened? */}
           <motion.section
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
@@ -834,18 +1623,18 @@ VERIFICATION TELEMETRY: COMPLETED // DEFENSE BLOCK STATUS: ${reportData.status.t
 
                   const milestones = [
                     {
-                      title: "Milestone 1: Looking for Entry (Ingress)",
+                      title: "Looking for Entry",
                       desc: `Attacker performed network scans and delivered payloads via ${reportData.vectorName}.`,
                       status: isStep1Blocked ? "Stopped" : "Successful"
                     },
                     {
-                      title: "Milestone 2: Pivoting Inside (Lateral Movement & Escalation)",
-                      desc: "Attacker searched memory for credentials and pivoted lateral to secure server zones.",
+                      title: "Pivoting Inside",
+                      desc: "Attacker searched memory for credentials and pivoted to database server zones.",
                       status: isStep1Blocked ? "Unreached" : isStep2Blocked ? "Stopped" : "Successful"
                     },
                     {
-                      title: "Milestone 3: Data Target (Exfiltration & System Ransom)",
-                      desc: "Attacker reached the target directory to copy files and lock system directories.",
+                      title: "Data Target",
+                      desc: "Attacker reached the target directory to copy files and lock directories.",
                       status: (isStep1Blocked || isStep2Blocked) ? "Unreached" : isStep3Blocked ? "Stopped" : "Successful"
                     }
                   ];
@@ -861,7 +1650,7 @@ VERIFICATION TELEMETRY: COMPLETED // DEFENSE BLOCK STATUS: ${reportData.status.t
                                 ? "bg-black border-cyber-green text-cyber-green shadow-[0_0_10px_rgba(16,185,129,0.3)]"
                                 : stepStatus === "Successful"
                                   ? "bg-cyber-red border-cyber-red text-black"
-                                  : "bg-slate-950 border-slate-800 text-slate-650"
+                                  : "bg-slate-950 border-slate-800 text-slate-655"
                             }`}>
                               {idx + 1}
                             </span>
@@ -886,22 +1675,22 @@ VERIFICATION TELEMETRY: COMPLETED // DEFENSE BLOCK STATUS: ${reportData.status.t
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-[10px] font-mono text-slate-400 pt-4">
                 <div className="bg-black/35 p-3 rounded border border-cyber-border">
-                  <span className="text-slate-500 uppercase block text-[8px]">TARGET ENVIRONMENT</span>
+                  <span className="text-slate-505 text-cyber-cyan uppercase block text-[8px] font-bold">Target Environment</span>
                   <span className="text-white font-bold block mt-1 uppercase">{reportData.industryName} ({reportData.targetName})</span>
                 </div>
                 <div className="bg-black/35 p-3 rounded border border-cyber-border">
-                  <span className="text-slate-500 uppercase block text-[8px]">ATTACKER GROUP</span>
+                  <span className="text-slate-505 text-cyber-cyan uppercase block text-[8px] font-bold">Threat Actor</span>
                   <span className="text-white font-bold block mt-1 uppercase">{reportData.actorName}</span>
                 </div>
                 <div className="bg-black/35 p-3 rounded border border-cyber-border">
-                  <span className="text-slate-500 uppercase block text-[8px]">ENTRY METHOD</span>
+                  <span className="text-slate-505 text-cyber-cyan uppercase block text-[8px] font-bold">Attack Method</span>
                   <span className="text-white font-bold block mt-1 uppercase">{reportData.vectorName}</span>
                 </div>
               </div>
             </div>
           </motion.section>
 
-          {/* 2. Why Was It Successful/Blocked? */}
+          {/* 2. Attack Journey */}
           <motion.section
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
@@ -909,7 +1698,38 @@ VERIFICATION TELEMETRY: COMPLETED // DEFENSE BLOCK STATUS: ${reportData.status.t
           >
             <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-cyber-cyan/30 via-transparent to-transparent" />
             <div className="flex items-center gap-2 border-b border-cyber-border/40 pb-4 mb-6">
-              <span className="text-cyber-cyan font-mono text-[10px] uppercase font-bold tracking-wider">🛡️ 2. Why Was It Successful or Blocked?</span>
+              <span className="text-cyber-cyan font-mono text-[10px] uppercase font-bold tracking-wider">🗺️ 2. Attack Journey</span>
+            </div>
+            
+            <div className="flex flex-col md:flex-row items-center justify-center gap-3 py-6 px-4 bg-black/40 rounded border border-cyber-border/40">
+              {getAttackJourneyFlow(reportData.vectorId).map((step, idx, arr) => (
+                <React.Fragment key={idx}>
+                  <div className="flex flex-col items-center p-3 rounded-lg border border-cyber-cyan/20 bg-cyber-cyan/5 w-full md:w-44 text-center">
+                    <span className="text-[10px] font-mono text-cyber-cyan font-bold block mb-1">STEP 0{idx + 1}</span>
+                    <span className="text-white text-[11px] font-medium leading-tight">{step}</span>
+                  </div>
+                  {idx < arr.length - 1 && (
+                    <div className="text-cyber-cyan/60 font-mono text-base font-bold my-1 md:my-0">
+                      <span className="md:hidden">↓</span>
+                      <span className="hidden md:inline">→</span>
+                    </div>
+                  )}
+                </React.Fragment>
+              ))}
+            </div>
+          </motion.section>
+
+          {/* 3. Why The Attack Succeeded / Was Blocked */}
+          <motion.section
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="glassmorphism-card rounded-xl p-6 border border-cyber-border relative"
+          >
+            <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-cyber-cyan/30 via-transparent to-transparent" />
+            <div className="flex items-center gap-2 border-b border-cyber-border/40 pb-4 mb-6">
+              <span className="text-cyber-cyan font-mono text-[10px] uppercase font-bold tracking-wider">
+                🛡️ 3. Why The Attack {reportData.status === "Blocked" ? "Was Blocked" : "Succeeded"}
+              </span>
             </div>
             <div className="space-y-4 font-sans text-xs leading-relaxed text-slate-300">
               <p className="text-slate-200 text-sm font-semibold leading-relaxed">
@@ -917,30 +1737,30 @@ VERIFICATION TELEMETRY: COMPLETED // DEFENSE BLOCK STATUS: ${reportData.status.t
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
                 <div className="bg-black/35 p-4 rounded border border-cyber-border">
-                  <span className="text-slate-500 uppercase block font-mono text-[8px] font-bold">Defensive Posture Level</span>
+                  <span className="text-slate-500 uppercase block font-mono text-[8px] font-bold">Security Setup (Defensive Posture)</span>
                   <span className="text-cyber-cyan font-extrabold block mt-1 uppercase text-sm font-mono">
                     {getSecurityLevelName(reportData.securityLevel)} Protection
                   </span>
                   <p className="text-slate-400 text-[10px] mt-1.5 leading-normal">
-                    This setting governs which alert policies, block triggers, and verification checkpoints were enabled during the simulation.
+                    This setup governs which security rules, alert policies, and access checks were active during the simulation.
                   </p>
                 </div>
                 <div className="bg-black/35 p-4 rounded border border-cyber-border">
-                  <span className="text-slate-500 uppercase block font-mono text-[8px] font-bold">Compromise Vulnerability</span>
+                  <span className="text-slate-500 uppercase block font-mono text-[8px] font-bold">Security Gap (Vulnerability)</span>
                   <span className={`font-extrabold block mt-1 uppercase text-sm font-mono ${reportData.status === "Blocked" ? "text-cyber-green" : "text-cyber-red"}`}>
-                    {reportData.status === "Blocked" ? "Fully Protected" : "Exposed Vulnerabilities"}
+                    {reportData.status === "Blocked" ? "Fully Protected" : "Exposed Vulnerability"}
                   </span>
                   <p className="text-slate-400 text-[10px] mt-1.5 leading-normal">
                     {reportData.status === "Blocked" 
-                      ? "The defense mechanisms successfully matched threat behavior patterns and immediately isolated the host." 
-                      : "Unsecured paths or lack of strict access rules allowed the adversary payload to bypass endpoint monitoring."}
+                      ? "Active defenses successfully blocked threat behavior patterns and prevented the attacker from reaching critical zones." 
+                      : "Unsecured paths or a lack of strict access controls allowed the payload to run and pivot to other servers."}
                   </p>
                 </div>
               </div>
             </div>
           </motion.section>
 
-          {/* 3. What Was The Impact? */}
+          {/* 4. What The Attacker Achieved */}
           <motion.section
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
@@ -948,50 +1768,88 @@ VERIFICATION TELEMETRY: COMPLETED // DEFENSE BLOCK STATUS: ${reportData.status.t
           >
             <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-cyber-cyan/30 via-transparent to-transparent" />
             <div className="flex items-center gap-2 border-b border-cyber-border/40 pb-4 mb-6">
-              <span className="text-cyber-cyan font-mono text-[10px] uppercase font-bold tracking-wider">💰 3. What Was The Impact?</span>
+              <span className="text-cyber-cyan font-mono text-[10px] uppercase font-bold tracking-wider">💰 4. What The Attacker Achieved</span>
             </div>
             
-            <div className="space-y-6">
-              {/* Metrics row */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div className="bg-black/35 p-4 rounded border border-cyber-border">
-                  <span className="text-slate-500 font-mono text-[8px] uppercase tracking-wider block font-bold">💰 Financial Liability</span>
-                  <div className="text-cyber-red text-base font-extrabold mt-1 font-mono">
-                    {reportData.financialLoss.includes("(") ? reportData.financialLoss.split(" ")[0] : reportData.financialLoss}
-                  </div>
-                  <span className="text-slate-400 text-[9px] block mt-1 leading-tight">Estimated forensic & penalty costs.</span>
-                </div>
-                <div className="bg-black/35 p-4 rounded border border-cyber-border">
-                  <span className="text-slate-500 font-mono text-[8px] uppercase tracking-wider block font-bold">⏱️ Operational Downtime</span>
-                  <div className="text-cyber-cyan text-base font-extrabold mt-1 font-mono">
-                    {reportData.downtime}
-                  </div>
-                  <span className="text-slate-400 text-[9px] block mt-1 leading-tight">Critical business system recovery duration.</span>
-                </div>
-                <div className="bg-black/35 p-4 rounded border border-cyber-green/30 bg-cyber-green/5">
-                  <span className="text-cyber-green font-mono text-[8px] uppercase tracking-wider block font-bold">⚡ Risk Mitigated</span>
-                  <div className="text-cyber-green text-base font-extrabold mt-1 font-mono">
-                    +{reportData.riskReduction}% Security
-                  </div>
-                  <span className="text-slate-400 text-[9px] block mt-1 leading-tight">Projected risk index reduction rate.</span>
-                </div>
+            <div className="space-y-6 text-xs leading-relaxed">
+              <div className="p-4 rounded bg-cyber-surface/40 border border-cyber-border/60">
+                <span className="text-white font-mono text-[9px] uppercase tracking-wider block font-bold text-cyber-cyan mb-1">Possible Business Impact</span>
+                <p className="text-slate-355">
+                  {reportData.status === "Blocked"
+                    ? "The attack was successfully contained. The attacker failed to reach the database, keeping operational disruption and cost to a minimum."
+                    : "The attack succeeded in bypassing defenses. Critical servers were accessed, which would lead to operational halts, potential regulatory violations, and reputational damage."}
+                </p>
               </div>
 
-              {/* Assessment details */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs font-sans">
-                <div className="p-3.5 rounded bg-cyber-surface/30 border border-cyber-border/40">
-                  <h5 className="font-bold text-white font-mono uppercase text-[9px] tracking-wide text-cyber-cyan mb-1">Operational Assessment</h5>
-                  <p className="text-slate-300 leading-relaxed text-[11px]">{reportData.operationalImpact}</p>
-                </div>
-                <div className="p-3.5 rounded bg-cyber-surface/30 border border-cyber-border/40">
-                  <h5 className="font-bold text-white font-mono uppercase text-[9px] tracking-wide text-cyber-cyan mb-1">Financial Assessment</h5>
-                  <p className="text-slate-300 leading-relaxed text-[11px]">{reportData.financialLoss}</p>
-                </div>
-              </div>
+              {(() => {
+                const details = getImpactDetails(reportData.vectorId, reportData.industryName, reportData.status === "Blocked");
+                return (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+                    {/* What Systems Were Affected */}
+                    <div className="bg-black/35 p-4 rounded border border-cyber-border/40">
+                      <span className="text-white font-mono text-[10px] uppercase tracking-wider block font-bold mb-3 flex items-center gap-1.5">
+                        <Terminal className="w-3.5 h-3.5 text-cyber-cyan" />
+                        What Systems Were Affected?
+                      </span>
+                      <ul className="space-y-2 text-[11px] text-slate-300">
+                        {details.systems.map((sys, index) => (
+                          <li key={index} className="flex items-center gap-2">
+                            <span className="text-cyber-red font-bold">•</span>
+                            {sys}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    {/* Possible Consequences */}
+                    <div className="bg-black/35 p-4 rounded border border-cyber-border/40">
+                      <span className="text-white font-mono text-[10px] uppercase tracking-wider block font-bold mb-3 flex items-center gap-1.5">
+                        <AlertTriangle className="w-3.5 h-3.5 text-amber-500" />
+                        What Problems Would This Cause?
+                      </span>
+                      <ul className="space-y-2 text-[11px] text-slate-300">
+                        {details.consequences.map((cons, index) => (
+                          <li key={index} className="flex items-center gap-2">
+                            <span className="text-cyber-red font-bold">•</span>
+                            {cons}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    {/* How Long Might Recovery Take */}
+                    <div className="bg-black/35 p-4 rounded border border-cyber-border/40">
+                      <span className="text-white font-mono text-[10px] uppercase tracking-wider block font-bold mb-2 flex items-center gap-1.5">
+                        <Activity className="w-3.5 h-3.5 text-cyber-cyan" />
+                        How Long Might Recovery Take?
+                      </span>
+                      <p className="text-[11px] text-slate-300 leading-normal">
+                        {details.recovery}
+                      </p>
+                    </div>
+
+                    {/* What Security Improvements Would Help */}
+                    <div className="bg-black/35 p-4 rounded border border-cyber-border/40">
+                      <span className="text-white font-mono text-[10px] uppercase tracking-wider block font-bold mb-3 flex items-center gap-1.5">
+                        <ShieldCheck className="w-3.5 h-3.5 text-cyber-green" />
+                        What Security Improvements Would Help?
+                      </span>
+                      <ul className="space-y-2 text-[11px] text-slate-300">
+                        {details.improvements.map((imp, index) => (
+                          <li key={index} className="flex items-center gap-2">
+                            <span className="text-cyber-green font-bold">✓</span>
+                            {imp}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                );
+              })()}
             </div>
           </motion.section>
 
-          {/* 4. What Could Have Prevented It? */}
+          {/* 5. How This Could Have Been Stopped */}
           <motion.section
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
@@ -999,12 +1857,12 @@ VERIFICATION TELEMETRY: COMPLETED // DEFENSE BLOCK STATUS: ${reportData.status.t
           >
             <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-cyber-cyan/30 via-transparent to-transparent" />
             <div className="flex items-center gap-2 border-b border-cyber-border/40 pb-4 mb-6">
-              <span className="text-cyber-cyan font-mono text-[10px] uppercase font-bold tracking-wider">🛑 4. What Could Have Prevented It?</span>
+              <span className="text-cyber-cyan font-mono text-[10px] uppercase font-bold tracking-wider">🛑 5. How This Could Have Been Stopped</span>
             </div>
             
             <div className="space-y-4">
-              <p className="text-[11px] text-slate-405 font-sans leading-relaxed">
-                Applying the following security controls would have blocked the vectors simulated during this simulation:
+              <p className="text-[11px] text-slate-400 font-sans leading-relaxed">
+                Applying the following security controls would have blocked the methods simulated during this attack:
               </p>
               
               <div className="space-y-3">
@@ -1030,7 +1888,7 @@ VERIFICATION TELEMETRY: COMPLETED // DEFENSE BLOCK STATUS: ${reportData.status.t
             </div>
           </motion.section>
 
-          {/* 5. What Should You Learn? */}
+          {/* 6. What You Should Learn */}
           <motion.section
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
@@ -1038,23 +1896,53 @@ VERIFICATION TELEMETRY: COMPLETED // DEFENSE BLOCK STATUS: ${reportData.status.t
           >
             <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-cyber-cyan/30 via-transparent to-transparent" />
             <div className="flex items-center gap-2 border-b border-cyber-border/40 pb-4 mb-6">
-              <span className="text-cyber-cyan font-mono text-[10px] uppercase font-bold tracking-wider">🎓 5. What Should You Learn?</span>
+              <span className="text-cyber-cyan font-mono text-[10px] uppercase font-bold tracking-wider">🎓 6. What You Should Learn</span>
             </div>
             
-            <div className="space-y-4 font-sans text-xs leading-relaxed text-slate-300">
-              <div className="p-4 rounded bg-cyber-surface/40 border border-cyber-border/60">
-                <span className="text-white font-mono text-[9px] uppercase tracking-wider block font-bold text-cyber-cyan mb-1">Key Takeaway</span>
-                <p className="text-slate-200 text-[12px] font-semibold leading-relaxed">
-                  {getWhatYouLearnedSummary(reportData.vectorId)}
-                </p>
-              </div>
+            <div className="space-y-4 font-sans text-xs leading-relaxed text-slate-350">
+              {(() => {
+                const lessons = getEducationalLessons(reportData.vectorId, reportData.securityLevel);
+                return (
+                  <div className="space-y-4">
+                    <div className="p-4 rounded bg-cyber-surface/40 border border-cyber-border/60">
+                      <span className="text-white font-mono text-[9px] uppercase tracking-wider block font-bold text-cyber-cyan mb-1">Key Takeaway</span>
+                      <p className="text-slate-205 text-[11px] leading-relaxed">
+                        {lessons.keyTakeaway}
+                      </p>
+                    </div>
 
-              <div className="p-4 rounded bg-cyber-cyan/5 border border-cyber-cyan/20">
-                <span className="text-cyber-cyan font-mono text-[9px] uppercase tracking-wider block font-bold mb-1">Lab Learning Outcome</span>
-                <p className="text-slate-300 text-[11px] leading-relaxed">
-                  {getEstimatedLearningOutcome(reportData.vectorId)}
-                </p>
-              </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="bg-black/35 p-4 rounded border border-cyber-border/40">
+                        <span className="text-white font-mono text-[9px] uppercase tracking-wider block font-bold text-amber-500 mb-1.5">What Beginners Should Remember</span>
+                        <p className="text-[11px] text-slate-400">
+                          {lessons.whatBeginnersRemember}
+                        </p>
+                      </div>
+
+                      <div className="bg-black/35 p-4 rounded border border-cyber-border/40">
+                        <span className="text-white font-mono text-[9px] uppercase tracking-wider block font-bold text-purple-400 mb-1.5">Real-World Lesson</span>
+                        <p className="text-[11px] text-slate-400">
+                          {lessons.realWorldLesson}
+                        </p>
+                      </div>
+
+                      <div className="bg-black/35 p-4 rounded border border-cyber-border/40">
+                        <span className="text-white font-mono text-[9px] uppercase tracking-wider block font-bold text-cyber-red mb-1.5">Why This Attack Worked</span>
+                        <p className="text-[11px] text-slate-400">
+                          {lessons.whyAttackWorked}
+                        </p>
+                      </div>
+
+                      <div className="bg-black/35 p-4 rounded border border-cyber-border/40">
+                        <span className="text-white font-mono text-[9px] uppercase tracking-wider block font-bold text-cyber-green mb-1.5">How Defenders Could Improve</span>
+                        <p className="text-[11px] text-slate-400">
+                          {lessons.howDefendersImprove}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })()}
             </div>
           </motion.section>
 
@@ -1253,6 +2141,10 @@ VERIFICATION TELEMETRY: COMPLETED // DEFENSE BLOCK STATUS: ${reportData.status.t
 
       </motion.div>
 
+      {reportData && (
+        <PrintCaseStudy reportData={reportData} />
+      )}
+
       {/* Footer - hidden on print */}
       <footer className="relative bg-black border-t border-cyber-border/40 py-10 z-10 overflow-hidden mt-12 print:hidden font-mono text-[9px]">
         <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-cyber-cyan/20 to-transparent" />
@@ -1266,7 +2158,7 @@ VERIFICATION TELEMETRY: COMPLETED // DEFENSE BLOCK STATUS: ${reportData.status.t
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyber-green opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-cyber-green"></span>
             </span>
-            <span>LEARNING SYSTEM ACTIVE</span>
+            <span>LEARNING SESSION ACTIVE</span>
           </div>
         </div>
       </footer>
@@ -1283,7 +2175,7 @@ export default function AIAnalystPage() {
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyber-cyan opacity-75"></span>
             <span className="relative inline-flex rounded-full h-3 w-3 bg-cyber-cyan"></span>
           </span>
-          Initializing Threat Intel Analyst Console...
+          Preparing Your Review...
         </div>
       </div>
     }>

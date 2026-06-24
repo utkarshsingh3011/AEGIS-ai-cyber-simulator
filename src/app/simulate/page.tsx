@@ -277,6 +277,8 @@ export default function SimulatePage() {
     // Save configuration in session storage so a future '/attack-viewer' page can read it directly!
     if (typeof window !== "undefined") {
       sessionStorage.setItem("sentinel_campaign_config", JSON.stringify(config));
+      sessionStorage.setItem("sentinel_max_unlocked_step", "2");
+      window.dispatchEvent(new Event("sentinel_progress_update"));
     }
 
     const compileLogs = [
@@ -779,7 +781,7 @@ export default function SimulatePage() {
         <div>SENTINEL CYBERSECURITY LEARNING PLATFORM</div>
         <div className="flex items-center gap-2">
           <Cpu className="w-3.5 h-3.5 text-cyber-cyan" />
-          <span>LEARNING LAB STANDBY</span>
+          <span>READY TO LEARN</span>
         </div>
       </footer>
 

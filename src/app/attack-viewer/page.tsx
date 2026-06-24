@@ -213,6 +213,13 @@ export default function AttackViewerPage() {
           setProgress(100);
           clearInterval(streamTimer);
           setTerminalLogs(prev => [...prev, `[COMPLETE] --- All attack stages executed ---`]);
+          if (typeof window !== "undefined") {
+            const currentMax = parseInt(sessionStorage.getItem("sentinel_max_unlocked_step") || "1", 10);
+            if (currentMax < 3) {
+              sessionStorage.setItem("sentinel_max_unlocked_step", "3");
+              window.dispatchEvent(new Event("sentinel_progress_update"));
+            }
+          }
         }
       }
     }, updateInterval);
@@ -331,123 +338,141 @@ export default function AttackViewerPage() {
     const isBlocked = status === "blocked";
     
     let whatHappened = "";
-    let whyItHappened = "";
-    let howItSpread = "";
+    let whyItWorked = "";
     let whatAttackerWanted = "";
-    let securityResponse = "";
-    let howPrevented = "";
+    let securityDidRight = "";
+    let securityMissed = "";
+    let howStoppedInRealLife = "";
 
     switch (stageIdx) {
       case 0:
-        whatHappened = "The attacker scanned the public network endpoints of the system.";
-        whyItHappened = "Public-facing ports or configuration details were left open, allowing automated discovery scripts to log response codes.";
-        howItSpread = "The scan stayed on the perimeter, searching for service versions and unpatched entry routes.";
-        whatAttackerWanted = "To locate an active network interface or misconfigured port that could be exploited.";
-        securityResponse = isBlocked
-          ? "The firewall immediately detected the aggressive scan patterns, logged the attacker's IP, and blocked further probes."
-          : "Perimeter monitoring failed to flag the scan, leaving the map of target network segments visible to the threat actor.";
-        howPrevented = "Regular external security assessments, closing unused ports, and setting up automated block rules for rapid scanning behavior.";
+        whatHappened = "The attacker scanned the public network connections of the system.";
+        whyItWorked = "Open ports were left visible to the public internet, allowing scanning tools to find active entry points.";
+        whatAttackerWanted = "To find an open door or a vulnerable service interface to exploit later.";
+        securityDidRight = isBlocked
+          ? "The firewall noticed the rapid network scans, flagged the hostile IP address, and immediately blocked further requests."
+          : "The system successfully logged the connection requests for later review.";
+        securityMissed = isBlocked
+          ? "No security gaps were exposed; the scanning attempt was fully blocked at the border."
+          : "The firewall did not automatically block the scanning behavior, leaving the system's layout exposed.";
+        howStoppedInRealLife = "Configure firewalls to block scanning patterns, close all unused network ports, and hide internal systems from the public web.";
         break;
       case 1:
-        whatHappened = `The attacker attempted to gain entry using the selected attack method (${attackType}).`;
-        whyItHappened = "Defensive gateway filters did not flag the malicious input vector or email payload before it reached its target.";
-        howItSpread = "The malicious package or connection script successfully executed, establishing a reverse terminal channel.";
-        whatAttackerWanted = "To establish an active connection inside the network and bypass outer perimeter controls.";
-        securityResponse = isBlocked
-          ? "The security gateway intercepted the malicious traffic or email link, blocking execution and terminating the connection."
-          : "The security filters failed to block the payload, allowing the attacker to establish a silent connection inside the system.";
-        howPrevented = "Deploying multi-factor authentication, email filters, and strict application control lists to block unrecognized executables.";
+        whatHappened = `The attacker attempted to gain entry using the ${attackType || "selected method"}.`;
+        whyItWorked = "System gateways and filters did not block the malicious package or link before it was accessed.";
+        whatAttackerWanted = "To establish an active connection from inside our system back to their control server.";
+        securityDidRight = isBlocked
+          ? "The security filters recognized the malicious file and stopped it from running, protecting the system."
+          : "Perimeter monitoring detected and logged the initial entry connection.";
+        securityMissed = isBlocked
+          ? "None; the attack was stopped before it could enter."
+          : "Defenses allowed the malicious file to execute, giving the attacker a foothold.";
+        howStoppedInRealLife = "Filter email attachments for malicious scripts, use modern endpoint protection tools, and train users to spot suspicious links.";
         break;
       case 2:
-        whatHappened = "The attacker searched system memory (e.g., LSASS dumps) for active login passwords and session keys.";
-        whyItHappened = "Local memory protection was not hardened, allowing processes running on the machine to read credentials of logged-in accounts.";
-        howItSpread = "Harvested administrative tokens were saved locally to impersonate legitimate network operators.";
-        whatAttackerWanted = "To steal administrator credentials, making it easy to masquerade as a legitimate user.";
-        securityResponse = isBlocked
-          ? "Local endpoint protection detected the memory dumping attempt and immediately terminated the hostile process."
-          : "Local protections failed, and the attacker successfully dumped system memory to harvest admin credentials.";
-        howPrevented = "Enabling Credential Guard, disabling storage of plaintext passwords in memory, and monitoring administrative tool calls.";
+        whatHappened = "The attacker searched the system's memory to locate active logins and passwords.";
+        whyItWorked = "The system memory was not fully protected, allowing programs to read stored passwords and security tokens.";
+        whatAttackerWanted = "To steal administrator passwords so they could act as a legitimate manager of the system.";
+        securityDidRight = isBlocked
+          ? "Endpoint security software detected the memory dump attempt and immediately terminated the attacker's script."
+          : "Central logs recorded the unusual program looking at system files.";
+        securityMissed = isBlocked
+          ? "None; password theft tools were blocked instantly."
+          : "The operating system stored active passwords in memory without strong encryption, allowing them to be read.";
+        howStoppedInRealLife = "Disable storing passwords in system memory, use operating system protections like Credential Guard, and require multi-factor authentication (MFA).";
         break;
       case 3:
-        whatHappened = "The attacker connected from the first compromised computer to other critical servers deep in the network.";
-        whyItHappened = "Internal network zones were unsegmented, allowing free communication between guest subnets and database zones.";
-        howItSpread = "Stolen credentials were used to authenticate with internal network shares and remote desktop hosts.";
-        whatAttackerWanted = "To locate and access key database storage arrays containing sensitive data.";
-        securityResponse = isBlocked
-          ? "Internal network firewalls blocked the unauthorized server-to-server traffic, isolating the threat."
-          : "Unsegmented network paths allowed the attacker to pivot directly from the workstation to the database gateway.";
-        howPrevented = "Implementing network microsegmentation, separating administrative hosts, and restricting internal port access.";
+        whatHappened = "The attacker used stolen logins to connect to databases and servers deeper in the network.";
+        whyItWorked = "There were no internal walls or rules separating standard user workstations from sensitive servers.";
+        whatAttackerWanted = "To navigate to the database storing customer files and private data.";
+        securityDidRight = isBlocked
+          ? "Internal firewalls blocked the connection because standard workstations are not allowed to access the database directly."
+          : "The system recorded the server-to-server connection hops for audit.";
+        securityMissed = isBlocked
+          ? "None; the internal lateral move attempt was stopped."
+          : "The network was not segmented, allowing a compromised computer to connect directly to the database server.";
+        howStoppedInRealLife = "Segment the network into isolated zones, restrict server-to-server connections, and monitor for unusual internal logins.";
         break;
       case 4:
-        whatHappened = "The attacker manipulated active security tokens to elevate permissions from a standard user to a system administrator.";
-        whyItHappened = "System policies allowed standard users to trigger installer services or exploit legacy kernel versions.";
-        howItSpread = "The process was restarted with full system/administrator permissions, bypassing access restrictions.";
-        whatAttackerWanted = "To gain unrestricted access and bypass database write locks and security rules.";
-        securityResponse = isBlocked
-          ? "Access controllers flagged the token manipulation attempt and revoked the account's credentials."
-          : "Loose configuration settings allowed the attacker to hijack admin tokens, granting them master control.";
-        howPrevented = "Adhering to the Principle of Least Privilege, enforcing app-locker policies, and patching operating system privilege gaps.";
+        whatHappened = "The attacker attempted to elevate their account privileges to become a system administrator.";
+        whyItWorked = "Unpatched operating system gaps or configuration rules allowed a standard user to run administrative files.";
+        whatAttackerWanted = "To gain full master control of the system to turn off security tools and access restricted records.";
+        securityDidRight = isBlocked
+          ? "The access control system flagged the suspicious privilege request and immediately locked the user account."
+          : "Local logging recorded the privilege escalation request.";
+        securityMissed = isBlocked
+          ? "None; the attempt to take administrator control was blocked."
+          : "Standard accounts had permission to run installer scripts or trigger administrative updates.";
+        howStoppedInRealLife = "Follow the rule of least privilege (limit what users can do), disable installer run access for standard accounts, and keep systems updated.";
         break;
       case 5:
-        whatHappened = "The attacker accessed target database directories to copy files and deploy disruptive payloads.";
-        whyItHappened = "Data-loss prevention monitoring did not alert on large outbound data transfers, and volume access was not locked.";
-        howItSpread = "Files were compressed and transferred over secure ports to an external command-and-control server.";
-        whatAttackerWanted = "To exfiltrate sensitive files out of the network and encrypt databases to demand ransom payment.";
-        securityResponse = isBlocked
-          ? "Automated database triggers and write locks immediately isolated the target files, preventing all exfiltration."
-          : "Defenses failed to halt database operations, allowing the attacker to copy sensitive customer files and encrypt the system.";
-        howPrevented = "Deploying data loss prevention (DLP) systems, setting up immutable databases, and enabling aggressive anomaly detection.";
+        whatHappened = "The attacker accessed the database and prepared to copy sensitive records out of the system.";
+        whyItWorked = "Outbound network monitors did not flag or limit large amounts of data being sent to unrecognized external servers.";
+        whatAttackerWanted = "To steal sensitive files to blackmail the organization or lock databases to demand payment.";
+        securityDidRight = isBlocked
+          ? "Database activity monitors detected the massive export request and automatically locked all tables to prevent theft."
+          : "Initial alerts were sent to the security team about database operations.";
+        securityMissed = isBlocked
+          ? "None; database locks successfully saved the data."
+          : "The system did not block the massive outbound data flow, allowing customer files to be copied.";
+        howStoppedInRealLife = "Use data loss prevention (DLP) tools to block large file transfers, keep encrypted offline backups, and monitor database queries for anomalous behavior.";
         break;
     }
 
     const titles = [
-      "Looking for Weak Points (Reconnaissance)",
-      "Trying to Get In (Initial Access)",
-      "Trying to Steal Passwords (Credential Access)",
-      "Moving Through the Network (Lateral Movement)",
+      "Looking For Weak Points (Reconnaissance)",
+      "Getting Into The System (Initial Access)",
+      "Trying To Steal Passwords (Credential Access)",
+      "Moving Through The Network (Lateral Movement)",
       "Taking Control (Privilege Escalation)",
-      "Attempting to Steal Data (Data Exfiltration)"
+      "Stealing Data (Data Exfiltration)"
     ];
 
     return {
       title: titles[stageIdx] || `Step ${stageIdx + 1}`,
       whatHappened,
-      whyItHappened,
-      howItSpread,
+      whyItWorked,
       whatAttackerWanted,
-      securityResponse,
-      howPrevented
+      securityDidRight,
+      securityMissed,
+      howStoppedInRealLife
     };
   };
 
   const getFriendlyStageInfo = (idx: number) => {
     const list = [
       {
-        title: "Looking for Weak Points (Reconnaissance)",
+        title: "Looking For Weak Points",
+        technical: "Reconnaissance",
         description: "The attacker scans the network to find active computers and open entry points."
       },
       {
-        title: "Trying to Get In (Initial Access)",
+        title: "Getting Into The System",
+        technical: "Initial Access",
         description: "The attacker establishes a silent foothold in the network, bypassing outer defenses."
       },
       {
-        title: "Trying to Steal Passwords (Credential Access)",
+        title: "Trying To Steal Passwords",
+        technical: "Credential Access",
         description: "The attacker searches local system memory to harvest administrative login credentials."
       },
       {
-        title: "Moving Through the Network (Lateral Movement)",
+        title: "Moving Through The Network",
+        technical: "Lateral Movement",
         description: "Using stolen credentials, the attacker pivots deeper into the core servers."
       },
       {
-        title: "Taking Control (Privilege Escalation)",
+        title: "Taking Control",
+        technical: "Privilege Escalation",
         description: "The attacker elevates permissions, gaining administrative access to network controllers."
       },
       {
-        title: "Attempting to Steal Data (Data Exfiltration)",
+        title: "Stealing Data",
+        technical: "Data Exfiltration",
         description: "The attacker copies database records out of the network and triggers the final disruptive payload."
       }
     ];
-    return list[idx] || { title: `Step ${idx + 1}`, description: `Executing stage ${idx + 1}...` };
+    return list[idx] || { title: `Step ${idx + 1}`, technical: `Stage ${idx + 1}`, description: `Executing stage ${idx + 1}...` };
   };
 
   const getLiveStoryTranslation = (stageIdx: number, attackType: string) => {
@@ -463,50 +488,56 @@ export default function AttackViewerPage() {
   };
 
   const getAttackGuide = (attackType: string, industry: string) => {
-    const guides: Record<string, { goal: string; entry: string; systems: string[]; impact: string[]; defenses: string[] }> = {
+    const guides: Record<string, { goal: string; entry: string; systems: string[]; consequences: string[]; recovery: string; improvements: string[] }> = {
       Phishing: {
         goal: "Steal employee credentials to gain a silent foothold and access critical internal databases.",
         entry: "Fake email scam carrying a malicious link designed to trick users.",
         systems: ["User workstation", "Domain Controller", "Database Server"],
-        impact: ["Credential theft", "Unauthorized access", "Patient/Client record leaks"],
-        defenses: ["Hardware MFA keys", "Email gateways", "Endpoint sandboxing"]
+        consequences: ["Service interruptions", "Data exposure", "Credential theft"],
+        recovery: "Several hours to reset credentials, verify logs, and ensure no persistent access remains.",
+        improvements: ["Multi-factor authentication", "Email filtering", "Endpoint protection"]
       },
       Ransomware: {
         goal: "Deploy wiper or encryption malware to lock critical operational databases and demand payment.",
         entry: "Fake email attachments or malicious script downloads.",
         systems: ["Workstation endpoints", "Backup storage arrays", "Core server directories"],
-        impact: ["File lockouts", "Severe operational downtime", "Compliance regulatory penalties"],
-        defenses: ["Immutable GCS backups", "Volume write locks", "Endpoint containment"]
+        consequences: ["Severe operational delays", "Data loss", "Financial impact"],
+        recovery: "Multiple days depending on the availability and integrity of offline backups.",
+        improvements: ["Immutable backups", "Network separation", "Endpoint containment"]
       },
       DDoS: {
         goal: "Overwhelm web portals and load balancers to disrupt public-facing services.",
         entry: "Volumetric packet flooding overloading gateway bandwidth.",
         systems: ["Internet gateway", "Load balancer ports", "Public web servers"],
-        impact: ["Service outage", "Downtime disruption", "Reputational loss"],
-        defenses: ["Traffic filtering scrubbers", "SYN-cookie rate limits", "Distributed CDN caching"]
+        consequences: ["Service outages", "Customer disruption", "Lost productivity"],
+        recovery: "A few hours to re-route traffic through scrubbers and filter malicious IPs.",
+        improvements: ["Traffic filtering", "Rate limiting", "Distributed caching"]
       },
       "SQL Injection": {
         goal: "Manipulate web input forms to bypass login authentication and extract database schemas.",
         entry: "Malicious SQL database commands entered directly into web forms.",
-        systems: ["Web application firewall", "Database server directories", "Customer database tables"],
-        impact: ["Database breach", "Data exposure", "Credential leaks"],
-        defenses: ["Parameterized queries", "WAF regex controls", "Least privilege DB permissions"]
+        systems: ["Web application firewall", "Database server", "Customer records"],
+        consequences: ["Database breach", "Data exposure", "System compromise"],
+        recovery: "Several hours to identify the vulnerability, patch the code, and rotate database credentials.",
+        improvements: ["Parameterized queries", "Web application firewalls", "Least privilege access"]
       },
       "Supply Chain": {
         goal: "Infect signed, trusted software updates to inject a back door into developer build servers.",
         entry: "Malicious packages imported as trusted dependencies.",
         systems: ["CI/CD builder containers", "Local library mirrors", "Internal application code"],
-        impact: ["CI/CD pipeline compromise", "Developer workstation hijack", "Repository compromise"],
-        defenses: ["Checksum hash checks", "Ephemeral build sandboxes", "Private registry mirroring"]
+        consequences: ["Pipeline compromise", "Developer workstation hijack", "Repository compromise"],
+        recovery: "Days to weeks to audit all code dependencies and rebuild clean environments.",
+        improvements: ["Checksum verification", "Dependency auditing", "Isolated build environments"]
       }
     };
 
     return guides[attackType] || {
       goal: "Bypass outer boundaries and access target database systems.",
       entry: "Exploiting network vulnerability or social engineering.",
-      systems: ["Network gateway", "Internal server node", "Target database"],
-      impact: ["System exposure", "Data leaks", "Operational outages"],
-      defenses: ["Zero trust rules", "EDR monitoring", "Firewall segment block"]
+      systems: ["Network gateway", "Internal server", "Target database"],
+      consequences: ["System exposure", "Data leaks", "Operational outages"],
+      recovery: "Several hours to multiple days depending on incident response readiness.",
+      improvements: ["Zero trust architecture", "Active monitoring", "Network segmentation"]
     };
   };
 
@@ -597,6 +628,111 @@ export default function AttackViewerPage() {
     const outcome = outcomeMap[attackType]?.[level] || `Under ${level} protection, defenses attempted to mitigate the threat.`;
 
     return { intro, outcome };
+  };
+
+  const getLiveActivitySummary = (stageIdx: number, status: "blocked" | "evaded" | "alerted", attackType: string, isCurrentStageRunning: boolean) => {
+    const isBlocked = status === "blocked";
+    
+    let currentStage = "";
+    let whatHappening = "";
+    let whyMatters = "";
+    let securityResponse = "";
+    let currentStatus = "";
+
+    switch (stageIdx) {
+      case 0:
+        currentStage = "Looking For Weak Points (Reconnaissance)";
+        whatHappening = "The attacker is scanning the network to identify active computers and open ports.";
+        whyMatters = "Identifying open ports allows the attacker to find potential doors into the private network.";
+        if (isCurrentStageRunning) {
+          securityResponse = "Firewalls are monitoring inbound connection requests for suspicious scanning patterns.";
+          currentStatus = "Running";
+        } else {
+          securityResponse = isBlocked 
+            ? "The network firewall detected the scanning pattern and blocked further requests from the attacker's IP address."
+            : "The perimeter monitoring allowed the scan to complete, meaning the attacker now has a map of the network.";
+          currentStatus = isBlocked ? "Blocked" : "Completed";
+        }
+        break;
+      case 1:
+        currentStage = "Getting Into The System (Initial Access)";
+        whatHappening = `The attacker is attempting to use ${attackType} to establish an initial foothold in the network.`;
+        whyMatters = "Getting inside the network is the first step needed to target internal servers and private databases.";
+        if (isCurrentStageRunning) {
+          securityResponse = "Security filters and email scanners are validating script signatures and inbound payloads.";
+          currentStatus = "Running";
+        } else {
+          securityResponse = isBlocked
+            ? "The security filters recognized the malicious activity and immediately terminated the entry connection."
+            : "The security gateway failed to intercept the payload, allowing the attacker to connect to a workstation.";
+          currentStatus = isBlocked ? "Blocked" : "Completed";
+        }
+        break;
+      case 2:
+        currentStage = "Trying To Steal Passwords (Credential Access)";
+        whatHappening = "The attacker is searching system memory to extract active login credentials and admin keys.";
+        whyMatters = "Stolen administrator passwords allow the attacker to masquerade as a legitimate administrator and access restricted files.";
+        if (isCurrentStageRunning) {
+          securityResponse = "Local endpoint agents are checking memory access requests for unauthorized tool activity.";
+          currentStatus = "Running";
+        } else {
+          securityResponse = isBlocked
+            ? "Endpoint protection detected the memory dumping tool and blocked access to the credential store."
+            : "Defenses failed to protect credentials in memory, allowing the attacker to extract administrator password hashes.";
+          currentStatus = isBlocked ? "Blocked" : "Completed";
+        }
+        break;
+      case 3:
+        currentStage = "Moving Through The Network (Lateral Movement)";
+        whatHappening = "The attacker is using stolen logins to connect to databases and critical servers deep in the network.";
+        whyMatters = "Attackers rarely land directly on their target; they must pivot from workstations to reach sensitive database zones.";
+        if (isCurrentStageRunning) {
+          securityResponse = "Internal network firewalls are validating connection credentials and inspecting server-to-server traffic.";
+          currentStatus = "Running";
+        } else {
+          securityResponse = isBlocked
+            ? "Internal firewalls blocked the workstation's attempt to access the database network zone directly."
+            : "Unsegmented network paths allowed the attacker to connect to the database server using legitimate credentials.";
+          currentStatus = isBlocked ? "Blocked" : "Completed";
+        }
+        break;
+      case 4:
+        currentStage = "Taking Control (Privilege Escalation)";
+        whatHappening = "The attacker is attempting to elevate their user privileges to gain full administrative rights.";
+        whyMatters = "Administrative privileges let the attacker disable security tools and access restricted operating system directories.";
+        if (isCurrentStageRunning) {
+          securityResponse = "Access controllers are evaluating account privileges and validating administrative requests.";
+          currentStatus = "Running";
+        } else {
+          securityResponse = isBlocked
+            ? "Access control rules blocked the privilege elevation request and locked the compromised account."
+            : "System configuration vulnerabilities allowed the attacker to hijack admin-level permissions.";
+          currentStatus = isBlocked ? "Blocked" : "Completed";
+        }
+        break;
+      case 5:
+        currentStage = "Stealing Data (Data Exfiltration)";
+        whatHappening = "The attacker is accessing target database directories to copy files out of the network.";
+        whyMatters = "Exfiltrating sensitive customer records or encrypting databases is the final step in a data breach or ransomware attack.";
+        if (isCurrentStageRunning) {
+          securityResponse = "Data loss prevention systems and database activity monitors are tracking file egress rates.";
+          currentStatus = "Running";
+        } else {
+          securityResponse = isBlocked
+            ? "Database activity monitors detected the unusual export request and automatically locked database operations."
+            : "Outbound network monitors failed to flag the large data transfer, allowing the attacker to copy files.";
+          currentStatus = isBlocked ? "Blocked" : "Completed";
+        }
+        break;
+    }
+
+    return {
+      currentStage,
+      whatHappening,
+      whyMatters,
+      securityResponse,
+      currentStatus
+    };
   };
 
   if (!campaign) {
@@ -744,7 +880,7 @@ export default function AttackViewerPage() {
                 animate={{ height: "auto", opacity: 1 }}
                 exit={{ height: 0, opacity: 0 }}
                 transition={{ duration: 0.3 }}
-                className="grid grid-cols-1 md:grid-cols-5 gap-6 text-[11px] font-sans text-slate-400 overflow-hidden"
+                className="grid grid-cols-1 md:grid-cols-3 gap-6 text-[11px] font-sans text-slate-400 overflow-hidden"
               >
                 <div>
                   <strong className="text-white font-mono block mb-1.5 uppercase tracking-wider text-[10px] text-cyber-cyan">🎯 Attacker&apos;s Goal</strong>
@@ -755,7 +891,7 @@ export default function AttackViewerPage() {
                   {getAttackGuide(campaign.attackType, campaign.industry).entry}
                 </div>
                 <div>
-                  <strong className="text-white font-mono block mb-1.5 uppercase tracking-wider text-[10px] text-cyber-cyan">🖥 Systems Targeted</strong>
+                  <strong className="text-white font-mono block mb-1.5 uppercase tracking-wider text-[10px] text-cyber-cyan">🖥 Affected Systems</strong>
                   <ul className="list-disc list-inside space-y-0.5 mt-1 font-mono text-[10px]">
                     {getAttackGuide(campaign.attackType, campaign.industry).systems.map((sys, idx) => (
                       <li key={idx} className="text-[10px] text-slate-300">{sys}</li>
@@ -763,17 +899,21 @@ export default function AttackViewerPage() {
                   </ul>
                 </div>
                 <div>
-                  <strong className="text-white font-mono block mb-1.5 uppercase tracking-wider text-[10px] text-cyber-cyan">⚠ Potential Impact</strong>
+                  <strong className="text-white font-mono block mb-1.5 uppercase tracking-wider text-[10px] text-cyber-cyan">⚠ Possible Consequences</strong>
                   <ul className="list-disc list-inside space-y-0.5 mt-1 font-mono text-[10px]">
-                    {getAttackGuide(campaign.attackType, campaign.industry).impact.map((imp, idx) => (
+                    {getAttackGuide(campaign.attackType, campaign.industry).consequences.map((imp, idx) => (
                       <li key={idx} className="text-[10px] text-slate-300">{imp}</li>
                     ))}
                   </ul>
                 </div>
                 <div>
-                  <strong className="text-white font-mono block mb-1.5 uppercase tracking-wider text-[10px] text-cyber-cyan">🛡 Defensive Measures</strong>
+                  <strong className="text-white font-mono block mb-1.5 uppercase tracking-wider text-[10px] text-cyber-cyan">⏱ Estimated Recovery</strong>
+                  <div className="text-[10px] text-slate-300">{getAttackGuide(campaign.attackType, campaign.industry).recovery}</div>
+                </div>
+                <div>
+                  <strong className="text-white font-mono block mb-1.5 uppercase tracking-wider text-[10px] text-cyber-cyan">🛡 Recommended Improvements</strong>
                   <ul className="list-disc list-inside space-y-0.5 mt-1 font-mono text-[10px]">
-                    {getAttackGuide(campaign.attackType, campaign.industry).defenses.map((def, idx) => (
+                    {getAttackGuide(campaign.attackType, campaign.industry).improvements.map((def, idx) => (
                       <li key={idx} className="text-[10px] text-slate-300">{def}</li>
                     ))}
                   </ul>
@@ -817,14 +957,14 @@ export default function AttackViewerPage() {
                 className="flex items-center gap-4 flex-wrap"
               >
                 <span className="text-[10px] font-mono text-cyber-green font-bold uppercase tracking-wider hidden sm:inline">
-                  [CTI BRIEF GENERATED]
+                  [REVIEW READY]
                 </span>
                 <Link
                   href="/ai-analyst"
                   className="inline-flex items-center gap-2 px-4 py-2 rounded bg-electric-blue border border-electric-blue/50 text-xs font-mono font-bold tracking-widest text-white uppercase hover:bg-blue-600 hover:shadow-[0_0_15px_rgba(37,99,235,0.4)] transition-all duration-300 animate-pulse cursor-pointer animate-pulse-subtle"
                 >
                   <Brain className="w-3.5 h-3.5 text-cyber-cyan" />
-                  Analyze with AI Analyst
+                  Understand What Happened (AI Analyst)
                 </Link>
               </motion.div>
             ) : (
@@ -1001,7 +1141,10 @@ export default function AttackViewerPage() {
                           {getStatusBadge()}
                         </div>
 
-                        <h4 className="text-xs font-bold text-white mt-2 font-mono uppercase tracking-wider">{getFriendlyStageInfo(idx).title}</h4>
+                        <h4 className="text-xs font-bold text-white mt-2 font-mono uppercase tracking-wider flex flex-col gap-0.5">
+                          <span>{getFriendlyStageInfo(idx).title}</span>
+                          <span className="text-[9px] text-slate-500 font-normal lowercase">({getFriendlyStageInfo(idx).technical})</span>
+                        </h4>
                         <p className="text-[11px] text-slate-400 mt-1 leading-relaxed font-sans">{getFriendlyStageInfo(idx).description}</p>
                       </div>
                     </div>
@@ -1135,24 +1278,24 @@ export default function AttackViewerPage() {
                         <p className="text-slate-350 mt-0.5">{event.whatHappened}</p>
                       </div>
                       <div>
-                        <span className="text-cyber-cyan font-mono text-[9px] uppercase tracking-wider block font-bold">🎯 Why It Happened?</span>
-                        <p className="text-slate-350 mt-0.5">{event.whyItHappened}</p>
+                        <span className="text-cyber-cyan font-mono text-[9px] uppercase tracking-wider block font-bold">🎯 Why It Worked?</span>
+                        <p className="text-slate-350 mt-0.5">{event.whyItWorked}</p>
                       </div>
                       <div>
-                        <span className="text-cyber-cyan font-mono text-[9px] uppercase tracking-wider block font-bold">🧬 How It Spread?</span>
-                        <p className="text-slate-350 mt-0.5">{event.howItSpread}</p>
-                      </div>
-                      <div>
-                        <span className="text-cyber-cyan font-mono text-[9px] uppercase tracking-wider block font-bold">🎯 What The Attacker Wanted?</span>
+                        <span className="text-cyber-cyan font-mono text-[9px] uppercase tracking-wider block font-bold">🎯 What Was The Attacker Trying To Do?</span>
                         <p className="text-slate-350 mt-0.5">{event.whatAttackerWanted}</p>
                       </div>
                       <div>
-                        <span className="text-cyber-cyan font-mono text-[9px] uppercase tracking-wider block font-bold">🛡️ How Defenses Responded?</span>
-                        <p className="text-slate-350 mt-0.5">{event.securityResponse}</p>
+                        <span className="text-cyber-cyan font-mono text-[9px] uppercase tracking-wider block font-bold">🛡️ What Security Did Right?</span>
+                        <p className="text-slate-350 mt-0.5">{event.securityDidRight}</p>
                       </div>
                       <div>
-                        <span className="text-cyber-cyan font-mono text-[9px] uppercase tracking-wider block font-bold">🛑 How It Could Be Prevented?</span>
-                        <p className="text-slate-350 mt-0.5">{event.howPrevented}</p>
+                        <span className="text-cyber-cyan font-mono text-[9px] uppercase tracking-wider block font-bold">🛑 What Security Missed?</span>
+                        <p className="text-slate-350 mt-0.5">{event.securityMissed}</p>
+                      </div>
+                      <div>
+                        <span className="text-cyber-cyan font-mono text-[9px] uppercase tracking-wider block font-bold">🛑 How Could This Be Stopped In Real Life?</span>
+                        <p className="text-slate-350 mt-0.5">{event.howStoppedInRealLife}</p>
                       </div>
                     </div>
 
@@ -1171,49 +1314,70 @@ export default function AttackViewerPage() {
               })()}
             </div>
 
-            {/* Live Terminal Log Panel with Translation */}
+            {/* Live Activity Summary Card */}
             <div className="glassmorphism-card rounded-xl border border-cyber-border overflow-hidden glow-blue">
               <div className="bg-cyber-surface px-4 py-2 border-b border-cyber-border flex items-center justify-between text-[10px] font-mono text-slate-400">
-                <span className="flex items-center gap-1.5 uppercase font-bold">
+                <span className="flex items-center gap-1.5 uppercase font-bold text-cyber-cyan">
                   <Terminal className="w-3.5 h-3.5 text-cyber-cyan" />
-                  simulation-progress-feed.log
+                  Live Activity Summary
                 </span>
                 <span className="text-cyber-cyan animate-pulse">STREAM ACTIVE</span>
               </div>
 
-              {/* Live Translation block */}
-              <div className="bg-cyber-surface/40 p-4 border-b border-cyber-border text-xs text-slate-300 font-sans leading-relaxed">
-                <div className="text-cyber-cyan font-mono text-[9px] uppercase font-bold tracking-wider mb-1">What Is Happening Right Now?</div>
-                <p className="text-[11px] text-slate-300">
-                  {getLiveStoryTranslation(currentStageIdx, campaign.attackType)}
-                </p>
-              </div>
+              {(() => {
+                const isCurrentStageRunning = isPlaying && progress < 100;
+                const summary = getLiveActivitySummary(
+                  currentStageIdx,
+                  campaign.stages[currentStageIdx].status,
+                  campaign.attackType,
+                  isCurrentStageRunning
+                );
 
-              {/* Logs Screen */}
-              <div
-                ref={terminalContainerRef}
-                onScroll={handleTerminalScroll}
-                className="bg-black/90 p-4 font-mono text-[10px] text-slate-400 h-[200px] overflow-y-auto space-y-1.5"
-              >
-                {terminalLogs.length === 0 ? (
-                  <div className="h-full flex items-center justify-center text-slate-600 text-center uppercase font-bold tracking-widest font-mono">
-                    Initializing logs stream player...
-                  </div>
-                ) : (
-                  terminalLogs.map((log, idx) => {
-                    const isSystem = log.includes("[STAGE DONE]") || log.includes("[COMPLETE]");
-                    return (
-                      <div
-                        key={idx}
-                        className={`leading-relaxed ${isSystem ? "text-cyber-cyan font-bold animate-pulse" : "text-slate-400"}`}
-                      >
-                        <span className="text-slate-700 mr-1.5">&gt;</span>
-                        {log}
+                return (
+                  <div className="p-5 font-sans text-xs space-y-4 leading-relaxed">
+                    <div>
+                      <span className="text-slate-500 font-mono text-[9px] uppercase tracking-wider block">Current Stage</span>
+                      <div className="text-white font-bold font-mono text-sm mt-0.5">
+                        {summary.currentStage}
                       </div>
-                    );
-                  })
-                )}
-              </div>
+                    </div>
+
+                    <div>
+                      <span className="text-cyber-cyan font-mono text-[9px] uppercase tracking-wider block">What Is Happening Right Now?</span>
+                      <p className="text-slate-300 mt-0.5">
+                        {summary.whatHappening}
+                      </p>
+                    </div>
+
+                    <div>
+                      <span className="text-cyber-cyan font-mono text-[9px] uppercase tracking-wider block">Why It Matters</span>
+                      <p className="text-slate-300 mt-0.5">
+                        {summary.whyMatters}
+                      </p>
+                    </div>
+
+                    <div>
+                      <span className="text-cyber-cyan font-mono text-[9px] uppercase tracking-wider block">Security Response</span>
+                      <p className="text-slate-300 mt-0.5">
+                        {summary.securityResponse}
+                      </p>
+                    </div>
+
+                    <div className="pt-2 border-t border-cyber-border/40 flex items-center justify-between">
+                      <span className="text-slate-500 font-mono text-[9px] uppercase tracking-wider">Current Status</span>
+                      <span className={`px-2.5 py-0.5 rounded text-[10px] font-mono font-bold uppercase tracking-wider ${
+                        summary.currentStatus === "Blocked" 
+                          ? "bg-cyber-green/10 border border-cyber-green/30 text-cyber-green shadow-[0_0_10px_rgba(16,185,129,0.15)]"
+                          : summary.currentStatus === "Completed"
+                          ? "bg-cyber-red/10 border border-cyber-red/30 text-cyber-red shadow-[0_0_10px_rgba(244,63,94,0.15)]"
+                          : "bg-amber-500/10 border border-amber-500/30 text-amber-500 animate-pulse shadow-[0_0_10px_rgba(245,158,11,0.15)]"
+                      }`}>
+                        {summary.currentStatus}
+                      </span>
+                    </div>
+                  </div>
+                );
+              })()}
             </div>
 
           </div>
@@ -1243,7 +1407,7 @@ export default function AttackViewerPage() {
                   transition={{ duration: 0.3 }}
                   className="space-y-8 overflow-hidden pb-8 pt-4"
                 >
-                  {/* Threat Intelligence Metadata */}
+                  {/* Attack Setup Details */}
                   <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 font-mono text-[10px]">
                     <div className="bg-black/40 p-4 rounded-xl border border-cyber-border bg-black/40">
                       <div className="text-cyber-cyan text-[8px] uppercase tracking-wider">Who is behind the attack (Threat Actor)</div>
@@ -1271,10 +1435,10 @@ export default function AttackViewerPage() {
                     </div>
                   </div>
 
-                  {/* Adversary Attack Chain & Containment Flow */}
+                  {/* Attack Flow & Containment */}
                   <div className="glassmorphism-card rounded-xl p-6 border border-cyber-border bg-black/40">
                     <span className="text-[9px] font-mono text-slate-500 uppercase tracking-widest block font-bold mb-6">
-                      Adversary Attack Chain & Containment Flow
+                      Attack Flow & Containment
                     </span>
                     <div className="flex flex-col md:flex-row items-center justify-between gap-4 font-mono text-[9px]">
                       {campaign.stages.map((stage, idx) => {
@@ -1326,7 +1490,7 @@ export default function AttackViewerPage() {
 
                     {/* Detection Methods Card */}
                     <div className="bg-cyber-surface/40 border border-cyber-border p-5 rounded-xl">
-                      <div className="text-cyber-cyan font-mono text-[10px] uppercase font-bold mb-4">Detection Rules</div>
+                      <div className="text-cyber-cyan font-mono text-[10px] uppercase font-bold mb-4">How Defenders Detect This</div>
                       <ul className="space-y-2.5 text-[10px] text-slate-350 list-disc pl-4 font-sans leading-relaxed">
                         {campaign.attackType === "Phishing" && (
                           <>
@@ -1366,9 +1530,9 @@ export default function AttackViewerPage() {
                       </ul>
                     </div>
 
-                    {/* Indicators of Compromise (IOCs) */}
+                    {/* Technical Artifacts */}
                     <div className="bg-cyber-surface/40 border border-cyber-border p-5 rounded-xl">
-                      <div className="text-cyber-cyan font-mono text-[10px] uppercase font-bold mb-4">Indicators of Compromise (IOCs)</div>
+                      <div className="text-cyber-cyan font-mono text-[10px] uppercase font-bold mb-4">Technical Artifacts (IOCs)</div>
                       <div className="space-y-3 font-mono text-[8px] text-slate-400">
                         <div>
                           <strong className="text-white block uppercase mb-1 text-[9px]">IP Addresses:</strong>
@@ -1404,7 +1568,7 @@ export default function AttackViewerPage() {
         <div>CORE PLATFORM: sentinel-learning-lab</div>
         <div className="flex items-center gap-2">
           <Activity className="w-3.5 h-3.5 text-cyber-cyan animate-pulse" />
-          <span>SIMULATION WALKTHROUGH ACTIVE</span>
+          <span>SIMULATION RUNNING</span>
         </div>
       </footer>
 

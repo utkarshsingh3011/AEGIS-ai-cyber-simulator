@@ -313,7 +313,7 @@ export default function CommandCenterPage() {
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyber-cyan opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-cyber-cyan"></span>
               </span>
-              LEARNING JOURNAL ACTIVE
+              YOUR PROGRESS
             </span>
           </div>
         </div>
@@ -324,7 +324,7 @@ export default function CommandCenterPage() {
         <div className="mb-8 p-5 rounded bg-cyber-surface/60 border border-cyber-border/80 text-xs text-slate-300 leading-relaxed max-w-4xl relative overflow-hidden space-y-3">
           <div className="absolute top-0 left-0 bottom-0 w-[3px] bg-cyber-cyan" />
           <div>
-            <strong className="text-white block mb-0.5">Welcome to your Learning Journal</strong>
+            <strong className="text-white block mb-0.5">Welcome to your Key Lessons (Learning Journal)</strong>
             This panel aggregates data from all attack simulations you have built and run on SENTINEL. It serves as your personal progress dashboard to track how different security configurations stood up to simulated threat actors.
           </div>
           <div>
@@ -836,7 +836,7 @@ export default function CommandCenterPage() {
                     </div>
 
                     <div className="text-[9px] font-mono text-slate-500 uppercase mt-6 pt-4 border-t border-cyber-border/40">
-                      LEARNING JOURNAL INSIGHTS
+                      YOUR PROGRESS INSIGHTS
                     </div>
                   </motion.div>
 
@@ -1057,10 +1057,10 @@ export default function CommandCenterPage() {
                     className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded border border-cyber-cyan bg-cyber-cyan/15 hover:bg-cyber-cyan/25 text-cyber-cyan text-xs font-bold uppercase transition-all duration-300 hover:shadow-[0_0_15px_rgba(6,182,212,0.3)] text-center cursor-pointer"
                   >
                     <Brain className="w-4 h-4 text-cyber-cyan animate-pulse" />
-                    Generate AI Prevention Guide (Gemini)
+                    Understand What Happened (Simulation Review)
                   </Link>
                   <span className="text-[8px] text-cyber-green text-center block mt-2 font-semibold">
-                    AI ANALYSIS READY - CLICK TO VIEW GUIDE
+                    REVIEW READY - CLICK TO UNDERSTAND ATTACK
                   </span>
                 </div>
               </div>
@@ -1082,7 +1082,7 @@ export default function CommandCenterPage() {
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyber-green opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-cyber-green"></span>
             </span>
-            <span>LEARNING SYSTEM ACTIVE</span>
+            <span>LEARNING SESSION ACTIVE</span>
           </div>
         </div>
       </footer>
