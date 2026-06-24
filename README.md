@@ -1,100 +1,105 @@
 # 🛡️ Sentinel
 
-### Learn Cybersecurity by Watching Attacks Unfold
+### Interactive Cybersecurity Learning Platform
+
+Sentinel is a cybersecurity learning platform that helps students understand how cyber attacks unfold through visual simulations, guided reviews, and interactive storytelling.
+
+Instead of reading isolated cybersecurity concepts, learners can follow complete attack scenarios, understand why they succeed, and explore how they could be prevented.
 
 🌐 **Live Demo:** https://sentinel-cyberlabs.vercel.app
 
-⭐ **If you find this project interesting, consider starring the repository.**
+---
+
+## Demo
+
+<p align="center">
+  <img src="./public/demo.gif" alt="Sentinel Demo" width="95%">
+</p>
 
 ---
 
-## Overview
+## Screenshots
 
-Sentinel is an educational cybersecurity simulation platform built to help students and beginners understand how modern cyber attacks work inside real-world environments.
+### Landing Page
 
-Instead of reading static theory, users can interact with attack scenarios, visualize attack progression, explore MITRE ATT&CK techniques, and understand how defensive strategies reduce risk.
+<img src="./public/landing-page.png" width="100%">
 
-The project focuses on making cybersecurity concepts easier to learn through visual and interactive experiences.
+### Simulation Builder
 
----
+<img src="./public/simulation-builder.png" width="100%">
 
-## Landing Page
+### Attack Storyboard
 
-![Landing Page](public/landing-page.png)
+<img src="./public/attack-storyboard.png" width="100%">
 
----
+### Learning Review
 
-## Key Features
-
-* Interactive Attack Simulation Builder
-* AI Security Analyst Console
-* Security Insights Dashboard
-* MITRE ATT&CK Mapping
-* Visual Attack Progression Workflow
-* Multiple Industry Scenarios
-* Educational Learning Experience
-* Modern Cybersecurity Interface
+<img src="./public/learning-review.png" width="100%">
 
 ---
 
-## Attack Simulation Builder
+## Why I Built This
 
-![Simulation Builder](public/simulation-builder.png)
+While learning cybersecurity, I found that many attack concepts were difficult to visualize.
 
-Configure attack scenarios, select attacker profiles, define security strengths, and observe how different defenses impact attack outcomes.
+Sentinel was built to transform topics such as phishing, password theft, privilege abuse, and data theft into an interactive learning experience that shows:
+
+* How attacks begin
+* How attackers move through systems
+* Why security controls fail
+* What impact attacks can have
+* How they can be prevented
+
+The goal is education and awareness, not offensive security.
 
 ---
 
-## Security Dashboard
+## Highlights
 
-![Security Dashboard](public/security-dashboard.png)
-
-Analyze simulated attack results, identify risks, and understand how security controls influence the attack lifecycle.
-
----
-
-## AI Security Analyst
-
-![AI Analyst](public/ai-analyst.png)
-
-An AI-powered analyst interface designed to explain attacks, security concepts, and mitigation strategies in a student-friendly way.
+* Interactive cybersecurity simulations
+* Step-by-step attack storyboards
+* Guided learning reviews
+* Beginner-friendly explanations
+* Expandable technical details
+* Downloadable simulation reports
 
 ---
 
 ## Built With
 
 * Next.js
+* React
 * TypeScript
 * Tailwind CSS
 * Framer Motion
+* GSAP
 * Vercel
 
 ---
 
-## Why This Project?
+## What I Learned
 
-Cybersecurity can feel overwhelming when concepts are only explained through text.
+Building Sentinel helped me strengthen my understanding of:
 
-Sentinel was built to make attack paths, attacker behavior, and defensive strategies easier to visualize and understand through interactive simulations.
-
-The goal is simple:
-
-> Make cybersecurity learning more practical, visual, and engaging.
-
----
-
-## About Me
-
-I'm Utkarsh Singh, an ECE student at JIIT Noida with a growing interest in cybersecurity and related fields.
-
-Sentinel is one of my projects focused on combining learning, visualization, and cybersecurity education into a single platform.
+* Cybersecurity fundamentals
+* Threat modeling concepts
+* Frontend architecture
+* UI/UX design
+* Interactive learning systems
+* React and TypeScript development
 
 ---
 
-### Live Website
+## Author
 
-🌐 https://sentinel-cyberlabs.vercel.app
+**Utkarsh Singh**
 
-### Repository
+B.Tech Electronics & Communication Engineering (ECE)
 
-📂 https://github.com/utkarshsingh3011/SENTINEL
+Jaypee Institute of Information Technology, Noida
+
+GitHub: https://github.com/utkarshsingh3011
+
+---
+
+⭐ If you found Sentinel interesting, consider starring the repository.
