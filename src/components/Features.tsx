@@ -1,105 +1,89 @@
 "use client";
 
 import React from "react";
-import { Bot, Clapperboard, Network, GitFork, ShieldAlert, Cpu, ArrowUpRight } from "lucide-react";
+import { Bot, Play, BarChart3, BookOpen, Cpu, ArrowUpRight, ShieldAlert } from "lucide-react";
 import { motion } from "framer-motion";
 
 const FEATURES = [
   {
-    id: "scenario-gen",
-    title: "AI Scenario Builder",
-    desc: "Create custom attack simulations using simple text. Learn how different attack styles and targets are structured, helping you understand how scenarios are planned.",
-    icon: Bot,
-    glowColor: "group-hover:shadow-[0_0_30px_rgba(37,99,235,0.15)]",
-    borderColor: "hover:border-blue-500/50",
-    badge: "Scenario Engine",
-    widget: (
-      <div className="mt-4 p-3 bg-black/40 rounded border border-cyber-border font-mono text-[9px] text-slate-400 space-y-1">
-        <div className="text-[8px] text-slate-500">{"// PROMPT"}</div>
-        <div className="text-white">&quot;Simulate a key-theft campaign on cloud storage...&quot;</div>
-        <div className="text-[8px] text-slate-500 mt-2">{"// OUTPUT COMPILED"}</div>
-        <div className="text-cyber-cyan">✓ T1530: Data from Cloud Storage Object</div>
-      </div>
-    ),
-  },
-  {
-    id: "movie-engine",
-    title: "Simulation Playback",
-    desc: "Watch simulations step-by-step with play, pause, and rewind controls. Inspect network activity and logs at each point to see how security issues unfold.",
-    icon: Clapperboard,
+    id: "attack-sims",
+    title: "Attack Simulations",
+    desc: "Watch interactive, step-by-step attack simulations.",
+    icon: Play,
     glowColor: "group-hover:shadow-[0_0_30px_rgba(6,182,212,0.15)]",
     borderColor: "hover:border-cyan-500/50",
-    badge: "Simulation Core",
+    badge: "Interactive Playback",
     widget: (
       <div className="mt-4 p-3 bg-black/40 rounded border border-cyber-border font-mono text-[9px] text-slate-400 space-y-2">
         <div className="flex justify-between text-[8px] text-slate-500">
-          <span>CAMPAIGN PLAYBACK</span>
-          <span className="text-cyber-cyan animate-pulse">04:12 / 10:00</span>
+          <span>ATTACK SIMULATION</span>
+          <span className="text-cyber-cyan animate-pulse">PLAYBACK ACTIVE</span>
         </div>
         <div className="w-full bg-slate-900 h-1 rounded overflow-hidden relative">
-          <div className="bg-cyber-cyan h-full w-[42%]" />
-          <div className="absolute left-[42%] top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-white shadow-[0_0_5px_#fff]" />
+          <div className="bg-cyber-cyan h-full w-[65%]" />
+          <div className="absolute left-[65%] top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-white shadow-[0_0_5px_#fff]" />
         </div>
-        <div className="text-center text-slate-300 text-[8px]">FRAME #249: Lateral Movement to HOST-20</div>
+        <div className="text-center text-slate-350 text-[8px]">Step 3 of 4: Lateral Movement to Central Server</div>
       </div>
     ),
   },
   {
-    id: "twin-infra",
-    title: "Virtual Network Model",
-    desc: "Model network layouts and firewalls without touching real systems. Gain hands-on practice configuring safety rules and testing defenses in a safe sandbox.",
-    icon: Network,
-    glowColor: "group-hover:shadow-[0_0_30px_rgba(10,185,129,0.15)]",
-    borderColor: "hover:border-emerald-500/50",
-    badge: "Topology Twin",
-    widget: (
-      <div className="mt-4 p-3 bg-black/40 rounded border border-cyber-border font-mono text-[9px] text-slate-400 flex justify-between items-center gap-2">
-        <div className="space-y-1">
-          <div className="text-[8px] text-slate-500">ASSET INGESTION</div>
-          <div className="text-white flex items-center gap-1">
-            <Cpu className="w-3 h-3 text-cyber-green" /> 15 Active Virtual Nodes
-          </div>
-        </div>
-        <div className="px-2 py-1 rounded bg-cyber-green/5 border border-cyber-green/30 text-cyber-green font-bold text-[8px]">
-          100% SYNCED
-        </div>
-      </div>
-    ),
-  },
-  {
-    id: "mitre-mapping",
-    title: "Security Mapping (MITRE ATT&CK)",
-    desc: "Map simulated attacks to standard security frameworks. Learn how real-world professionals categorize attack tactics and identify defense weaknesses.",
-    icon: GitFork,
-    glowColor: "group-hover:shadow-[0_0_30px_rgba(245,158,11,0.15)]",
-    borderColor: "hover:border-amber-500/50",
-    badge: "Matrix Compliance",
-    widget: (
-      <div className="mt-4 grid grid-cols-3 gap-1 font-mono text-[8px] text-center">
-        <div className="p-1 rounded bg-cyber-green/10 border border-cyber-green/20 text-cyber-green">T1566<br />Phishing</div>
-        <div className="p-1 rounded bg-cyber-red/10 border border-cyber-red/20 text-cyber-red">T1078<br />Accounts</div>
-        <div className="p-1 rounded bg-amber-500/10 border border-amber-500/20 text-amber-500">T1021<br />RDP</div>
-      </div>
-    ),
-  },
-  {
-    id: "defense-simulator",
-    title: "Security Rule Tester",
-    desc: "Test firewall rules and security controls against incoming threats. See how changing defense settings can successfully stop attacks from spreading.",
-    icon: ShieldAlert,
+    id: "security-insights",
+    title: "Security Insights",
+    desc: "Analyze logs, risk scores, and security findings.",
+    icon: BarChart3,
     glowColor: "group-hover:shadow-[0_0_30px_rgba(244,63,94,0.15)]",
     borderColor: "hover:border-rose-500/50",
-    badge: "Policy Hardening",
+    badge: "Risk Analysis",
     widget: (
       <div className="mt-4 p-3 bg-black/40 rounded border border-cyber-border font-mono text-[9px] text-slate-400 space-y-1.5">
-        <div className="text-[8px] text-slate-500">RESPONSE TRIGGER</div>
+        <div className="text-[8px] text-slate-500">SECURITY INSIGHTS LOG</div>
         <div className="flex justify-between items-center text-slate-300">
-          <span>Block C2 IP 192.168.4.15</span>
-          <span className="text-cyber-green font-bold">ACTIVE</span>
+          <span>Overall Security Level</span>
+          <span className="text-cyber-cyan font-bold">Standard</span>
         </div>
         <div className="flex justify-between items-center text-slate-300">
-          <span>Revoke Domain Admin Token</span>
-          <span className="text-cyber-green font-bold">ACTIVE</span>
+          <span>Identified Vulnerabilities</span>
+          <span className="text-amber-500 font-bold">2 At Risk</span>
+        </div>
+      </div>
+    ),
+  },
+  {
+    id: "simulation-builder",
+    title: "Simulation Builder",
+    desc: "Create custom scenarios and configure environments.",
+    icon: Bot,
+    glowColor: "group-hover:shadow-[0_0_30px_rgba(37,99,235,0.15)]",
+    borderColor: "hover:border-blue-500/50",
+    badge: "Scenario Setup",
+    widget: (
+      <div className="mt-4 p-3 bg-black/40 rounded border border-cyber-border font-mono text-[9px] text-slate-400 space-y-1">
+        <div className="text-[8px] text-slate-500">{"// SCENARIO CONFIG"}</div>
+        <div className="text-white">&quot;Custom Spear-Phishing Campaign&quot;</div>
+        <div className="text-[8px] text-slate-500 mt-2">{"// TARGET SYSTEM"}</div>
+        <div className="text-cyber-cyan">✓ Hospital EMR Network selected</div>
+      </div>
+    ),
+  },
+  {
+    id: "modules",
+    title: "Modules",
+    desc: "Learn cybersecurity concepts through structured lessons.",
+    icon: BookOpen,
+    glowColor: "group-hover:shadow-[0_0_30px_rgba(10,185,129,0.15)]",
+    borderColor: "hover:border-emerald-500/50",
+    badge: "Educational Content",
+    widget: (
+      <div className="mt-4 p-3 bg-black/40 rounded border border-cyber-border font-mono text-[9px] text-slate-400 flex justify-between items-center gap-2">
+        <div className="space-y-0.5">
+          <div className="text-[8px] text-slate-500">ACTIVE LESSON</div>
+          <div className="text-white font-bold text-[10px]">
+            Lesson 1: Phishing Basics
+          </div>
+        </div>
+        <div className="px-2 py-0.5 rounded bg-cyber-green/5 border border-cyber-green/30 text-cyber-green font-bold text-[8px]">
+          Completed
         </div>
       </div>
     ),
@@ -146,13 +130,13 @@ export default function Features() {
           >
             <div className="inline-flex items-center gap-2 text-cyber-cyan text-[10px] font-mono tracking-widest uppercase mb-4">
               <Cpu className="w-3.5 h-3.5 text-cyber-cyan" />
-              Simulation Modules
+              Platform Modules
             </div>
             <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight text-white">
-              Core Educational Modules
+              Core Modules
             </h2>
             <p className="mt-4 text-slate-400 text-sm md:text-base leading-relaxed">
-              SENTINEL houses five modular components designed to customize scenarios, visualize playbacks, model network environments, verify security compliance, and automate defenses.
+              SENTINEL provides four core modules designed to help you build, run, analyze, and learn from interactive cybersecurity simulations.
             </p>
           </motion.div>
 
@@ -162,7 +146,7 @@ export default function Features() {
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
           >
             {FEATURES.map((feat) => {
               const Icon = feat.icon;
@@ -218,7 +202,7 @@ export default function Features() {
               What You Can Learn
             </h2>
             <p className="mt-4 text-slate-400 text-sm md:text-base leading-relaxed">
-              Explore hands-on concepts that model real-world cybersecurity attacks and organizational defense procedures.
+              Explore hands-on concepts that model cybersecurity attacks and defensive policies in a safe, educational environment.
             </p>
           </motion.div>
 
@@ -231,34 +215,34 @@ export default function Features() {
           >
             {[
               {
-                title: "Phishing Attacks",
-                desc: "Learn how phishing emails work, how users are tricked, and how to spot malicious links.",
-                topic: "Initial Access",
+                title: "Attack Simulation Basics",
+                desc: "Learn how attacks are structured and executed.",
+                topic: "Simulations",
               },
               {
-                title: "Ransomware Operations",
-                desc: "Understand how ransomware locks files, why attackers do it, and how to recover using backups.",
-                topic: "Impact & Mitigation",
+                title: "Network & System Security",
+                desc: "Understand networks, systems, and common vulnerabilities.",
+                topic: "Infrastructure",
               },
               {
-                title: "Supply Chain Compromise",
-                desc: "See how untrusted code can slip into software updates, and how developers verify third-party libraries.",
-                topic: "Software Security",
+                title: "Threat Techniques",
+                desc: "Explore attacker methods and tactics.",
+                topic: "Attacks",
               },
               {
-                title: "Credential Theft",
-                desc: "Learn how passwords and login tokens are stolen from computer memory, and how to protect them.",
-                topic: "Access Control",
+                title: "Defensive Measures",
+                desc: "Learn how to detect, respond, and defend.",
+                topic: "Defense",
               },
               {
-                title: "Network Compromise",
-                desc: "Understand how attackers move between computers in a network, and how to segment networks to contain them.",
-                topic: "Internal Defenses",
+                title: "Security Analysis",
+                desc: "Review logs, insights, and risk assessments.",
+                topic: "Analysis",
               },
               {
-                title: "Security Best Practices",
-                desc: "Explore modern defense rules like multi-factor authentication (MFA) and zero-trust policies.",
-                topic: "Preventative Controls",
+                title: "Best Practices",
+                desc: "Build strong security habits and awareness.",
+                topic: "Prevention",
               },
             ].map((learn, i) => (
               <motion.div

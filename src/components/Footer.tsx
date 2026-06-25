@@ -32,30 +32,10 @@ export default function Footer() {
             <h4 className="text-white text-xs font-bold uppercase tracking-[0.2em] font-mono">
               Quick Links
             </h4>
-            <ul className="grid grid-cols-2 gap-x-4 gap-y-2 text-xs">
+            <ul className="flex flex-col gap-2.5 text-xs">
               <li>
                 <Link href="/" className="text-slate-400 hover:text-cyber-cyan transition-colors">
                   Home
-                </Link>
-              </li>
-              <li>
-                <Link href="/simulate" className="text-slate-400 hover:text-cyber-cyan transition-colors">
-                  Simulation Builder
-                </Link>
-              </li>
-              <li>
-                <Link href="/attack-viewer" className="text-slate-400 hover:text-cyber-cyan transition-colors">
-                  Attack Viewer
-                </Link>
-              </li>
-              <li>
-                <Link href="/ai-analyst" className="text-slate-400 hover:text-cyber-cyan transition-colors">
-                  AI Analyst
-                </Link>
-              </li>
-              <li>
-                <Link href="/command-center" className="text-slate-400 hover:text-cyber-cyan transition-colors">
-                  Command Center
                 </Link>
               </li>
               <li>
@@ -63,7 +43,7 @@ export default function Footer() {
                   About
                 </Link>
               </li>
-              <li className="col-span-2">
+              <li>
                 <a
                   href="https://github.com/utkarshsingh3011/SENTINEL"
                   target="_blank"
@@ -71,6 +51,16 @@ export default function Footer() {
                   className="text-slate-400 hover:text-cyber-cyan transition-colors"
                 >
                   GitHub
+                </a>
+              </li>
+              <li>
+                <a
+                  href="https://linkedin.com/in/utkarshsingh3011"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-slate-400 hover:text-cyber-cyan transition-colors"
+                >
+                  LinkedIn
                 </a>
               </li>
             </ul>

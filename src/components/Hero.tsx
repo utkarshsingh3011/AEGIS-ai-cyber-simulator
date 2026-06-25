@@ -129,12 +129,8 @@ export default function Hero() {
             transition={{ duration: 0.8, delay: 0.1 }}
             className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.08] text-white"
           >
-            See How <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-electric-blue via-cyber-cyan to-white">
-              Cyber Attacks
-            </span>{" "}
-            <br />
-            Actually Happen
+            Learn Cybersecurity <br />
+            Through <span className="text-transparent bg-clip-text bg-gradient-to-r from-electric-blue via-cyber-cyan to-white">Interactive Simulations</span>
           </motion.h1>
 
           <motion.p
@@ -143,7 +139,7 @@ export default function Hero() {
             transition={{ duration: 0.8, delay: 0.2 }}
             className="mt-6 text-sm md:text-base text-slate-400 max-w-xl font-sans leading-relaxed"
           >
-            Follow realistic attack scenarios step by step, understand how attackers think, and learn which security measures stop them.
+            SENTINEL is an educational platform that helps you understand how cyber attacks happen. Build simulations, watch attacks unfold step-by-step, analyze security insights, and strengthen your skills.
           </motion.p>
 
           {/* What You'll Learn Section */}
@@ -181,17 +177,17 @@ export default function Hero() {
             transition={{ duration: 0.8, delay: 0.3 }}
             className="mt-8 flex flex-wrap gap-4"
           >
-            <a
-              href="#workflow"
-              className="px-6 py-3 rounded bg-white hover:bg-slate-200 text-black text-xs font-mono tracking-widest uppercase transition-all duration-300 shadow-[0_0_20px_rgba(255,255,255,0.2)]"
-            >
-              How It Works
-            </a>
             <Link
               href="/simulate"
+              className="px-6 py-3 rounded bg-white hover:bg-slate-200 text-black text-xs font-mono tracking-widest uppercase transition-all duration-300 shadow-[0_0_20px_rgba(255,255,255,0.2)]"
+            >
+              Start Learning
+            </Link>
+            <Link
+              href="/attack-viewer"
               className="px-6 py-3 rounded bg-cyber-surface border border-cyber-border hover:border-cyber-border-active text-xs font-mono tracking-widest uppercase text-slate-300 hover:text-white transition-all duration-300"
             >
-              Build a Scenario
+              Explore Simulations
             </Link>
           </motion.div>
         </motion.div>

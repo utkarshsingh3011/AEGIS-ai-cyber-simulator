@@ -65,27 +65,27 @@ export default function Home() {
                 {[
                   {
                     title: "Students",
-                    desc: "Bridge the gap between theoretical textbook concepts and visual, step-by-step network attack timelines.",
+                    desc: "Learn cybersecurity through hands-on simulations and visual explanations.",
                     icon: GraduationCap,
                   },
                   {
                     title: "Beginners",
-                    desc: "Demystify cybersecurity jargon and build foundational knowledge through simple English and clear interactive guides.",
+                    desc: "Understand core concepts with simple, guided examples.",
                     icon: BookOpen,
                   },
                   {
                     title: "Security Enthusiasts",
-                    desc: "Experiment with security configurations and test firewall strength settings in a safe, simulated sandbox.",
+                    desc: "Explore attack techniques and analyze simulated environments.",
                     icon: ShieldAlert,
                   },
                   {
                     title: "Recruiters",
-                    desc: "Evaluate the architecture and design of an impressive educational portfolio project built by a motivated student.",
+                    desc: "Evaluate practical understanding through simulation-based learning.",
                     icon: Briefcase,
                   },
                   {
-                    title: "Academic Demos",
-                    desc: "Showcase clear, structured visual simulations during lectures, presentations, or lab study groups.",
+                    title: "Educators",
+                    desc: "Use simulations as teaching aids for cybersecurity concepts.",
                     icon: Presentation,
                   },
                 ].map((item, idx) => {
