@@ -1,31 +1,18 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React from "react";
 import Link from "next/link";
 import {
-  ArrowLeft, Brain, Cpu, Layers,
-  BookOpen, Lightbulb, Compass, Award
+  ArrowLeft, Lightbulb, Activity, Shield, Cpu,
+  Layers, Play, FileText, CheckCircle2
 } from "lucide-react";
 import { motion } from "framer-motion";
 import Header from "../../components/Header";
 import Footer from "@/components/Footer";
 
-function LiveClock() {
-  const [time, setTime] = useState("");
-  useEffect(() => {
-    const updateTime = () => {
-      setTime(new Date().toUTCString());
-    };
-    updateTime();
-    const interval = setInterval(updateTime, 1000);
-    return () => clearInterval(interval);
-  }, []);
-  return <span>{time || "00:00:00 UTC"}</span>;
-}
-
 export default function AboutPage() {
   return (
-    <div className="relative min-h-screen flex flex-col justify-between overflow-x-hidden bg-cyber-bg text-slate-200 selection:bg-electric-blue/30 selection:text-white">
+    <div className="relative min-h-screen flex flex-col justify-between overflow-x-hidden bg-cyber-bg text-slate-200 selection:bg-electric-blue/30 selection:text-white font-sans">
 
       {/* Background radial glows & grids */}
       <div className="absolute inset-0 cyber-grid opacity-20 pointer-events-none z-0" />
@@ -36,217 +23,173 @@ export default function AboutPage() {
       {/* Sticky Header Navigation */}
       <Header />
 
-      <main className="flex-grow pt-32 pb-20 relative z-10">
+      <main className="flex-grow pt-36 pb-24 relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
+          animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: "easeOut" }}
-          className="max-w-4xl mx-auto px-6"
+          className="max-w-4xl mx-auto px-6 space-y-20"
         >
 
           {/* Navigation back */}
-          <Link
-            href="/"
-            className="inline-flex items-center gap-2 text-[10px] font-mono tracking-widest text-slate-400 hover:text-white uppercase mb-8 transition-colors group"
-          >
-            <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform" />
-            Return to Home Page
-          </Link>
-
-          {/* Top Human-Readable Explanation */}
-          <div className="mb-8 p-5 rounded bg-cyber-surface/60 border border-cyber-border/80 text-xs text-slate-300 leading-relaxed max-w-4xl relative overflow-hidden space-y-3">
-            <div className="absolute top-0 left-0 bottom-0 w-[3px] bg-cyber-cyan" />
-            <div>
-              <strong className="text-white block mb-0.5">What is this?</strong>
-              An educational overview explaining the architecture, technology stack, and design of the SENTINEL simulation platform.
-            </div>
-            <div>
-              <strong className="text-white block mb-0.5">Why does it matter?</strong>
-              It provides developers, students, and recruiters with a clear look under the hood at how Next.js, Framer Motion, and the Gemini API are integrated.
-            </div>
-            <div>
-              <strong className="text-white block mb-0.5">What can I do here?</strong>
-              Learn about the project purpose, explore the system modules, examine the technology stack, and review the future development roadmap.
-            </div>
+          <div>
+            <Link
+              href="/"
+              className="inline-flex items-center gap-2 text-[10px] font-mono tracking-widest text-slate-400 hover:text-white uppercase transition-colors group"
+            >
+              <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform" />
+              Return to Home Page
+            </Link>
           </div>
 
-          {/* Page Intro Title */}
-          <div className="mb-12">
-            <div className="inline-flex items-center gap-2 text-cyber-cyan text-[10px] font-mono tracking-widest uppercase mb-4">
-              <BookOpen className="w-3.5 h-3.5 text-cyber-cyan" />
-              Document Node: about-project.exe
+          {/* SECTION 1: About Sentinel */}
+          <section className="space-y-6">
+            <div className="inline-flex items-center gap-2 text-cyber-cyan text-[10px] font-mono tracking-widest uppercase">
+              <Shield className="w-3.5 h-3.5" />
+              Overview
             </div>
-            <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight text-white uppercase">
-              About the SENTINEL Platform
+            <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-white leading-tight">
+              About Sentinel
             </h1>
-            <p className="mt-4 text-slate-400 text-sm md:text-base leading-relaxed">
-              SENTINEL is an educational cybersecurity simulation platform that helps students, beginners, and security enthusiasts understand how modern cyberattacks work and how organizations defend against them.
+            <p className="text-slate-300 text-base md:text-lg leading-relaxed max-w-3xl font-sans">
+              Sentinel is an interactive cybersecurity learning platform designed to make cyber attacks easier to understand.
             </p>
-          </div>
+            <p className="text-slate-400 text-sm md:text-base leading-relaxed max-w-3xl font-sans">
+              Instead of reading long technical explanations, users can build attack scenarios, watch them unfold step by step, explore what happened, and learn how different security measures stop them.
+            </p>
+          </section>
 
-          <div className="space-y-16">
+          {/* SECTION 2: Why I Built It */}
+          <section className="space-y-6 pt-6 border-t border-cyber-border/20">
+            <div className="inline-flex items-center gap-2 text-cyber-cyan text-[10px] font-mono tracking-widest uppercase">
+              <Lightbulb className="w-3.5 h-3.5" />
+              Purpose
+            </div>
+            <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight text-white">
+              Why I Built It
+            </h2>
+            <div className="space-y-4 text-slate-400 text-sm md:text-base leading-relaxed max-w-3xl font-sans">
+              <p>
+                When I first started learning cybersecurity, I realized many concepts were difficult to visualize.
+              </p>
+              <p>
+                Most resources explained attacks using slides, terminal logs, or long documentation.
+              </p>
+              <p>
+                I built Sentinel to make cybersecurity more interactive and easier to understand through visual simulations.
+              </p>
+            </div>
+          </section>
 
-            {/* 1. Project Overview & Purpose */}
-            <section className="glassmorphism-card rounded-xl p-6 border border-cyber-border relative overflow-hidden">
-              <div className="absolute top-0 left-0 bottom-0 w-[3px] bg-cyber-cyan" />
-              <h2 className="text-white font-mono text-xs uppercase tracking-widest font-bold mb-4 flex items-center gap-2">
-                <Compass className="w-4 h-4 text-cyber-cyan" />
-                [1.0] Project Overview & Purpose
-              </h2>
-              <div className="space-y-4 text-sm text-slate-300 leading-relaxed font-sans">
-                <p>
-                  Cybersecurity concepts are often locked behind dense jargon and command-line interfaces. SENTINEL was built to make these complex processes visible and intuitive. By combining custom simulation controls, real-time playbacks, and AI-driven analysis, SENTINEL allows users to safely watch how attacks spread across networks and study defensive protections in real-time.
-                </p>
-                <p>
-                  Whether you are a recruiter evaluating technical competency, a professor verifying architectural frameworks, or a beginner starting your cybersecurity journey, SENTINEL is designed to convey the core mechanics of threat blocking and defense in less than 60 seconds.
+          {/* SECTION 3: What You Can Do */}
+          <section className="space-y-8 pt-6 border-t border-cyber-border/20">
+            <div className="inline-flex items-center gap-2 text-cyber-cyan text-[10px] font-mono tracking-widest uppercase">
+              <Layers className="w-3.5 h-3.5" />
+              Capabilities
+            </div>
+            <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight text-white">
+              What You Can Do
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              {/* Card 1 */}
+              <div className="glassmorphism-card rounded-xl p-6 border border-cyber-border bg-cyber-surface/30 hover:border-cyber-cyan/35 transition-all duration-300 relative overflow-hidden group">
+                <span className="absolute top-0 left-0 w-2 h-full bg-cyber-cyan opacity-0 group-hover:opacity-100 transition-opacity" />
+                <div className="flex items-center gap-3 mb-3">
+                  <span className="w-8 h-8 rounded-lg bg-cyber-surface border border-cyber-border flex items-center justify-center text-cyber-cyan">
+                    <Play className="w-4 h-4 fill-current ml-0.5" />
+                  </span>
+                  <h3 className="text-white text-sm font-bold uppercase font-mono tracking-wider">
+                    Build Scenarios
+                  </h3>
+                </div>
+                <p className="text-xs text-slate-400 leading-relaxed font-sans">
+                  Create custom attack simulations.
                 </p>
               </div>
-            </section>
 
-            {/* 2. Why I Built SENTINEL */}
-            <section className="glassmorphism-card rounded-xl p-6 border border-cyber-border relative overflow-hidden">
-              <div className="absolute top-0 left-0 bottom-0 w-[3px] bg-cyber-cyan" />
-              <h2 className="text-white font-mono text-xs uppercase tracking-widest font-bold mb-4 flex items-center gap-2">
-                <Lightbulb className="w-4 h-4 text-cyber-cyan" />
-                [2.0] Why I Built SENTINEL
-              </h2>
-              <div className="space-y-4 text-sm text-slate-300 leading-relaxed font-sans">
-                <p>
-                  As a student learning cybersecurity, I noticed a huge gap between textbook theory and practical, visual understanding. Concepts like port scanning, lateral network movement, and credential protection are often taught purely through text or complex command-line logs, making it hard for beginners to grasp the &quot;big picture.&quot;
-                </p>
-                <p>
-                  I built SENTINEL as an educational student project to bridge this gap. My goal was to create a visual, interactive simulation workspace that makes cybersecurity concepts clear and accessible. It serves as:
-                </p>
-                <ul className="list-disc list-inside space-y-2 text-slate-400 pl-2">
-                  <li><strong className="text-slate-200">A Visual Textbook:</strong> Turning abstract network logs into interactive timeline playback animations.</li>
-                  <li><strong className="text-slate-200">A Safe Sandbox:</strong> Demonstrating attack steps deep within a network without any setup or security risks.</li>
-                  <li><strong className="text-slate-200">A Portfolio Showcase:</strong> Demonstrating how React, Next.js, Framer Motion, and generative AI can be integrated into a premium educational tool.</li>
-                </ul>
-              </div>
-            </section>
-
-            {/* 3. Core Features */}
-            <section className="glassmorphism-card rounded-xl p-6 border border-cyber-border relative overflow-hidden">
-              <div className="absolute top-0 left-0 bottom-0 w-[3px] bg-cyber-cyan" />
-              <h2 className="text-white font-mono text-xs uppercase tracking-widest font-bold mb-4 flex items-center gap-2">
-                <Award className="w-4 h-4 text-cyber-cyan" />
-                [3.0] Platform Modules
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs mt-2">
-                <div className="bg-black/35 p-4 rounded border border-cyber-border">
-                  <h3 className="text-white font-mono uppercase tracking-wider font-bold mb-1">Simulation Builder</h3>
-                  <p className="text-slate-400 leading-relaxed">
-                    Custom-build attack simulations by selecting target environments, attacker profiles, attack scenarios, and security strengths.
-                  </p>
+              {/* Card 2 */}
+              <div className="glassmorphism-card rounded-xl p-6 border border-cyber-border bg-cyber-surface/30 hover:border-cyber-cyan/35 transition-all duration-300 relative overflow-hidden group">
+                <span className="absolute top-0 left-0 w-2 h-full bg-cyber-cyan opacity-0 group-hover:opacity-100 transition-opacity" />
+                <div className="flex items-center gap-3 mb-3">
+                  <span className="w-8 h-8 rounded-lg bg-cyber-surface border border-cyber-border flex items-center justify-center text-cyber-cyan">
+                    <Activity className="w-4 h-4" />
+                  </span>
+                  <h3 className="text-white text-sm font-bold uppercase font-mono tracking-wider">
+                    Watch Attacks
+                  </h3>
                 </div>
-                <div className="bg-black/35 p-4 rounded border border-cyber-border">
-                  <h3 className="text-white font-mono uppercase tracking-wider font-bold mb-1">Attack Viewer</h3>
-                  <p className="text-slate-400 leading-relaxed">
-                    Observe the attack playback step-by-step. Includes an educational guide panel and live logs monitoring gateway and internal networks.
-                  </p>
-                </div>
-                <div className="bg-black/35 p-4 rounded border border-cyber-border">
-                  <h3 className="text-white font-mono uppercase tracking-wider font-bold mb-1">AI Analyst Console</h3>
-                  <p className="text-slate-400 leading-relaxed">
-                    Generates a clear AI security report using the Gemini API. Features a 30-second Quick Summary panel and security improvement recommendations.
-                  </p>
-                </div>
-                <div className="bg-black/35 p-4 rounded border border-cyber-border">
-                  <h3 className="text-white font-mono uppercase tracking-wider font-bold mb-1">Security Insights Dashboard</h3>
-                  <p className="text-slate-400 leading-relaxed">
-                    Dashboard tracking past simulations, average security scores, target environment distributions, and effectiveness rates mapped to standard techniques.
-                  </p>
-                </div>
-              </div>
-            </section>
-
-            {/* 4. Architecture & Technology Stack */}
-            <section id="tech-stack" className="glassmorphism-card rounded-xl p-6 border border-cyber-border relative overflow-hidden">
-              <div className="absolute top-0 left-0 bottom-0 w-[3px] bg-cyber-cyan" />
-              <h2 className="text-white font-mono text-xs uppercase tracking-widest font-bold mb-4 flex items-center gap-2">
-                <Cpu className="w-4 h-4 text-cyber-cyan" />
-                [4.0] Architecture & Technology Stack
-              </h2>
-              <div className="space-y-6 text-sm text-slate-300 leading-relaxed">
-                <p>
-                  SENTINEL is structured as a client-first React application deployed on Vercel. It leverages serverless server endpoints for external API requests.
-                </p>
-
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 font-mono text-xs">
-                  <div className="p-4 bg-black/40 border border-cyber-border rounded">
-                    <span className="text-cyber-cyan font-bold block mb-2 uppercase text-[10px]">Framework</span>
-                    <strong className="text-white block">Next.js 16 (React 19)</strong>
-                    <span className="text-slate-500 block mt-1 text-[10px]">App Router architecture utilizing Server Actions and API route handlers.</span>
-                  </div>
-                  <div className="p-4 bg-black/40 border border-cyber-border rounded">
-                    <span className="text-cyber-cyan font-bold block mb-2 uppercase text-[10px]">Styling & Animations</span>
-                    <strong className="text-white block">Tailwind CSS v4 & Framer Motion</strong>
-                    <span className="text-slate-500 block mt-1 text-[10px]">High-performance styling and custom keyframe timeline playback animations.</span>
-                  </div>
-                  <div className="p-4 bg-black/40 border border-cyber-border rounded">
-                    <span className="text-cyber-cyan font-bold block mb-2 uppercase text-[10px]">Security Standard</span>
-                    <strong className="text-white block">MITRE ATT&CK Mapping</strong>
-                    <span className="text-slate-500 block mt-1 text-[10px]">Attack techniques mapped directly to standard industry security IDs (e.g. T1566 for Phishing, T1486 for Encryption).</span>
-                  </div>
-                </div>
-              </div>
-            </section>
-
-            {/* 5. Gemini API Integration */}
-            <section className="glassmorphism-card rounded-xl p-6 border border-cyber-border relative overflow-hidden">
-              <div className="absolute top-0 left-0 bottom-0 w-[3px] bg-cyber-cyan" />
-              <h2 className="text-white font-mono text-xs uppercase tracking-widest font-bold mb-4 flex items-center gap-2">
-                <Brain className="w-4 h-4 text-cyber-cyan" />
-                [5.0] Gemini API Integration
-              </h2>
-              <div className="space-y-4 text-sm text-slate-300 leading-relaxed font-sans">
-                <p>
-                  The AI Security Analyst Console integrates Google&apos;s <strong className="text-white">Gemini 2.5 Flash / 1.5 Flash</strong> model to generate reports.
-                  When a simulation concludes, security logs are sent to the Next.js API endpoint `/api/analyze`.
-                </p>
-                <p>
-                  To guarantee reliability, we invoke the Gemini API using <strong className="text-white">Structured JSON Output</strong>. By providing a strict JSON schema, the API is constrained to return a perfectly formatted security report, ensuring structured data is parsed instantly.
-                </p>
-                <div className="bg-black/40 border border-cyber-border p-4 rounded font-mono text-[10px] text-slate-400 space-y-1">
-                  <div className="text-slate-500">{"// Structured Report Schema"}</div>
-                  <div>{"{"}</div>
-                  <div className="pl-4">&quot;executiveSummary&quot;: &quot;string&quot;,</div>
-                  <div className="pl-4">&quot;attackerProfile&quot;: &quot;string&quot;,</div>
-                  <div className="pl-4">&quot;businessImpact&quot;: {"{ \"financialLoss\": \"string\", \"downtime\": \"string\" }"},</div>
-                  <div className="pl-4">&quot;mitigations&quot;: &quot;string[]&quot;</div>
-                  <div>{"}"}</div>
-                </div>
-                <p className="text-slate-400 text-xs mt-2">
-                  *Fallback: If no API key is configured, a high-fidelity local report compiler processes parameters, ensuring recruiters can test all report sections without setup delays.*
+                <p className="text-xs text-slate-400 leading-relaxed font-sans">
+                  See every stage of an attack unfold visually.
                 </p>
               </div>
-            </section>
 
-            {/* 6. Future Roadmap */}
-            <section className="glassmorphism-card rounded-xl p-6 border border-cyber-border relative overflow-hidden">
-              <div className="absolute top-0 left-0 bottom-0 w-[3px] bg-cyber-cyan" />
-              <h2 className="text-white font-mono text-xs uppercase tracking-widest font-bold mb-4 flex items-center gap-2">
-                <Layers className="w-4 h-4 text-cyber-cyan" />
-                [6.0] Future Platform Roadmap
-              </h2>
-              <div className="space-y-4 text-sm text-slate-300 leading-relaxed font-sans">
-                <p>
-                  SENTINEL is actively developed. Future enhancements include:
+              {/* Card 3 */}
+              <div className="glassmorphism-card rounded-xl p-6 border border-cyber-border bg-cyber-surface/30 hover:border-cyber-cyan/35 transition-all duration-300 relative overflow-hidden group">
+                <span className="absolute top-0 left-0 w-2 h-full bg-cyber-cyan opacity-0 group-hover:opacity-100 transition-opacity" />
+                <div className="flex items-center gap-3 mb-3">
+                  <span className="w-8 h-8 rounded-lg bg-cyber-surface border border-cyber-border flex items-center justify-center text-cyber-cyan">
+                    <FileText className="w-4 h-4" />
+                  </span>
+                  <h3 className="text-white text-sm font-bold uppercase font-mono tracking-wider">
+                    Review Reports
+                  </h3>
+                </div>
+                <p className="text-xs text-slate-400 leading-relaxed font-sans">
+                  Understand what happened using simple explanations.
                 </p>
-                <ul className="list-disc list-inside space-y-2 text-slate-400 pl-2">
-                  <li><strong className="text-slate-200">Active Defenses:</strong> Toggle firewall rules and network limits *during* simulation playback to see the attacker blocked in real-time.</li>
-                  <li><strong className="text-slate-200">Custom Network Layouts:</strong> Upload network configuration files to instantly render custom visual network diagrams.</li>
-                  <li><strong className="text-slate-200">Multi-Stage Attacks:</strong> Run complex, multi-step simulations testing defense limits against prolonged digital threats.</li>
-                </ul>
               </div>
-            </section>
 
-          </div>
+              {/* Card 4 */}
+              <div className="glassmorphism-card rounded-xl p-6 border border-cyber-border bg-cyber-surface/30 hover:border-cyber-cyan/35 transition-all duration-300 relative overflow-hidden group">
+                <span className="absolute top-0 left-0 w-2 h-full bg-cyber-cyan opacity-0 group-hover:opacity-100 transition-opacity" />
+                <div className="flex items-center gap-3 mb-3">
+                  <span className="w-8 h-8 rounded-lg bg-cyber-surface border border-cyber-border flex items-center justify-center text-cyber-cyan">
+                    <CheckCircle2 className="w-4 h-4" />
+                  </span>
+                  <h3 className="text-white text-sm font-bold uppercase font-mono tracking-wider">
+                    Learn Defenses
+                  </h3>
+                </div>
+                <p className="text-xs text-slate-400 leading-relaxed font-sans">
+                  Explore practical security measures that stop attacks.
+                </p>
+              </div>
+            </div>
+          </section>
+
+          {/* SECTION 4: Technology */}
+          <section className="space-y-6 pt-6 border-t border-cyber-border/20">
+            <div className="inline-flex items-center gap-2 text-cyber-cyan text-[10px] font-mono tracking-widest uppercase">
+              <Cpu className="w-3.5 h-3.5" />
+              Stack
+            </div>
+            <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight text-white">
+              Technology
+            </h2>
+            <div className="flex flex-wrap gap-3 pt-2">
+              {[
+                "Next.js",
+                "TypeScript",
+                "Tailwind CSS",
+                "Framer Motion",
+                "GSAP",
+                "Gemini API",
+                "MITRE ATT&CK"
+              ].map((tech) => (
+                <span
+                  key={tech}
+                  className="px-4 py-2 rounded-full bg-cyber-surface/60 border border-cyber-border/80 text-xs font-mono font-bold text-slate-300 tracking-wider hover:border-cyber-cyan/30 hover:text-white transition-all duration-300"
+                >
+                  {tech}
+                </span>
+              ))}
+            </div>
+          </section>
+
         </motion.div>
       </main>
 
-      {/* Futuristic Command Center Footer */}
+      {/* Global Footer */}
       <Footer />
 
     </div>

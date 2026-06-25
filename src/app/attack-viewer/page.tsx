@@ -10,6 +10,7 @@ import {
   Play, Pause, RotateCcw, ArrowLeft, Terminal,
   Activity, ShieldCheck, Brain, ChevronRight, Layers, ShieldAlert, CheckCircle2, AlertOctagon, Info
 } from "lucide-react";
+import Footer from "../../components/Footer";
 
 interface CampaignStage {
   title: string;
@@ -1564,13 +1565,7 @@ export default function AttackViewerPage() {
       </motion.div>
 
       {/* Footer Info */}
-      <footer className="max-w-7xl mx-auto px-6 w-full text-slate-650 font-mono text-[9px] tracking-wider border-t border-cyber-border/20 pt-6 mt-12 flex justify-between items-center z-10">
-        <div>CORE PLATFORM: sentinel-learning-lab</div>
-        <div className="flex items-center gap-2">
-          <Activity className="w-3.5 h-3.5 text-cyber-cyan animate-pulse" />
-          <span>SIMULATION RUNNING</span>
-        </div>
-      </footer>
+      <Footer />
 
     </div>
   );

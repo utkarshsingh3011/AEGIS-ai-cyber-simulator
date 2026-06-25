@@ -13,6 +13,7 @@ import {
 } from "../../components/campaignStore";
 import AnimatedCounter from "../../components/AnimatedCounter";
 import JourneyStepper from "../../components/JourneyStepper";
+import Footer from "../../components/Footer";
 
 export default function CommandCenterPage() {
   const [history, setHistory] = useState<StoredCampaign[]>([]);
@@ -1070,22 +1071,7 @@ export default function CommandCenterPage() {
       </AnimatePresence>
 
       {/* Footer */}
-      <footer className="relative bg-black border-t border-cyber-border/40 py-10 z-10 overflow-hidden mt-12">
-        <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-cyber-cyan/20 to-transparent" />
-        <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4 text-slate-500 font-mono text-[9px] tracking-wider uppercase">
-          <div>
-            <span className="text-white font-bold tracking-[0.2em]">SENTINEL</span>
-            <span className="ml-2">Student Project | EEE Lab</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyber-green opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-cyber-green"></span>
-            </span>
-            <span>LEARNING SESSION ACTIVE</span>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

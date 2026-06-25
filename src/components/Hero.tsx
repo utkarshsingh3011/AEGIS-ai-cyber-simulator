@@ -129,12 +129,12 @@ export default function Hero() {
             transition={{ duration: 0.8, delay: 0.1 }}
             className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.08] text-white"
           >
-            Understand Real <br />
+            See How <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-electric-blue via-cyber-cyan to-white">
               Cyber Attacks
             </span>{" "}
             <br />
-            in a Safe Environment
+            Actually Happen
           </motion.h1>
 
           <motion.p
@@ -143,10 +143,10 @@ export default function Hero() {
             transition={{ duration: 0.8, delay: 0.2 }}
             className="mt-6 text-sm md:text-base text-slate-400 max-w-xl font-sans leading-relaxed"
           >
-            SENTINEL generates real-time, step-by-step attack simulations inside a safe virtual network. Select an attack scenario, watch how it spreads, and learn how to configure security rules to protect network systems.
+            Follow realistic attack scenarios step by step, understand how attackers think, and learn which security measures stop them.
           </motion.p>
 
-          {/* Why I Built Sentinel Section */}
+          {/* What You'll Learn Section */}
           <motion.div
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
@@ -154,8 +154,25 @@ export default function Hero() {
             className="mt-6 p-4 rounded bg-cyber-surface/60 border border-cyber-border/80 text-xs text-slate-300 leading-relaxed max-w-xl relative overflow-hidden"
           >
             <div className="absolute top-0 left-0 bottom-0 w-[3px] bg-cyber-cyan" />
-            <span className="font-mono text-[9px] uppercase tracking-widest text-cyber-cyan font-bold block mb-1">Why I Built Sentinel</span>
-            I created SENTINEL as a student project at Jaypee Institute of Information Technology, Noida (Electronics & Communication Engineering) to make cybersecurity concepts visual and accessible. It translates complex attack methods into a step-by-step learning journey, helping beginners and fellow students understand how attacks propagate and how defense setups block them.
+            <span className="font-mono text-[9px] uppercase tracking-widest text-cyber-cyan font-bold block mb-2">What You'll Learn</span>
+            <ul className="space-y-1.5 font-sans text-slate-300 text-[11px]">
+              <li className="flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-cyber-cyan shrink-0 animate-pulse" />
+                <span>How attackers gain access to systems</span>
+              </li>
+              <li className="flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-cyber-cyan shrink-0 animate-pulse" />
+                <span>Why security controls succeed or fail</span>
+              </li>
+              <li className="flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-cyber-cyan shrink-0 animate-pulse" />
+                <span>How attacks spread through networks</span>
+              </li>
+              <li className="flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-cyber-cyan shrink-0 animate-pulse" />
+                <span>What organizations can do to stop them</span>
+              </li>
+            </ul>
           </motion.div>
 
           <motion.div

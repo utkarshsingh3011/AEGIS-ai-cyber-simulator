@@ -9,6 +9,7 @@ import {
   ArrowLeft, RefreshCw, Cpu, Database, Network, ArrowRight
 } from "lucide-react";
 import JourneyStepper from "../../components/JourneyStepper";
+import Footer from "../../components/Footer";
 
 // Types matching the architectural requirements
 interface CampaignStage {
@@ -777,13 +778,7 @@ export default function SimulatePage() {
       </div>
 
       {/* Footer */}
-      <footer className="max-w-7xl mx-auto px-6 w-full text-slate-600 font-mono text-[9px] tracking-wider border-t border-cyber-border/20 pt-6 mt-12 flex justify-between items-center z-10">
-        <div>SENTINEL CYBERSECURITY LEARNING PLATFORM</div>
-        <div className="flex items-center gap-2">
-          <Cpu className="w-3.5 h-3.5 text-cyber-cyan" />
-          <span>READY TO LEARN</span>
-        </div>
-      </footer>
+      <Footer />
 
     </div>
   );
