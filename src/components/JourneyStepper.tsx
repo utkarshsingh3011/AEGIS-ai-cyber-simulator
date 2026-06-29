@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Settings, Eye, FileText, BookOpen, Check, Lock } from "lucide-react";
 
@@ -17,8 +18,9 @@ const STEPS = [
 ];
 
 export default function JourneyStepper({ currentStep }: JourneyStepperProps) {
+  const router = useRouter();
   const [maxUnlockedStep, setMaxUnlockedStep] = useState<number>(1);
-  const [activeTooltipId, setActiveTooltipId] = useState<number | null>(null);
+  const [showLockedModal, setShowLockedModal] = useState(false);
 
   useEffect(() => {
     const handleUpdate = () => {
@@ -40,122 +42,182 @@ export default function JourneyStepper({ currentStep }: JourneyStepperProps) {
     };
   }, []);
 
-  const handleStepClick = (e: React.MouseEvent, stepId: number, isLocked: boolean) => {
-    if (isLocked) {
-      e.preventDefault();
-      setActiveTooltipId(stepId);
-      const timer = setTimeout(() => {
-        setActiveTooltipId(prev => prev === stepId ? null : prev);
-      }, 2000);
-    }
+  // The next step user should go to is maxUnlockedStep + 1 (capped at 4)
+  const nextRequiredStep = Math.min(maxUnlockedStep + 1, 4);
+  const nextRequiredPath = STEPS[nextRequiredStep - 1]?.path ?? "/simulate";
+
+  const handleStepClick = (e: React.MouseEvent, stepId: number) => {
+    // Steps the user has already completed or is currently on → always allow
+    if (stepId <= maxUnlockedStep) return;
+
+    // The immediate next step (maxUnlockedStep + 1) → allow navigation
+    if (stepId === maxUnlockedStep + 1) return;
+
+    // All further future steps → block and show modal
+    e.preventDefault();
+    setShowLockedModal(true);
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto mb-10 px-4 print:hidden">
-      <div className="glassmorphism-card rounded-xl p-4 border border-cyber-border/60 bg-cyber-surface/35 backdrop-blur-md relative overflow-hidden">
-        {/* Top subtle highlight */}
-        <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-cyber-cyan/30 to-transparent" />
-        
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-1.5 font-mono text-[9px] text-slate-500 uppercase tracking-wider">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyber-cyan opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-cyber-cyan"></span>
-            </span>
-            <span>Learning Journey Progress</span>
-          </div>
-          
-          <div className="flex items-center gap-2 text-[9px] font-mono text-slate-400">
-            <span>STEP 0{currentStep} / 04:</span>
-            <span className="text-white font-bold uppercase tracking-widest flex items-center gap-1">
-              {STEPS[currentStep - 1].label}
-              <span className="text-slate-500 font-normal lowercase font-sans">({STEPS[currentStep - 1].secondary})</span>
-            </span>
-          </div>
-        </div>
+    <>
+      <div className="w-full max-w-4xl mx-auto mb-10 px-4 print:hidden">
+        <div className="glassmorphism-card rounded-xl p-4 border border-cyber-border/60 bg-cyber-surface/35 backdrop-blur-md relative overflow-hidden">
+          {/* Top subtle highlight */}
+          <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-cyber-cyan/30 to-transparent" />
 
-        {/* Stepper Steps Row */}
-        <div className="relative mt-5 flex items-center justify-between gap-2">
-          {/* Connector Line behind steps */}
-          <div className="absolute left-6 right-6 top-[22px] h-[1.5px] bg-slate-900 z-0" />
-          
-          {/* Animated active path length connector */}
-          <div className="absolute left-6 right-6 top-[22px] h-[1.5px] z-0">
-            <motion.div
-              className="h-full bg-gradient-to-r from-cyber-cyan via-blue-500 to-cyber-green"
-              initial={{ width: 0 }}
-              animate={{ 
-                width: `${((currentStep - 1) / (STEPS.length - 1)) * 100}%` 
-              }}
-              transition={{ duration: 0.6, ease: "easeInOut" }}
-            />
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-1.5 font-mono text-[9px] text-slate-500 uppercase tracking-wider">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyber-cyan opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-cyber-cyan"></span>
+              </span>
+              <span>Learning Journey Progress</span>
+            </div>
+
+            <div className="flex items-center gap-2 text-[9px] font-mono text-slate-400">
+              <span>STEP 0{currentStep} / 04:</span>
+              <span className="text-white font-bold uppercase tracking-widest flex items-center gap-1">
+                {STEPS[currentStep - 1].label}
+                <span className="text-slate-500 font-normal lowercase font-sans">({STEPS[currentStep - 1].secondary})</span>
+              </span>
+            </div>
           </div>
 
-          {STEPS.map((step) => {
-            const Icon = step.icon;
-            const isCompleted = step.id < currentStep;
-            const isActive = step.id === currentStep;
-            const isLocked = step.id > maxUnlockedStep;
+          {/* Stepper Steps Row */}
+          <div className="relative mt-5 flex items-center justify-between gap-2">
+            {/* Connector Line behind steps */}
+            <div className="absolute left-6 right-6 top-[22px] h-[1.5px] bg-slate-900 z-0" />
 
-            return (
-              <div key={step.id} className="relative z-10 flex-1 flex flex-col items-center group">
-                {/* Tooltip */}
-                <AnimatePresence>
-                  {activeTooltipId === step.id && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 5 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: 5 }}
-                      className="absolute bottom-14 left-1/2 -translate-x-1/2 z-50 whitespace-nowrap bg-black/95 border border-cyber-red/50 text-cyber-red px-3 py-1.5 rounded text-[10px] font-mono shadow-[0_0_10px_rgba(244,63,94,0.25)]"
-                    >
-                      Complete the previous step first.
-                      {/* Tooltip Arrow */}
-                      <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-black border-r border-b border-cyber-red/50 rotate-45" />
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+            {/* Animated active path length connector */}
+            <div className="absolute left-6 right-6 top-[22px] h-[1.5px] z-0">
+              <motion.div
+                className="h-full bg-gradient-to-r from-cyber-cyan via-blue-500 to-cyber-green"
+                initial={{ width: 0 }}
+                animate={{
+                  width: `${((currentStep - 1) / (STEPS.length - 1)) * 100}%`,
+                }}
+                transition={{ duration: 0.6, ease: "easeInOut" }}
+              />
+            </div>
 
-                <Link
-                  href={step.path}
-                  onClick={(e) => handleStepClick(e, step.id, isLocked)}
-                  className={`relative flex items-center justify-center w-11 h-11 rounded-lg border transition-all duration-300 ${
-                    isActive
-                      ? "bg-black border-cyber-cyan text-cyber-cyan shadow-[0_0_15px_rgba(6,182,212,0.3)] scale-110"
-                      : isCompleted
-                      ? "bg-cyber-surface/80 border-cyber-green/50 text-cyber-green hover:border-cyber-green"
-                      : isLocked
-                      ? "bg-black/20 border-slate-950 text-slate-700 opacity-40 cursor-not-allowed"
-                      : "bg-black/60 border-slate-900 text-slate-400 hover:border-slate-800"
-                  }`}
-                >
-                  {isLocked ? (
-                    <Lock className="w-4 h-4 text-slate-600" />
-                  ) : isCompleted ? (
-                    <Check className="w-5 h-5 stroke-[2.5]" />
-                  ) : (
-                    <Icon className="w-5 h-5" />
-                  )}
-                </Link>
+            {STEPS.map((step) => {
+              const Icon = step.icon;
+              const isCompleted = step.id < currentStep;
+              const isActive = step.id === currentStep;
+              // A step is hard-locked if it's MORE than one step ahead of maxUnlockedStep
+              const isLocked = step.id > maxUnlockedStep + 1;
+              // The clickable "next" step is exactly maxUnlockedStep + 1 and ahead of current
+              const isNextStep = step.id === maxUnlockedStep + 1 && step.id > currentStep;
 
-                <span
-                  className={`hidden md:flex flex-col items-center text-[9px] font-mono font-bold uppercase tracking-wider mt-2.5 transition-colors duration-300 ${
-                    isActive
-                      ? "text-cyber-cyan"
-                      : isCompleted
-                      ? "text-cyber-green"
-                      : isLocked
-                      ? "text-slate-700 opacity-40"
-                      : "text-slate-500"
-                  }`}
-                >
-                  <span className="text-center">{step.label}</span>
-                  <span className="text-slate-500 text-[8px] font-normal lowercase tracking-wide mt-0.5">({step.secondary})</span>
-                </span>
-              </div>
-            );
-          })}
+              return (
+                <div key={step.id} className="relative z-10 flex-1 flex flex-col items-center group">
+                  <Link
+                    href={isLocked ? "#" : step.path}
+                    onClick={(e) => handleStepClick(e, step.id)}
+                    className={`relative flex items-center justify-center w-11 h-11 rounded-lg border transition-all duration-300 ${
+                      isActive
+                        ? "bg-black border-cyber-cyan text-cyber-cyan shadow-[0_0_15px_rgba(6,182,212,0.3)] scale-110"
+                        : isCompleted
+                        ? "bg-cyber-surface/80 border-cyber-green/50 text-cyber-green hover:border-cyber-green"
+                        : isNextStep
+                        ? "bg-black/60 border-slate-700 text-slate-400 hover:border-slate-500 hover:text-slate-200"
+                        : isLocked
+                        ? "bg-black/20 border-slate-950 text-slate-700 opacity-40 cursor-not-allowed"
+                        : "bg-black/60 border-slate-900 text-slate-400 hover:border-slate-800"
+                    }`}
+                  >
+                    {isLocked ? (
+                      <Lock className="w-4 h-4 text-slate-600" />
+                    ) : isCompleted ? (
+                      <Check className="w-5 h-5 stroke-[2.5]" />
+                    ) : (
+                      <Icon className="w-5 h-5" />
+                    )}
+                  </Link>
+
+                  <span
+                    className={`hidden md:flex flex-col items-center text-[9px] font-mono font-bold uppercase tracking-wider mt-2.5 transition-colors duration-300 ${
+                      isActive
+                        ? "text-cyber-cyan"
+                        : isCompleted
+                        ? "text-cyber-green"
+                        : isLocked
+                        ? "text-slate-700 opacity-40"
+                        : "text-slate-500"
+                    }`}
+                  >
+                    <span className="text-center">{step.label}</span>
+                    <span className="text-slate-500 text-[8px] font-normal lowercase tracking-wide mt-0.5">
+                      ({step.secondary})
+                    </span>
+                  </span>
+                </div>
+              );
+            })}
+          </div>
         </div>
       </div>
-    </div>
+
+      {/* Locked Step Modal */}
+      <AnimatePresence>
+        {showLockedModal && (
+          <>
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 0.6 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowLockedModal(false)}
+              className="fixed inset-0 bg-black z-[100] backdrop-blur-sm"
+            />
+
+            {/* Modal */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.93, y: 16 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.93, y: 16 }}
+              transition={{ type: "spring", duration: 0.4, bounce: 0.15 }}
+              className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-sm z-[101] p-6 rounded-xl border border-cyber-border bg-cyber-surface/95 shadow-[0_0_40px_rgba(0,0,0,0.6)] backdrop-blur-xl font-sans text-center"
+            >
+              {/* Top glow stripe */}
+              <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-cyber-cyan/40 to-transparent rounded-t-xl" />
+
+              {/* Lock icon */}
+              <div className="flex items-center justify-center mb-4">
+                <div className="w-12 h-12 rounded-full border border-slate-800 bg-slate-900/80 flex items-center justify-center">
+                  <Lock className="w-5 h-5 text-slate-400" />
+                </div>
+              </div>
+
+              <h3 className="text-white text-sm font-bold uppercase tracking-wider font-mono mb-2">
+                Complete the previous step first
+              </h3>
+
+              <p className="text-slate-400 text-xs leading-relaxed mb-6">
+                Finish the previous learning stage before continuing. Sentinel is designed to guide you through the complete attack story one step at a time.
+              </p>
+
+              <div className="flex flex-col gap-2.5">
+                <button
+                  onClick={() => {
+                    setShowLockedModal(false);
+                    router.push(nextRequiredPath);
+                  }}
+                  className="w-full py-2.5 px-4 rounded bg-electric-blue hover:bg-blue-600 text-white text-xs font-bold font-mono uppercase tracking-widest transition-all duration-300 hover:shadow-[0_0_15px_rgba(37,99,235,0.4)] cursor-pointer"
+                >
+                  Continue Learning
+                </button>
+                <button
+                  onClick={() => setShowLockedModal(false)}
+                  className="w-full py-2.5 px-4 rounded border border-slate-800 bg-transparent text-slate-400 hover:text-white hover:border-slate-600 text-xs font-bold font-mono uppercase tracking-widest transition-all duration-300 cursor-pointer"
+                >
+                  Stay Here
+                </button>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+    </>
   );
 }
