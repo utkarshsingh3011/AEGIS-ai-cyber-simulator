@@ -13,6 +13,39 @@ export default function Header() {
   const router = useRouter();
   const pathname = usePathname();
 
+  const [startSimPath, setStartSimPath] = useState("/simulate");
+  const [isInvestigationActive, setIsInvestigationActive] = useState(false);
+
+  useEffect(() => {
+    const checkActiveSimulation = () => {
+      if (typeof window !== "undefined") {
+        const saved = sessionStorage.getItem("sentinel_campaign_config");
+        const maxUnlocked = parseInt(sessionStorage.getItem("sentinel_max_unlocked_step") || "1", 10);
+        if (saved && maxUnlocked > 1) {
+          setIsInvestigationActive(true);
+          const pathMap: Record<number, string> = {
+            1: "/simulate",
+            2: "/attack-viewer",
+            3: "/ai-analyst",
+            4: "/command-center"
+          };
+          setStartSimPath(pathMap[maxUnlocked] || "/simulate");
+        } else {
+          setIsInvestigationActive(false);
+          setStartSimPath("/simulate");
+        }
+      }
+    };
+
+    checkActiveSimulation();
+    window.addEventListener("sentinel_progress_update", checkActiveSimulation);
+    window.addEventListener("focus", checkActiveSimulation);
+    return () => {
+      window.removeEventListener("sentinel_progress_update", checkActiveSimulation);
+      window.removeEventListener("focus", checkActiveSimulation);
+    };
+  }, []);
+
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 20);
@@ -138,11 +171,15 @@ export default function Header() {
             className="flex"
           >
             <Link
-              href="/simulate"
-              className="relative px-4 py-2 flex items-center gap-2 rounded bg-electric-blue/15 border border-electric-blue/50 text-xs font-mono tracking-widest text-white uppercase overflow-hidden hover:bg-electric-blue/25 hover:border-electric-blue/80 hover:shadow-[0_0_15px_rgba(37,99,235,0.4)] transition-all duration-300"
+              href={startSimPath}
+              className={`relative px-4 py-2 flex items-center gap-2 rounded text-xs font-mono tracking-widest text-white uppercase overflow-hidden transition-all duration-300 ${
+                isInvestigationActive
+                  ? "bg-cyber-cyan/15 border border-cyber-cyan/50 hover:bg-cyber-cyan/25 hover:border-cyber-cyan/85 hover:shadow-[0_0_15px_rgba(6,182,212,0.4)] animate-pulse-subtle"
+                  : "bg-electric-blue/15 border border-electric-blue/50 hover:bg-electric-blue/25 hover:border-electric-blue/80 hover:shadow-[0_0_15px_rgba(37,99,235,0.4)]"
+              }`}
             >
               <Terminal className="w-3.5 h-3.5 text-cyber-cyan" />
-              Start Simulation
+              {isInvestigationActive ? "Resume Investigation" : "Start Simulation"}
               <ArrowUpRight className="w-3 h-3 text-slate-400" />
               {/* Corner decorations */}
               <span className="absolute top-0 left-0 w-1 h-1 border-t border-l border-cyber-cyan" />

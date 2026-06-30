@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import JourneyStepper from "../../components/JourneyStepper";
 import Footer from "../../components/Footer";
+import { getFriendlySimulationName } from "../../components/campaignStore";
 
 // Types matching the architectural requirements
 interface CampaignStage {
@@ -170,6 +171,24 @@ export default function SimulatePage() {
   const [actor, setActor] = useState<string | null>(null);
   const [attack, setAttack] = useState<string | null>(null);
   const [security, setSecurity] = useState<string | null>(null);
+
+  // Active campaign resume states
+  const [activeCampaignExists, setActiveCampaignExists] = useState(false);
+  const [activeCampaignName, setActiveCampaignName] = useState("");
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const saved = sessionStorage.getItem("sentinel_campaign_config");
+      const maxUnlocked = parseInt(sessionStorage.getItem("sentinel_max_unlocked_step") || "1", 10);
+      if (saved && maxUnlocked > 1) {
+        try {
+          const parsed = JSON.parse(saved);
+          setActiveCampaignExists(true);
+          setActiveCampaignName(getFriendlySimulationName(parsed.attackType));
+        } catch (e) {}
+      }
+    }
+  }, []);
 
   // Tech Mode toggle (kept for compatibility)
   const [showTechnicalIntel, setShowTechnicalIntel] = useState(false);
@@ -392,6 +411,58 @@ export default function SimulatePage() {
               : "Sentinel is preparing a custom, fictional cybersecurity case study. You will watch the simulation unfold, investigate the threat actor's steps, and analyze how defenses respond."}
           </p>
         </div>
+
+        {/* Active Investigation Resume Banner */}
+        {simState === "idle" && activeCampaignExists && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-10 p-4 rounded-xl border border-electric-blue/30 bg-electric-blue/5 flex flex-col sm:flex-row items-center justify-between gap-4 max-w-[850px] mx-auto relative overflow-hidden backdrop-blur-sm shadow-[0_0_15px_rgba(37,99,235,0.05)] text-left"
+          >
+            <div className="absolute top-0 left-0 bottom-0 w-[3px] bg-electric-blue" />
+            <div className="flex items-center gap-3">
+              <span className="text-xl">🕵️</span>
+              <div className="text-left">
+                <div className="text-xs font-bold text-white uppercase tracking-wider font-mono">Active Investigation Detected</div>
+                <div className="text-[10px] text-slate-400 mt-0.5 leading-relaxed font-sans">
+                  You have an ongoing simulation: <strong className="text-cyber-cyan">{activeCampaignName}</strong>.
+                </div>
+              </div>
+            </div>
+            <div className="flex gap-2.5 w-full sm:w-auto justify-end">
+              <button
+                onClick={() => {
+                  if (typeof window !== "undefined") {
+                    const maxUnlocked = parseInt(sessionStorage.getItem("sentinel_max_unlocked_step") || "1", 10);
+                    const pathMap: Record<number, string> = {
+                      1: "/simulate",
+                      2: "/attack-viewer",
+                      3: "/ai-analyst",
+                      4: "/command-center"
+                    };
+                    router.push(pathMap[maxUnlocked] || "/attack-viewer");
+                  }
+                }}
+                className="px-4 py-2 rounded bg-electric-blue hover:bg-blue-600 text-[10px] font-mono text-white font-bold uppercase tracking-widest transition-all duration-300 cursor-pointer shadow-[0_0_10px_rgba(37,99,235,0.3)]"
+              >
+                Resume Investigation →
+              </button>
+              <button
+                onClick={() => {
+                  if (typeof window !== "undefined") {
+                    sessionStorage.removeItem("sentinel_campaign_config");
+                    sessionStorage.setItem("sentinel_max_unlocked_step", "1");
+                    window.dispatchEvent(new Event("sentinel_progress_update"));
+                  }
+                  setActiveCampaignExists(false);
+                }}
+                className="px-3 py-2 rounded border border-slate-800 bg-transparent text-[10px] font-mono text-slate-400 hover:text-white hover:border-slate-650 transition-all duration-300 cursor-pointer"
+              >
+                Reset
+              </button>
+            </div>
+          </motion.div>
+        )}
 
         {/* How It Works - Onboarding */}
         {simState === "idle" && (

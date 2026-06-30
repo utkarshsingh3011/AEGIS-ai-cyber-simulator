@@ -3,7 +3,8 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
-import { saveCampaignToHistory, getFriendlySimulationName, getActorName, getAttackName, getIndustryName, getSecurityLevelName } from "../../components/campaignStore";
+import { useRouter } from "next/navigation";
+import { saveCampaignToHistory, getFriendlySimulationName, getActorName, getAttackName, getIndustryName, getSecurityLevelName, StoredCampaign, generateCTIReport, getCampaignHistory } from "../../components/campaignStore";
 import JourneyStepper from "../../components/JourneyStepper";
 import AnimatedCounter from "../../components/AnimatedCounter";
 import {
@@ -88,6 +89,7 @@ const FALLBACK_CAMPAIGN: CampaignConfig = {
 };
 
 export default function AttackViewerPage() {
+  const router = useRouter();
   const [campaign, setCampaign] = useState<CampaignConfig | null>(null);
   const [isPlaying, setIsPlaying] = useState(true);
   const [currentStageIdx, setCurrentStageIdx] = useState(0);
@@ -98,15 +100,30 @@ export default function AttackViewerPage() {
   const [showGuide, setShowGuide] = useState(true);
   const [isTechnicalExpanded, setIsTechnicalExpanded] = useState(false);
   const [showLockModal, setShowLockModal] = useState(false);
+  const [lockModalType, setLockModalType] = useState<"analyst" | "journal">("journal");
  
   const handleJournalClick = (e: React.MouseEvent) => {
     e.preventDefault();
     if (typeof window !== "undefined") {
       const maxUnlocked = parseInt(sessionStorage.getItem("sentinel_max_unlocked_step") || "1", 10);
       if (maxUnlocked < 4) {
+        setLockModalType("journal");
         setShowLockModal(true);
       } else {
-        window.location.href = "/command-center";
+        router.push("/command-center");
+      }
+    }
+  };
+
+  const handleAnalystClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (typeof window !== "undefined") {
+      const maxUnlocked = parseInt(sessionStorage.getItem("sentinel_max_unlocked_step") || "1", 10);
+      if (maxUnlocked < 3 && progress < 100) {
+        setLockModalType("analyst");
+        setShowLockModal(true);
+      } else {
+        router.push("/ai-analyst");
       }
     }
   };
@@ -159,27 +176,112 @@ export default function AttackViewerPage() {
 
   // Read configuration from sessionStorage on mount
   useEffect(() => {
-    const loadCampaign = () => {
-      if (typeof window !== "undefined") {
-        const saved = sessionStorage.getItem("sentinel_campaign_config");
-        if (saved) {
-          try {
-            const parsed = JSON.parse(saved);
-            setCampaign(parsed);
-            saveCampaignToHistory(parsed);
-            return;
-          } catch {
-            // fallback
-          }
+    if (typeof window !== "undefined") {
+      const saved = sessionStorage.getItem("sentinel_campaign_config");
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          setCampaign(parsed);
+          saveCampaignToHistory(parsed);
+          return;
+        } catch {
+          // fallback
         }
       }
-      setCampaign(FALLBACK_CAMPAIGN);
-      saveCampaignToHistory(FALLBACK_CAMPAIGN);
+    }
+    setCampaign(FALLBACK_CAMPAIGN);
+    saveCampaignToHistory(FALLBACK_CAMPAIGN);
+  }, []);
+
+  // Pre-fetch AI Analyst CTI report in background
+  useEffect(() => {
+    if (!campaign) return;
+
+    const prefetchReport = async () => {
+      // Resolve campaign to StoredCampaign format (matching saveCampaignToHistory)
+      const resolvedCampaign: StoredCampaign = {
+        id: (campaign as any).id || `SIM-${Math.floor(1000 + Math.random() * 9000)}`,
+        timestamp: campaign.timestamp,
+        threatActor: campaign.threatActor,
+        industry: campaign.industry,
+        attackType: campaign.attackType,
+        riskScore: campaign.riskFactor !== undefined ? campaign.riskFactor : 50,
+        status: campaign.stages && campaign.stages[campaign.stages.length - 1]?.status === "blocked" ? "Blocked" : "Successful",
+        securityLevel: campaign.securityLevel || "Medium",
+        primaryTarget: campaign.primaryTarget || "Unknown-Target",
+        stages: campaign.stages || [],
+      };
+
+      // Ensure we get the correct ID if already saved
+      if (typeof window !== "undefined") {
+        try {
+          const history = getCampaignHistory();
+          const match = history.find(c => c.timestamp === campaign.timestamp && c.industry === campaign.industry && c.threatActor === campaign.threatActor);
+          if (match) {
+            resolvedCampaign.id = match.id;
+          }
+        } catch (e) {}
+      }
+
+      const cacheKey = `sentinel_ai_report_${resolvedCampaign.id}`;
+      if (sessionStorage.getItem(cacheKey)) {
+        return; // Already cached!
+      }
+
+      try {
+        const res = await fetch("/api/analyze", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(resolvedCampaign),
+        });
+
+        if (!res.ok) return;
+
+        const data = await res.json();
+        let reportPayload;
+
+        if (data.isFallback) {
+          const localReport = generateCTIReport(resolvedCampaign);
+          reportPayload = { ...localReport, isLiveAI: false };
+        } else {
+          reportPayload = {
+            id: resolvedCampaign.id,
+            timestamp: resolvedCampaign.timestamp,
+            actorName: getActorName(resolvedCampaign.threatActor),
+            actorId: resolvedCampaign.threatActor,
+            vectorName: getAttackName(resolvedCampaign.attackType),
+            vectorId: resolvedCampaign.attackType,
+            industryName: getIndustryName(resolvedCampaign.industry),
+            targetName: resolvedCampaign.primaryTarget,
+            status: resolvedCampaign.status,
+            securityLevel: resolvedCampaign.securityLevel,
+            executiveSummary: data.executiveSummary,
+            actorProfile: data.actorProfile,
+            financialLoss: data.businessImpact.financialLoss,
+            operationalImpact: data.businessImpact.operationalImpact,
+            downtime: data.businessImpact.downtime,
+            mitigations: data.mitigations,
+            currentRisk: data.riskAssessment.currentRisk,
+            projectedRisk: data.riskAssessment.projectedRisk,
+            riskReduction: data.riskAssessment.riskReduction,
+            stages: resolvedCampaign.stages,
+            mitreMapping: data.mitreMapping,
+            isLiveAI: true
+          };
+        }
+
+        sessionStorage.setItem(cacheKey, JSON.stringify(reportPayload));
+      } catch (error) {
+        // Silent fallback in background
+      }
     };
 
-    const timer = setTimeout(loadCampaign, 50);
-    return () => clearTimeout(timer);
-  }, []);
+    // Pre-fetch after a short idle delay to let UI load smoothly
+    const prefetchTimer = setTimeout(prefetchReport, 1500);
+    return () => clearTimeout(prefetchTimer);
+  }, [campaign]);
 
   // Playback and log streaming engine
   useEffect(() => {
@@ -838,13 +940,14 @@ export default function AttackViewerPage() {
               <Activity className="w-3.5 h-3.5" />
               Open Learning Journal
             </button>
-            <Link
+            <a
               href="/ai-analyst"
-              className="inline-flex items-center gap-2 px-3 py-1.5 rounded border border-cyber-cyan/30 bg-cyber-cyan/10 text-cyber-cyan hover:bg-cyber-cyan/20 transition-all duration-300 hover:shadow-[0_0_15px_rgba(6,182,212,0.25)] hover:border-cyber-cyan/60"
+              onClick={handleAnalystClick}
+              className="inline-flex items-center gap-2 px-3 py-1.5 rounded border border-cyber-cyan/30 bg-cyber-cyan/10 text-cyber-cyan hover:bg-cyber-cyan/20 transition-all duration-300 hover:shadow-[0_0_15px_rgba(6,182,212,0.25)] hover:border-cyber-cyan/60 cursor-pointer"
             >
               <Brain className="w-3.5 h-3.5 animate-pulse" />
               Next Step: Understand What Happened
-            </Link>
+            </a>
           </div>
         </div>
 
@@ -1603,12 +1706,18 @@ export default function AttackViewerPage() {
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md p-6 rounded-xl border border-cyber-red/35 bg-cyber-surface/90 shadow-[0_0_30px_rgba(244,63,94,0.15)] z-50 font-sans text-left"
+              className={`fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md p-6 rounded-xl border bg-cyber-surface/90 z-50 font-sans text-left ${
+                lockModalType === "analyst"
+                  ? "border-cyber-cyan/35 shadow-[0_0_30px_rgba(6,182,212,0.15)]"
+                  : "border-cyber-red/35 shadow-[0_0_30px_rgba(244,63,94,0.15)]"
+              }`}
             >
               <div className="flex justify-between items-start mb-4">
-                <div className="flex items-center gap-2 text-cyber-red font-mono text-xs uppercase font-bold tracking-wider">
-                  <Lock className="w-4 h-4 text-cyber-red" />
-                  Step 3 Required
+                <div className={`flex items-center gap-2 font-mono text-xs uppercase font-bold tracking-wider ${
+                  lockModalType === "analyst" ? "text-cyber-cyan" : "text-cyber-red"
+                }`}>
+                  <Lock className="w-4 h-4" />
+                  {lockModalType === "analyst" ? "Step 2 Incomplete" : "Step 3 Required"}
                 </div>
                 <button
                   onClick={() => setShowLockModal(false)}
@@ -1619,20 +1728,37 @@ export default function AttackViewerPage() {
               </div>
  
               <h3 className="text-white text-lg font-bold uppercase font-mono tracking-wide mb-2">
-                Analysis Step Required
+                {lockModalType === "analyst" ? "Watch the Attack First" : "Analysis Step Required"}
               </h3>
               
               <p className="text-slate-300 text-xs leading-relaxed mb-6 font-sans">
-                You must complete the <strong>Understand What Happened (AI Analyst)</strong> step before you can access the Key Lessons Learning Journal. This ensures you understand why the threat actor breached or failed to breach the environment.
+                {lockModalType === "analyst" ? (
+                  <>
+                    Please finish watching the attack simulation (<strong>Watch the Attack</strong>) before proceeding to the AI Analyst report. This ensures you observe the entire threat progression.
+                  </>
+                ) : (
+                  <>
+                    You must complete the <strong>Understand What Happened (AI Analyst)</strong> step before you can access the Key Lessons Learning Journal. This ensures you understand why the threat actor breached or failed to breach the environment.
+                  </>
+                )}
               </p>
  
               <div className="flex flex-col gap-3 font-mono">
-                <Link
-                  href="/ai-analyst"
-                  className="w-full text-center py-2.5 px-4 rounded bg-cyber-red hover:bg-cyber-red/90 text-white text-xs font-bold uppercase transition-all duration-300 shadow-[0_0_15px_rgba(244,63,94,0.3)] cursor-pointer"
-                >
-                  Go to AI Analyst →
-                </Link>
+                {lockModalType === "analyst" ? (
+                  <button
+                    onClick={() => setShowLockModal(false)}
+                    className="w-full text-center py-2.5 px-4 rounded bg-cyber-cyan hover:bg-cyber-cyan/90 text-black text-xs font-bold uppercase transition-all duration-300 shadow-[0_0_15px_rgba(6,182,212,0.3)] cursor-pointer"
+                  >
+                    Resume Watching Attack
+                  </button>
+                ) : (
+                  <Link
+                    href="/ai-analyst"
+                    className="w-full text-center py-2.5 px-4 rounded bg-cyber-red hover:bg-cyber-red/90 text-white text-xs font-bold uppercase transition-all duration-300 shadow-[0_0_15px_rgba(244,63,94,0.3)] cursor-pointer"
+                  >
+                    Go to AI Analyst →
+                  </Link>
+                )}
                 <button
                   onClick={() => setShowLockModal(false)}
                   className="w-full text-center py-2.5 px-4 rounded border border-slate-800 bg-slate-950/40 text-slate-400 hover:bg-slate-900/60 hover:text-slate-200 text-xs font-bold uppercase transition-all duration-300 cursor-pointer"

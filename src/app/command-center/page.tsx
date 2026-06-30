@@ -63,9 +63,7 @@ export default function CommandCenterPage() {
   }, []);
 
   useEffect(() => {
-    setTimeout(() => {
-      setHistory(getCampaignHistory());
-    }, 0);
+    setHistory(getCampaignHistory());
 
     const updateClock = () => {
       const now = new Date();

@@ -49,16 +49,13 @@ export default function JourneyStepper({ currentStep }: JourneyStepperProps) {
     };
   }, []);
 
-  // The ONLY navigable "next" step is exactly maxUnlockedStep + 1
-  const nextRequiredStep = Math.min(maxUnlockedStep + 1, 4);
+  // The ONLY navigable next steps are those that have been unlocked
+  const nextRequiredStep = Math.min(maxUnlockedStep, 4);
   const nextRequiredPath = STEPS[nextRequiredStep - 1]?.path ?? "/simulate";
 
   const handleStepClick = (e: React.MouseEvent, stepId: number) => {
-    // Always allow: already completed or is the current step
+    // Always allow: already completed or is the current step (unlocked)
     if (stepId <= maxUnlockedStep) return;
-
-    // Allow: the single immediate next step
-    if (stepId === maxUnlockedStep + 1) return;
 
     // Anything else: locked — show modal
     e.preventDefault();
@@ -109,10 +106,10 @@ export default function JourneyStepper({ currentStep }: JourneyStepperProps) {
               const Icon = step.icon;
               const isCompleted = step.id < currentStep;
               const isActive = step.id === currentStep;
-              // Hard-locked: more than one step beyond maxUnlocked
-              const isHardLocked = step.id > maxUnlockedStep + 1;
-              // Soft-accessible: exactly the next step (maxUnlockedStep + 1)
-              const isNextStep = !isHardLocked && step.id > currentStep && step.id <= maxUnlockedStep + 1;
+              // Hard-locked: step is not yet unlocked
+              const isHardLocked = step.id > maxUnlockedStep;
+              // Soft-accessible: unlocked, but ahead of the current step
+              const isNextStep = !isHardLocked && step.id > currentStep;
 
               return (
                 <div key={step.id} className="relative z-10 flex-1 flex flex-col items-center group">

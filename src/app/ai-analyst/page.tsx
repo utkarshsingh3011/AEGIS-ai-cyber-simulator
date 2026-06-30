@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import {
   getCampaignHistory, StoredCampaign, getActorName,
-  getAttackName, getIndustryName, CampaignStage, getSecurityLevelName
+  getAttackName, getIndustryName, CampaignStage, getSecurityLevelName, generateCTIReport
 } from "../../components/campaignStore";
 
 // Fallback campaign configuration
@@ -122,116 +122,7 @@ const getMitreAttackMapping = (attackType: string, stageIdx: number) => {
   return list[stageIdx] || { code: "T1059", name: "Command and Scripting Interpreter" };
 };
 
-// Local Fallback CTI Report Generator
-const generateCTIReport = (campaign: StoredCampaign) => {
-  const actor = getActorName(campaign.threatActor);
-  const vector = getAttackName(campaign.attackType);
-  const industry = getIndustryName(campaign.industry);
-  const target = campaign.primaryTarget;
-  const isBlocked = campaign.status === "Blocked";
 
-  // Executive Summary
-  let execSummary = "";
-  if (isBlocked) {
-    execSummary = `A simulated attack emulating ${actor} was run against the ${industry} network target ${target}. The attacker attempted access via ${vector}. Under your current security strength (${campaign.securityLevel}), the platform's security rules successfully detected and stopped the attack. Defensive controls blocked the attacker from spreading through the network or copying files. Your target database remains safe, and defenses functioned as expected.`;
-  } else {
-    execSummary = `A security compromise was simulated representing a ${actor} attack against the ${industry} network. Using a ${vector} scenario, the attacker bypassed outer defenses, established a connection to the compromised device, and harvested active login credentials. The attacker then moved laterally across the network to access the target system ${target}, copying sensitive database tables and encrypting files. Local security rules failed to block these actions, highlighting a need for stronger security settings.`;
-  }
-
-  // Threat Actor Profile
-  let actorProfile = "";
-  if (campaign.threatActor === "APT29") {
-    actorProfile = "APT29 (also known as CozyBear) is a state-sponsored advanced persistent threat group known for stealthy, long-term intelligence operations. They typically target government entities, foreign ministries, and critical research infrastructure. Their operational profile focuses heavily on defense evasion, utilizing spearphishing campaigns carrying weaponized attachments, API token hijacking, and custom backdoor loaders. APT29 prioritizes credential theft and lateral pivoting to establish persistent footholds while keeping log signatures minimal.";
-  } else if (campaign.threatActor === "Lazarus") {
-    actorProfile = "Lazarus Group is a state-sponsored cyber warfare actor famous for highly destructive attacks, financial cyber-heists, and cryptocurrency network infiltrations. Lazarus employs diverse, aggressive tactics, ranging from Blind SQL Injection on database services to weaponized supply chain dependencies. Their campaigns are characterized by rapid propagation, custom network evasion tunnels, and the deployment of wiper malware. Lazarus exhibits high operational flexibility and will pivot quickly to exfiltration or system ransom.";
-  } else if (campaign.threatActor === "LockBit") {
-    actorProfile = "LockBit 3.0 is one of the most prolific Ransomware-as-a-Service (RaaS) syndicate globally. Operating on a double-extortion model, they exfiltrate sensitive corporate databases before triggering local file encryption. LockBit targets commercial entities, municipal backbones, and healthcare infrastructures. They utilize automated network scanners, lateral service transfers, and memory dump scripts to steal administrative domain controller tokens. LockBit leverages aggressive double-extortion leak sites as leverage for payout.";
-  } else if (campaign.threatActor === "FIN7") {
-    actorProfile = "FIN7 is a highly organized, financially motivated cybercriminal syndicate specializing in targeting point-of-sale (POS) environments, corporate billing pipelines, and financial ledger services. FIN7 relies heavily on spearphishing campaigns with highly polished social engineering scripts. They deploy modular malware backdoors and memory scrapers to capture domain keys. FIN7 typically monitors compromised networks for weeks to map financial systems before executing final asset theft.";
-  } else {
-    actorProfile = "Anonymous is a decentralized, global hacktivist collective specializing in public-facing service disruptions, volumetric packet floods, and public data leaks. Their operational focus is ideological rather than financial, targeting public corporate portals and Registrar student backends. They utilize open-source stressor tools to execute volumetric DDoS packet floods and exploit SQL flaws on vulnerable web applications to leak customer lists. Anonymous actions are designed to cause maximum reputational damage.";
-  }
-
-  // Business Impact Assessment
-  let financialLoss = "";
-  let operationalImpact = "";
-  let downtime = "";
-
-  if (campaign.industry === "Banking") {
-    financialLoss = isBlocked ? "$45,000 (Incident Response & Forensic Audit)" : "$6,800,000 (Direct ledger liabilities, SWIFT penalty fines, and compliance litigation)";
-    operationalImpact = isBlocked ? "Negligible. Security Operations isolated target hosts within 15 minutes." : "Severe. SWIFT ledger operations suspended. Customer portals taken offline for 48 hours for data sanitization.";
-    downtime = isBlocked ? "0 Hours" : "48 Hours";
-  } else if (campaign.industry === "Healthcare") {
-    financialLoss = isBlocked ? "$35,000 (SIEM log analysis and EDR updates)" : "$4,200,000 (HIPAA regulatory fines, medical class-action lawsuits, and forensic remediation)";
-    operationalImpact = isBlocked ? "None. Patient databases remained isolated behind active EDR rules." : "Critical. Electronic Medical Record (EMR) systems locked. Telemedicine and scheduling nodes offline, forcing manual triage protocols.";
-    downtime = isBlocked ? "0 Hours" : "24 Hours";
-  } else if (campaign.industry === "Government") {
-    financialLoss = isBlocked ? "$20,000 (Threat intelligence feeds and patching)" : "$9,500,000 (National security audit, backup server rebuilds, and identity recovery funding)";
-    operationalImpact = isBlocked ? "Negligible. Gateway firewall rules dropped all C2 exfiltration attempts." : "High. Secure federal registry directories compromised. Government agency backup storage arrays corrupted.";
-    downtime = isBlocked ? "0 Hours" : "72 Hours";
-  } else if (campaign.industry === "University") {
-    financialLoss = isBlocked ? "$15,000 (Infrastructure scan and token reset)" : "$1,800,000 (FERPA privacy violations, research patent litigation, and system recovery)";
-    operationalImpact = isBlocked ? "None. Network micro-segmentation blocked access to registrar NAS arrays." : "Moderate. Registrar portal taken offline. Research file shares encrypted, disrupting ongoing scientific projects.";
-    downtime = isBlocked ? "0 Hours" : "36 Hours";
-  } else { // Startup
-    financialLoss = isBlocked ? "$12,000 (Cloud security configuration review)" : "$1,500,000 (Production API key exposure, customer churn liabilities, and Kubernetes rebuilding costs)";
-    operationalImpact = isBlocked ? "Negligible. API rate-limiting successfully contained the intrusion source." : "Critical. Kubernetes master cluster compromised. Production API tokens exposed, requiring immediate revocation of all client keys.";
-    downtime = isBlocked ? "0 Hours" : "18 Hours";
-  }
-
-  // Recommended Defenses
-  const mitigations = [];
-  if (campaign.attackType === "Phishing") {
-    mitigations.push("Enforce hardware multi-factor authentication (MFA) like security keys to stop attackers from using stolen credentials.");
-    mitigations.push("Use email filtering rules to detect and block malicious phishing links before they reach users.");
-    mitigations.push("Enable endpoint protection rules to block credential harvesting tools from scanning system memory.");
-  } else if (campaign.attackType === "Ransomware") {
-    mitigations.push("Set up offline, immutable backups so data can be restored easily without paying a ransom.");
-    mitigations.push("Disable default administrative folders (like Admin$ and C$) on endpoints to block spreading.");
-    mitigations.push("Deploy active endpoint rules to detect and stop rapid file encryption attempts.");
-  } else if (campaign.attackType === "DDoS") {
-    mitigations.push("Use traffic scrubbing and web gateways to filter out large surges of malicious traffic.");
-    mitigations.push("Configure rate limits on border firewalls to throttle excessive connection requests.");
-    mitigations.push("Enable content delivery networks (CDNs) and caching to protect application servers under load.");
-  } else if (campaign.attackType === "Supply Chain") {
-    mitigations.push("Validate package integrity (using SHA-256 checks) before importing third-party libraries.");
-    mitigations.push("Use software scan tools to identify known security vulnerabilities in external code dependencies.");
-    mitigations.push("Configure firewall rules to block build servers from initiating unauthorized outbound connections.");
-  } else { // SQL Injection
-    mitigations.push("Use parameterized queries (prepared statements) in code to ensure input parameters cannot run database commands.");
-    mitigations.push("Deploy a Web Application Firewall (WAF) to intercept database injection entries.");
-    mitigations.push("Apply the principle of least privilege by removing write and file access permissions for the database user account.");
-  }
-
-  // Risk Reduction metrics
-  const currentRisk = isBlocked ? campaign.riskScore : Math.max(70, campaign.riskScore);
-  const projectedRisk = 5;
-  const riskReduction = Math.max(0, currentRisk - projectedRisk);
-
-  return {
-    id: campaign.id,
-    timestamp: campaign.timestamp,
-    actorName: actor,
-    actorId: campaign.threatActor,
-    vectorName: vector,
-    vectorId: campaign.attackType,
-    industryName: industry,
-    targetName: target,
-    status: campaign.status,
-    securityLevel: campaign.securityLevel,
-    executiveSummary: execSummary,
-    actorProfile,
-    financialLoss,
-    operationalImpact,
-    downtime,
-    mitigations,
-    currentRisk,
-    projectedRisk,
-    riskReduction,
-    stages: campaign.stages,
-    mitreMapping: undefined as { stageIndex: number; code: string; name: string }[] | undefined // local has no overrides
-  };
-};
 
 function LiveClock() {
   const [time, setTime] = useState("");
@@ -1652,6 +1543,30 @@ function AIAnalystContent() {
     // Call server API for live Gemini analysis!
     const fetchAIReport = async (camp: StoredCampaign) => {
       setCampaign(camp);
+      
+      // Check cache first!
+      if (typeof window !== "undefined") {
+        const cached = sessionStorage.getItem(`sentinel_ai_report_${camp.id}`);
+        if (cached) {
+          try {
+            const parsed = JSON.parse(cached);
+            setReportData(parsed);
+            setIsLiveAI(parsed.isLiveAI !== undefined ? parsed.isLiveAI : true);
+            setLoading(false);
+            
+            // Unlock next step
+            const currentMax = parseInt(sessionStorage.getItem("sentinel_max_unlocked_step") || "1", 10);
+            if (currentMax >= 3 && currentMax < 4) {
+              sessionStorage.setItem("sentinel_max_unlocked_step", "4");
+              window.dispatchEvent(new Event("sentinel_progress_update"));
+            }
+            return;
+          } catch (e) {
+            // fallback to fetch
+          }
+        }
+      }
+
       setLoading(true);
       try {
         const res = await fetch("/api/analyze", {
@@ -1668,11 +1583,16 @@ function AIAnalystContent() {
 
         if (data.isFallback) {
           console.warn("[SENTINEL] Live Gemini API not configured or returned fallback. Using local generator.");
-          setReportData(generateCTIReport(camp));
+          const localReport = generateCTIReport(camp);
+          const cachedPayload = { ...localReport, isLiveAI: false };
+          if (typeof window !== "undefined") {
+            sessionStorage.setItem(`sentinel_ai_report_${camp.id}`, JSON.stringify(cachedPayload));
+          }
+          setReportData(localReport);
           setIsLiveAI(false);
         } else {
           console.log("[SENTINEL] Live Gemini CTI report generated successfully.");
-          setReportData({
+          const reportPayload = {
             id: camp.id,
             timestamp: camp.timestamp,
             actorName: getActorName(camp.threatActor),
@@ -1693,13 +1613,23 @@ function AIAnalystContent() {
             projectedRisk: data.riskAssessment.projectedRisk,
             riskReduction: data.riskAssessment.riskReduction,
             stages: camp.stages,
-            mitreMapping: data.mitreMapping
-          });
+            mitreMapping: data.mitreMapping,
+            isLiveAI: true
+          };
+          if (typeof window !== "undefined") {
+            sessionStorage.setItem(`sentinel_ai_report_${camp.id}`, JSON.stringify(reportPayload));
+          }
+          setReportData(reportPayload);
           setIsLiveAI(true);
         }
       } catch (error) {
         console.error("[SENTINEL ERROR] Fetching Gemini report failed. Using local compiler:", error);
-        setReportData(generateCTIReport(camp));
+        const localReport = generateCTIReport(camp);
+        const cachedPayload = { ...localReport, isLiveAI: false };
+        if (typeof window !== "undefined") {
+          sessionStorage.setItem(`sentinel_ai_report_${camp.id}`, JSON.stringify(cachedPayload));
+        }
+        setReportData(localReport);
         setIsLiveAI(false);
       } finally {
         setLoading(false);
